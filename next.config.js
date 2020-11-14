@@ -1,4 +1,4 @@
 module.exports = {
-  basePath: '/cpiemontese',
-  assetPrefix: '/cpiemontese/',
+  basePath: '/cpiemontese/cpiemontese.github.io',
+  assetPrefix: '/cpiemontese/cpiemontese.github.io/',
 };
