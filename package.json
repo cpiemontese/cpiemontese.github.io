@@ -5,7 +5,8 @@
     "dev": "next",
     "build": "next build",
     "start": "next start",
-    "export": "next export && cp -r out/* . && rm -rf out"
+    "export": "rm -rf _next && next export && cp -r out/* . && rm -rf out && touch _next/.nojekyll",
+    "deploy": "npm run build && npm run export"
   },
   "dependencies": {
     "next": "^10.0.1",
