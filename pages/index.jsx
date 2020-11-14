@@ -6,15 +6,15 @@ export default function IndexPage() {
   return (
     <Layout home>
       <section>
-        <div className="flex">
-          <div className="flex flex-col justify-between w-2/3 border-r-2 mr-2">
-            <div>
+        <div className="sm:flex">
+          <div className="flex flex-col justify-between sm:w-3/5 border-b-2 sm:border-b-0 mb-4 sm:mb-0 pb-4 sm:pb-0 sm:border-r-2 sm:mr-2">
+            <div className="mb-6">
               <h1 className="text-3xl font-bold">Cristiano Piemontese</h1>
               <h2 className="text-xl font-light">Full-stack developer</h2>
             </div>
-            <p>Nato a Bentivoglio (Bo) il 26/11/1994</p>
+            <p className="font-light">Nato a Bentivoglio (Bo) il 26/11/1994</p>
           </div>
-          <div className="w-1/3">
+          <div className="flex flex-col justify-center sm:w-2/5">
             <div className="flex items-center">
               <FaMapMarkerAlt />
               <span className="ml-2">Milano</span>

@@ -6,7 +6,7 @@ export const siteTitle = 'Next.js Sample Website'
 
 export default function Layout({ children, home }) {
   return (
-    <div className="max-w-4xl min-h-screen mx-auto p-4 overflow-hidden">
+    <div className="max-w-4xl min-h-screen mx-auto p-8 overflow-hidden">
       <Head>
         <link rel="icon" href="/favicon.ico" />
         <meta
