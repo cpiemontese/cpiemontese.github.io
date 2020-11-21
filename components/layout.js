@@ -34,7 +34,7 @@ export default function Layout({ children, home }) {
       <header className="flex justify-end items-center mb-4">
         <Toggle toggled={toggled} setToggled={setToggled} />
       </header>
-      <main>{ children({ lang }) }</main>
+      <main className="dark:text-gray-100">{ children({ lang }) }</main>
       {!home && (
         <div className={styles.backToHome}>
           <Link href="/">
