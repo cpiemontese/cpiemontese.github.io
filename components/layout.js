@@ -16,7 +16,7 @@ export default function Layout({ children, home }) {
   const lang = toggled ? IT : EN;
 
   return (
-    <div className="max-w-4xl min-h-screen mx-auto pt-4 px-8 pb-8 overflow-hidden">
+    <div className="max-w-4xl min-h-screen mx-auto pt-4 px-8 pb-8 overflow-hidden dark:bg-gray-800">
       <Head>
         <link rel="icon" href="/favicon.ico" />
         <meta
