@@ -7,8 +7,8 @@ import Toggle from '../components/toggle'
 const name = 'Cristiano Piemontese'
 export const siteTitle = `${name} Portfolio`
 
-const IT = 'IT'
-const EN = 'EN'
+export const IT = 'IT'
+export const EN = 'EN'
 
 export default function Layout({ children, home }) {
   const [toggled, setToggled] = useState(false);
@@ -34,11 +34,15 @@ export default function Layout({ children, home }) {
       <header className="flex justify-end items-center mb-4">
         <Toggle toggled={toggled} setToggled={setToggled} />
       </header>
-      <main>{children}</main>
+      <main>{ children({ lang }) }</main>
       {!home && (
         <div className={styles.backToHome}>
           <Link href="/">
-            <a>← Back to home</a>
+            <a>
+              {
+                lang === EN ? '← Back' : '← Indietro'
+              }
+            </a>
           </Link>
         </div>
       )}
