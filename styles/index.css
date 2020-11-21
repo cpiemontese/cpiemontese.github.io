@@ -11,6 +11,10 @@
   @apply bg-blue-500 text-white font-bold py-2 px-4 rounded;
 }
 
+.smooth {
+  @apply transition-all ease-in-out duration-200;
+}
+
 /* Start purging... */
 @tailwind utilities;
 /* Stop purging. */

@@ -1,12 +1,22 @@
 import Head from 'next/head'
 import Link from 'next/link'
+import { useState } from 'react'
+
+import Toggle from '../components/toggle'
 
 const name = 'Cristiano Piemontese'
-export const siteTitle = 'Next.js Sample Website'
+export const siteTitle = `${name} Portfolio`
+
+const IT = 'IT'
+const EN = 'EN'
 
 export default function Layout({ children, home }) {
+  const [toggled, setToggled] = useState(false);
+
+  const lang = toggled ? IT : EN;
+
   return (
-    <div className="max-w-4xl min-h-screen mx-auto p-8 overflow-hidden">
+    <div className="max-w-4xl min-h-screen mx-auto pt-4 px-8 pb-8 overflow-hidden">
       <Head>
         <link rel="icon" href="/favicon.ico" />
         <meta
@@ -21,8 +31,9 @@ export default function Layout({ children, home }) {
         />
         <meta name="og:title" content="Cristiano Piemontese's portfolio" />
       </Head>
-      {/* <header className="">
-      </header> */}
+      <header className="flex justify-end items-center mb-4">
+        <Toggle toggled={toggled} setToggled={setToggled} />
+      </header>
       <main>{children}</main>
       {!home && (
         <div className={styles.backToHome}>
