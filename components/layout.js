@@ -16,7 +16,7 @@ export default function Layout({ children, home }) {
   const lang = toggled ? IT : EN;
 
   return (
-    <div className="max-w-4xl min-h-screen mx-auto pt-4 px-8 pb-8 overflow-hidden bg-gray-100 dark:bg-gray-800">
+    <div className="max-w-4xl min-h-screen mx-auto pt-4 px-8 pb-8 overflow-hidden">
       <Head>
         <link rel="icon" href="/favicon.ico" />
         <meta
@@ -34,7 +34,7 @@ export default function Layout({ children, home }) {
       <header className="flex justify-end items-center mb-4">
         <Toggle toggled={toggled} setToggled={setToggled} />
       </header>
-      <main className="dark:text-gray-100">{ children({ lang }) }</main>
+      <main>{ children({ lang }) }</main>
       {!home && (
         <div className={styles.backToHome}>
           <Link href="/">
