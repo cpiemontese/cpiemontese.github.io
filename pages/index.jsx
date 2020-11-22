@@ -132,19 +132,26 @@ export default function IndexPage() {
                 title="Freelance front-end developer"
                 subtitle="EMMEPI s.r.l. (Bologna)"
                 period="2018"
-                list={[
-                  {
-                    [EN]:
-                      "Developed the current showcase site (www.mpinsegne.it)",
-                    [IT]:
-                      "Sviluppato l’attuale sito vetrina (www.mpinsegne.it)",
-                  },
-                  {
-                    [EN]: "Maintained legacy web applications",
-                    [IT]: "Manutenuto applicazioni web legacy",
-                  },
-                ]}
-              />
+              >
+                <ul className="list-disc list-inside">
+                  <li>
+                    {lang === EN
+                      ? "Developed the current showcase site "
+                      : "Sviluppato l’attuale sito vetrina "}
+                    <a
+                      className="text-green-500 dark:text-green-400"
+                      href="https://www.mpinsegne.it"
+                    >
+                      www.mpinsegne.it
+                    </a>
+                  </li>
+                  <li>
+                    {lang === EN
+                      ? "Maintained legacy web applications"
+                      : "Manutenuto applicazioni web legacy"}
+                  </li>
+                </ul>
+              </CVElement>
               <CVElement
                 className="mb-12"
                 lang={lang}

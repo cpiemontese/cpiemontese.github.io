@@ -1,4 +1,4 @@
-export default function CVElement({ className, lang, title, subtitle, period, body, list, grade, children }) {
+export default function CVElement({ className, lang, title, subtitle, period, list, grade, children }) {
   return (
     <div className={className}>
       <div className="mb-4">
@@ -19,7 +19,7 @@ export default function CVElement({ className, lang, title, subtitle, period, bo
           )
         }
       </ul> }
-      { body && <p>{body}</p> }
+      { children !== undefined ? children : null }
       {
         grade && <p className="text-sm">{grade}</p>
       }
