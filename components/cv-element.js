@@ -1,7 +1,7 @@
 export default function CVElement({ className, lang, title, subtitle, period, list, grade, children }) {
   return (
     <div className={className}>
-      <div className="mb-4">
+      <div className="mb-2">
         <h3 className="text-xl font-bold text-green-600 dark:text-green-500">{title}</h3>
         {
           subtitle && <h4 className="text-md">{subtitle}</h4>
@@ -10,7 +10,7 @@ export default function CVElement({ className, lang, title, subtitle, period, li
           period && <p className="text-sm uppercase text-green-600 dark:text-green-500">{period}</p>
         }
       </div>
-      { list && <ul className="list-disc list-inside">
+      { list && <ul className="mt-4 list-disc list-inside">
         {
           list.map((element, index) =>
             <li key={index} className={`${index + 1 < list.length ? 'mb-2' : ''}`}>
@@ -21,7 +21,7 @@ export default function CVElement({ className, lang, title, subtitle, period, li
       </ul> }
       { children !== undefined ? children : null }
       {
-        grade && <p className="text-sm">{grade}</p>
+        grade && <p className="mt-2 text-sm text-green-600 dark:text-green-500">{grade}</p>
       }
     </div>
   );

@@ -133,7 +133,7 @@ export default function IndexPage() {
                 subtitle="EMMEPI s.r.l. (Bologna)"
                 period="2018"
               >
-                <ul className="list-disc list-inside">
+                <ul className="mt-4 list-disc list-inside">
                   <li>
                     {lang === EN
                       ? "Developed the current showcase site "
@@ -168,6 +168,27 @@ export default function IndexPage() {
                 ]}
               />
               <SectionTitle name={lang === EN ? "Education" : "Formazione"} />
+              <CVElement
+                className="mb-12"
+                lang={lang}
+                title={
+                  lang === EN
+                    ? "Master’s Degree in Computer Science"
+                    : "Laurea Magistrale in Informatica"
+                }
+                subtitle={`Alma Mater Studiorum - Univerist${
+                  lang === EN ? "y of Bologna" : "à di Bologna"
+                }`}
+                period="2018"
+                grade={
+                  lang === EN
+                    ? "Final mark: 110/110 cum laude"
+                    : "Valutazione: 110/110 e lode"
+                }
+              >
+                <p>Thesis in Emerging Programming Paradigms:</p>
+                <p>“Developement of an Interactive Theorem Prover in ELPI”</p>
+              </CVElement>
             </div>
             <div className="sm:w-1/2"></div>
           </section>
