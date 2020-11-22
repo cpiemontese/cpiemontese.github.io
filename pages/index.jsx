@@ -79,9 +79,9 @@ export default function IndexPage() {
                 list={[
                   {
                     [EN]:
-                      "Contributed to developing the Digital Integration Hub",
+                      "Contributed to developing the Digital Integration Hub for Helvetia Insurance",
                     [IT]:
-                      "Contribuito allo sviluppo del Digital Integration Hub",
+                      "Contribuito allo sviluppo del Digital Integration Hub per Helvetia Assicurazioni",
                   },
                   {
                     [EN]:
@@ -229,11 +229,11 @@ export default function IndexPage() {
                 title={lang === EN ? "Tecnical (IT) skills" : "Informatiche"}
                 list={(function () {
                   const languages =
-                    "C, C++, C#, CSS, HTML, Java, Javascript, Python";
+                    "C, C++, C#, CSS, HTML, Java, Javascript, Python, TypeScript";
                   const techs =
                     "Docker, Git, Kafka, Kubernetes, MongoDB, Node.js, Unity3D, Webpack";
                   const frameworks =
-                    "Bootstrap, Express.js, jQuery, KeystoneJS, Mongoose";
+                    "Bootstrap, Express.js, jQuery, KeystoneJS, Mongoose, Next.js, React, tailwindcss";
 
                   return [
                     {
