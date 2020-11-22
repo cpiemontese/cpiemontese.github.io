@@ -63,8 +63,8 @@ export default function IndexPage() {
               </div>
             </div>
           </section>
-          <section className="flex">
-            <div className="sm:w-1/2">
+          <section className="md:flex">
+            <div className="md:w-1/2 md:mr-6">
               <SectionTitle
                 name={`${
                   lang === EN ? "Work Experience" : "Esperienza Lavorativa"
@@ -220,7 +220,101 @@ export default function IndexPage() {
                 </p>
               </CVElement>
             </div>
-            <div className="sm:w-1/2"></div>
+            <div className="md:w-1/2 md:ml-6">
+              <SectionTitle name={`${lang === EN ? "Skills" : "Competenze"}`} />
+              <CVElement
+                className="mb-14"
+                lang={lang}
+                title={lang === EN ? "Tecnical (IT) skills" : "Informatiche"}
+                list={(function () {
+                  const languages =
+                    "C, C++, C#, CSS, HTML, Java, Javascript, Python";
+                  const techs =
+                    "Docker, Git, Kafka, Kubernetes, MongoDB, Node.js, Unity3D, Webpack";
+                  const frameworks =
+                    "Bootstrap, Express.js, jQuery, KeystoneJS, Mongoose";
+
+                  return [
+                    {
+                      [EN]: `Languages: ${languages}`,
+                      [IT]: `Linguaggi: ${languages}`,
+                    },
+                    {
+                      [EN]: `Technologies: ${techs}`,
+                      [IT]: `Tecnologie: ${techs}`,
+                    },
+                    {
+                      [EN]: `Frameworks: ${frameworks}`,
+                      [IT]: `Frameworks: ${frameworks}`,
+                    },
+                    {
+                      [EN]:
+                        "Experience with microservice architectures, APIs and streaming architectures",
+                      [IT]:
+                        "Esperienza con architetture a microservizi, APIs e architetture di streaming",
+                    },
+                    {
+                      [EN]:
+                        "Experience with Agile methodologies like Scrum, Pair Programming and TDD",
+                      [IT]:
+                        "Esperienza con metodologie Agili tra cui Scrum, Pair Programming e TDD",
+                    },
+                  ];
+                })()}
+              />
+              <CVElement
+                className="mb-14"
+                lang={lang}
+                title={
+                  lang === EN
+                    ? "Communication and social skills"
+                    : "Relazionali e organizzative"
+                }
+                list={[
+                  {
+                    [EN]: `Teamwork and leadership skills developed through work,
+                    academic and personal projects, such as the participation
+                    to Google Hash Code 2018 and 2019`,
+                    [IT]: `Ottime capacità di lavoro di squadra sviluppate non
+                    solo attraverso esperienze lavorative ma anche progetti
+                    accademici e partecipazione a eventi come Google Hash
+                    Code 2018 e 2019.`,
+                  },
+                  {
+                    [EN]: `Good communication and listening skills gained through
+                    work experiences, I had to collaborate with both expert
+                    and non expert clients`,
+                    [IT]: `Buone capacità di comunicazione col cliente, sviluppate
+                    attraverso esperienze lavorative, grazie all’interazione con
+                    clienti tecnici e non tecnici.`,
+                  },
+                  {
+                    [EN]: `Excellent problem solving abilities and learning
+                    predisposition: thanks to both my academic studies and
+                    personal disposition I am eager to learn new concepts,
+                    technologies and languages`,
+                    [IT]: `Ottime capacità di problem solving e attitudine
+                    all’apprendimento di nuovi concetti, tecnologie e
+                    linguaggi.`,
+                  },
+                ]}
+              />
+              <CVElement
+                className="mb-14"
+                lang={lang}
+                title={lang === EN ? "Languages" : "Linguistiche"}
+                list={[
+                  {
+                    [EN]: "Italian: mother tongue",
+                    [IT]: "Italiano: madrelingua",
+                  },
+                  {
+                    [EN]: "English: C1 (advanced)",
+                    [IT]: "Inglese: C1 (advanced)",
+                  },
+                ]}
+              />
+            </div>
           </section>
         </>
       )}
