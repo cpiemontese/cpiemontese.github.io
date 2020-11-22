@@ -4,9 +4,7 @@ import { GrMail } from "react-icons/gr";
 import CVElement from "../components/cv-element";
 
 const SectionTitle = ({ name }) => (
-  <h2 className=" w-max px-2 mb-6 uppercase text-xl bg-gray-800 text-gray-100 dark:bg-gray-100 dark:text-gray-800">
-    {name}
-  </h2>
+  <h2 className="mb-6 uppercase text-3xl">{name}</h2>
 );
 
 export default function IndexPage() {
@@ -153,7 +151,7 @@ export default function IndexPage() {
                 </ul>
               </CVElement>
               <CVElement
-                className="mb-12"
+                className="mb-14"
                 lang={lang}
                 title="Freelance front-end developer"
                 subtitle="FEED-0 (Bologna)"
@@ -169,11 +167,11 @@ export default function IndexPage() {
               />
               <SectionTitle name={lang === EN ? "Education" : "Formazione"} />
               <CVElement
-                className="mb-12"
+                className="mb-6"
                 lang={lang}
                 title={
                   lang === EN
-                    ? "Master’s Degree in Computer Science"
+                    ? "Master's Degree in Computer Science"
                     : "Laurea Magistrale in Informatica"
                 }
                 subtitle={`Alma Mater Studiorum - Univerist${
@@ -186,8 +184,40 @@ export default function IndexPage() {
                     : "Valutazione: 110/110 e lode"
                 }
               >
-                <p>Thesis in Emerging Programming Paradigms:</p>
-                <p>“Developement of an Interactive Theorem Prover in ELPI”</p>
+                <p>
+                  {lang === EN ? "Thesis in" : "Tesi di laurea in"} Emerging
+                  Programming Paradigms:
+                </p>
+                <p>
+                  {lang === EN
+                    ? "“Developement of an Interactive Theorem Prover in ELPI”"
+                    : "“Sviluppo di un Interactive Theorem Prover in ELPI”"}
+                </p>
+              </CVElement>
+              <CVElement
+                lang={lang}
+                title={
+                  lang === EN
+                    ? "Bachelor's Degree in Computer Science"
+                    : "Laurea Triennale in Informatica"
+                }
+                subtitle={`Alma Mater Studiorum - Univerist${
+                  lang === EN ? "y of Bologna" : "à di Bologna"
+                }`}
+                period="2018"
+                grade={
+                  lang === EN ? "Final mark: 108/110" : "Valutazione: 108/110"
+                }
+              >
+                <p>
+                  {lang === EN ? "Thesis in" : "Tesi di laurea in"} Computer
+                  Vision:
+                </p>
+                <p>
+                  {lang === EN
+                    ? "“Design and implementation of an interactive didactic application for object recognition based on the SIFT algorithm”"
+                    : "“Progettazione e implementazione di un’applicazione didattica interattiva per il riconoscimento di oggetti basata sull’algoritmo SIFT”"}
+                </p>
               </CVElement>
             </div>
             <div className="sm:w-1/2"></div>
