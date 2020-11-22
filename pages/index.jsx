@@ -3,6 +3,12 @@ import { FaMapMarkerAlt, FaPhoneAlt, FaSkype, FaGithub } from "react-icons/fa";
 import { GrMail } from "react-icons/gr";
 import CVElement from "../components/cv-element";
 
+const SectionTitle = ({ name }) => (
+  <h2 className=" w-max px-2 mb-6 uppercase text-xl bg-gray-800 text-gray-100 dark:bg-gray-100 dark:text-gray-800">
+    {name}
+  </h2>
+);
+
 export default function IndexPage() {
   return (
     <Layout home>
@@ -22,7 +28,7 @@ export default function IndexPage() {
                 <div className="flex items-center">
                   <FaMapMarkerAlt />
                   <span className="ml-2">
-                    {lang === EN ? "Milan" : "Milano"}
+                    {lang === EN ? "Milan, Italy" : "Milano"}
                   </span>
                 </div>
                 <div className="flex items-center">
@@ -61,9 +67,15 @@ export default function IndexPage() {
           </section>
           <section className="flex">
             <div className="sm:w-1/2">
+              <SectionTitle
+                name={`${
+                  lang === EN ? "Work Experience" : "Esperienza Lavorativa"
+                }`}
+              />
               <CVElement
+                className="mb-8"
                 lang={lang}
-                title={"Full-stack developer"}
+                title="Full-stack developer"
                 subtitle={`MIA-Platform (Milan${lang === EN ? "" : "o"})`}
                 period={`2019 - Present${lang === IT ? "e" : ""}`}
                 list={[
@@ -95,6 +107,60 @@ export default function IndexPage() {
                   },
                 ]}
               />
+              <CVElement
+                className="mb-8"
+                lang={lang}
+                title="Full-stack developer"
+                subtitle="NSI Nier Soluzioni Informatiche (Bologna)"
+                period="2019"
+                list={[
+                  {
+                    [EN]:
+                      "Developed web applications using Mongo (Mongoose, KeystoneJS), Express and Bootstrap",
+                    [IT]:
+                      "Sviluppato applicazioni web usando Mongo (Mongoose, KeystoneJS), Express e Bootstrap",
+                  },
+                  {
+                    [EN]: "Maintained legacy web applications",
+                    [IT]: "Manutenuto applicazioni web legacy",
+                  },
+                ]}
+              />
+              <CVElement
+                className="mb-8"
+                lang={lang}
+                title="Freelance front-end developer"
+                subtitle="EMMEPI s.r.l. (Bologna)"
+                period="2018"
+                list={[
+                  {
+                    [EN]:
+                      "Developed the current showcase site (www.mpinsegne.it)",
+                    [IT]:
+                      "Sviluppato l’attuale sito vetrina (www.mpinsegne.it)",
+                  },
+                  {
+                    [EN]: "Maintained legacy web applications",
+                    [IT]: "Manutenuto applicazioni web legacy",
+                  },
+                ]}
+              />
+              <CVElement
+                className="mb-12"
+                lang={lang}
+                title="Freelance front-end developer"
+                subtitle="FEED-0 (Bologna)"
+                period="2017"
+                list={[
+                  {
+                    [EN]:
+                      "Developed the front-end of the FEED-0 e-commerce website",
+                    [IT]:
+                      "Sviluppato la parte front-end del sito web e-commerce di FEED-0",
+                  },
+                ]}
+              />
+              <SectionTitle name={lang === EN ? "Education" : "Formazione"} />
             </div>
             <div className="sm:w-1/2"></div>
           </section>
