@@ -9,6 +9,7 @@
     "deploy": "npm run build && npm run export && git add . && git commit -m 'Deploy' && git push"
   },
   "dependencies": {
+    "autoprefixer": "^10.0.2",
     "next": "^10.0.2",
     "react": "^17.0.1",
     "react-dom": "^17.0.1",
