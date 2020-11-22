@@ -195,6 +195,7 @@ export default function IndexPage() {
                 </p>
               </CVElement>
               <CVElement
+                className="mb-14 md:mb-0"
                 lang={lang}
                 title={
                   lang === EN
@@ -300,7 +301,6 @@ export default function IndexPage() {
                 ]}
               />
               <CVElement
-                className="mb-14"
                 lang={lang}
                 title={lang === EN ? "Languages" : "Linguistiche"}
                 list={[
