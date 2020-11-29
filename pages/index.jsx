@@ -12,7 +12,7 @@ export default function IndexPage() {
     <Layout home>
       {({ lang }) => (
         <>
-          <section className="pb-6 mb-8 border-b-2 border-gray-800 dark:border-gray-100">
+          <section className="pb-8 mb-8 border-b-2 border-gray-800 dark:border-gray-100">
             <div className="sm:flex">
               <div className="flex flex-col justify-between sm:w-3/5 border-gray-300 dark:border-gray-600 border-b-2 sm:border-b-0 mb-4 sm:mb-0 pb-4 sm:pb-0 sm:border-r-2 sm:mr-2">
                 <div className="sm:mb-6">
@@ -301,6 +301,7 @@ export default function IndexPage() {
                 ]}
               />
               <CVElement
+                className="mb-14"
                 lang={lang}
                 title={lang === EN ? "Languages" : "Linguistiche"}
                 list={[
@@ -314,6 +315,36 @@ export default function IndexPage() {
                   },
                 ]}
               />
+              <SectionTitle
+                name={`${lang === EN ? "Other projects" : "Altri progetti"}`}
+              />
+              <CVElement
+                className=""
+                lang={lang}
+                title={lang === EN ? "Games" : "Giochi"}
+              >
+                <ul className="mt-4 list-disc list-inside">
+                  <li>
+                    <a
+                      className="text-green-500 dark:text-green-400"
+                      href="/run-sparty-run"
+                    >
+                      Run Sparty, Run!
+                    </a>{" "}
+                    &ndash;{" "}
+                    {lang === EN
+                      ? "final project for the"
+                      : "progetto finale per la"}{" "}
+                    <a
+                      className="text-green-500 dark:text-green-400"
+                      href="https://www.coursera.org/specializations/game-development"
+                    >
+                      Game Design and Development Specialization
+                    </a>{" "}
+                    {lang === EN ? "at" : "di"} Coursera
+                  </li>
+                </ul>
+              </CVElement>
             </div>
           </section>
         </>
