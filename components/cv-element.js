@@ -10,7 +10,7 @@ export default function CVElement({ className, lang, title, subtitle, period, li
           period && <p className="text-md uppercase text-green-600 dark:text-green-500">{period}</p>
         }
       </div>
-      { list && <ul className="mt-4 list-disc list-inside">
+      { list && <ul className="mt-4 list-disc list-outside">
         {
           list.map((element, index) =>
             <li key={index} className={`${index + 1 < list.length ? 'mb-2' : ''}`}>
