@@ -58,7 +58,7 @@ export default function IndexPage() {
                 className='mb-8'
                 lang={lang}
                 title='Backend developer'
-                subtitle='Vidiemme'
+                subtitle={`Vidiemme (Milan${lang === EN ? '' : 'o'})`}
                 period={`2021 - Present${lang === IT ? 'e' : ''}`}
                 list={[
                   {
