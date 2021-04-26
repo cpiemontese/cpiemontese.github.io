@@ -155,11 +155,11 @@ export default function IndexPage() {
                 grade={lang === EN ? 'Final mark: 110/110 cum laude' : 'Valutazione: 110/110 e lode'}
               >
                 <p>{lang === EN ? 'Thesis in' : 'Tesi di laurea in'} Emerging Programming Paradigms:</p>
-                <p>
+                <a className='text-green-500 dark:text-green-400' href='https://amslaurea.unibo.it/17293/'>
                   {lang === EN
                     ? '“Developement of an Interactive Theorem Prover in ELPI”'
                     : '“Sviluppo di un Interactive Theorem Prover in ELPI”'}
-                </p>
+                </a>
               </CVElement>
               <CVElement
                 className='mb-14 md:mb-0'
@@ -170,11 +170,11 @@ export default function IndexPage() {
                 grade={lang === EN ? 'Final mark: 108/110' : 'Valutazione: 108/110'}
               >
                 <p>{lang === EN ? 'Thesis in' : 'Tesi di laurea in'} Computer Vision:</p>
-                <p>
+                <a className='text-green-500 dark:text-green-400' href='https://amslaurea.unibo.it/10883/'>
                   {lang === EN
                     ? '“Design and implementation of an interactive didactic application for object recognition based on the SIFT algorithm”'
                     : '“Progettazione e implementazione di un’applicazione didattica interattiva per il riconoscimento di oggetti basata sull’algoritmo SIFT”'}
-                </p>
+                </a>
               </CVElement>
             </div>
             <div className='md:w-1/2 md:ml-6'>
