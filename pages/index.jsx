@@ -130,7 +130,6 @@ export default function IndexPage() {
                       www.mpinsegne.it
                     </a>
                   </li>
-                  <li>{lang === EN ? 'Maintained legacy web applications' : 'Manutenuto applicazioni web legacy'}</li>
                 </ul>
               </CVElement>
               <CVElement
