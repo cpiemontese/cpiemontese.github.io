@@ -11,18 +11,15 @@ export const IT = 'IT'
 export const EN = 'EN'
 
 export default function Layout({ children, home }) {
-  const [toggled, setToggled] = useState(false);
+  const [toggled, setToggled] = useState(false)
 
-  const lang = toggled ? IT : EN;
+  const lang = toggled ? IT : EN
 
   return (
     <div className="max-w-4xl min-h-screen mx-auto pt-4 px-8 pb-8 overflow-hidden">
       <Head>
         <link rel="icon" href="/favicon.ico" />
-        <meta
-          name="description"
-          content="Cristiano Piemontese portfolio"
-        />
+        <meta name="description" content="Cristiano Piemontese portfolio" />
         <meta
           property="og:image"
           content={`https://og-image.now.sh/${encodeURI(
@@ -34,15 +31,11 @@ export default function Layout({ children, home }) {
       <header className="flex justify-end items-center mb-4">
         <Toggle toggled={toggled} setToggled={setToggled} />
       </header>
-      <main>{ children({ lang }) }</main>
+      <main>{children({ lang })}</main>
       {!home && (
         <div className={styles.backToHome}>
           <Link href="/">
-            <a>
-              {
-                lang === EN ? '← Back' : '← Indietro'
-              }
-            </a>
+            <a>{lang === EN ? '← Back' : '← Indietro'}</a>
           </Link>
         </div>
       )}
