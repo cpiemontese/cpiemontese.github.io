@@ -34,13 +34,6 @@ export default function Layout({ children, home }) {
         <Toggle toggled={toggled} setToggled={setToggled} />
       </header>
       <main>{children({ lang })}</main>
-      {!home && (
-        <div className={styles.backToHome}>
-          <Link href="/">
-            <a>{lang === EN ? '← Back' : '← Indietro'}</a>
-          </Link>
-        </div>
-      )}
     </div>
   )
 }
