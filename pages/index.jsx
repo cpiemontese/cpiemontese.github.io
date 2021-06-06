@@ -52,7 +52,7 @@ export default function IndexPage() {
             </div>
           </section>
           <section className="md:flex">
-            <div className="md:w-1/2 md:mr-6">
+            <div className="md:w-1/2 md:mr-12">
               <SectionTitle name={`${lang === EN ? 'Work Experience' : 'Esperienza Lavorativa'}`} />
               <CVElement
                 className="mb-8"
@@ -147,7 +147,7 @@ export default function IndexPage() {
                 className="mb-6"
                 lang={lang}
                 title={lang === EN ? "Master's Degree in Computer Science" : 'Laurea Magistrale in Informatica'}
-                subtitle={`Alma Mater Studiorum - Univerist${lang === EN ? 'y of Bologna' : 'à di Bologna'}`}
+                subtitle={`Alma Mater Studiorum - Universit${lang === EN ? 'y of Bologna' : 'à di Bologna'}`}
                 period="2018"
                 grade={lang === EN ? 'Final mark: 110/110 cum laude' : 'Valutazione: 110/110 e lode'}
               >
@@ -162,7 +162,7 @@ export default function IndexPage() {
                 className="mb-14 md:mb-0"
                 lang={lang}
                 title={lang === EN ? "Bachelor's Degree in Computer Science" : 'Laurea Triennale in Informatica'}
-                subtitle={`Alma Mater Studiorum - Univerist${lang === EN ? 'y of Bologna' : 'à di Bologna'}`}
+                subtitle={`Alma Mater Studiorum - Universit${lang === EN ? 'y of Bologna' : 'à di Bologna'}`}
                 period="2018"
                 grade={lang === EN ? 'Final mark: 108/110' : 'Valutazione: 108/110'}
               >
@@ -174,7 +174,7 @@ export default function IndexPage() {
                 </a>
               </CVElement>
             </div>
-            <div className="md:w-1/2 md:ml-6">
+            <div className="md:w-1/2 md:ml-12">
               <SectionTitle name={`${lang === EN ? 'Skills' : 'Competenze'}`} />
               <CVElement
                 className="mb-14"
