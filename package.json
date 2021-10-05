@@ -1,5 +1,5 @@
 {
-  "name": "with-tailwindcss",
+  "name": "cpiemontese.github.io",
   "version": "0.1.0",
   "scripts": {
     "preinstall": "git config core.hooksPath custom_hooks",
