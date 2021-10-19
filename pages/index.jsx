@@ -1,6 +1,6 @@
-import Layout, { EN, IT } from '../components/layout'
-import { FaMapMarkerAlt, FaPhoneAlt, FaSkype, FaGithub } from 'react-icons/fa'
 import { GrMail } from 'react-icons/gr'
+import { FaMapMarkerAlt, FaPhoneAlt, FaSkype, FaGithub } from 'react-icons/fa'
+import Layout, { EN, IT } from '../components/layout'
 import CVElement from '../components/cv-element'
 
 const SectionTitle = ({ name }) => <h2 className="mb-6 uppercase text-3xl">{name}</h2>
@@ -62,8 +62,8 @@ export default function IndexPage() {
                 period={`2021 - Present${lang === IT ? 'e' : ''}`}
                 list={[
                   {
-                    [EN]: 'Developed APIs and SSR apps using Typescript, AdonisJS and SQL databases',
-                    [IT]: 'Sviluppato API e applicazioni in SSR con Typescript, AdonisJS e basi dati SQL',
+                    [EN]: 'Developed REST and GraphQL APIs and SSR applications using Typescript, AdonisJS and SQL databases',
+                    [IT]: 'Sviluppato API REST e GraphQL e applicazioni in SSR con Typescript, AdonisJS e database SQL',
                   },
                 ]}
               />
@@ -179,11 +179,13 @@ export default function IndexPage() {
               <CVElement
                 className="mb-14"
                 lang={lang}
-                title={lang === EN ? 'Tecnical (IT) skills' : 'Informatiche'}
+                title={lang === EN ? 'Tecnical skills' : 'Informatiche'}
                 list={(function () {
-                  const languages = 'C, C++, C#, CSS, HTML, Java, Javascript, Python, Typescript'
-                  const techs = 'Docker, Git, Kafka, Kubernetes, MongoDB, Node.js, Unity3D, Webpack'
-                  const frameworks = 'AdonisJS, Bootstrap, Express.js, jQuery, Next.js, React, tailwindcss'
+                  const languages = 'C, C++, C#, CSS, HTML, Javascript, Python, Typescript'
+                  const techsAndFrameworks =
+                    'Docker, Git, GraphQL, Kafka, Kubernetes, MongoDB, MySQL, Next.js, Node.js, React, Tailwindcss, Unity3D'
+                  const ckadCredlyLink = 'https://www.credly.com/badges/9a267086-bd53-408e-b0c5-e9ce6d79dafb/public_url'
+                  const linkClass = 'text-green-600 dark:text-green-500'
 
                   return [
                     {
@@ -191,20 +193,28 @@ export default function IndexPage() {
                       [IT]: `Linguaggi: ${languages}`,
                     },
                     {
-                      [EN]: `Technologies: ${techs}`,
-                      [IT]: `Tecnologie: ${techs}`,
+                      [EN]: `Technologies and frameworks: ${techsAndFrameworks}`,
+                      [IT]: `Tecnologie e frameworks: ${techsAndFrameworks}`,
                     },
                     {
-                      [EN]: `Frameworks: ${frameworks}`,
-                      [IT]: `Frameworks: ${frameworks}`,
-                    },
-                    {
-                      [EN]: 'Experience with microservice architectures, APIs and streaming architectures',
-                      [IT]: 'Esperienza con architetture a microservizi, APIs e architetture di streaming',
+                      [EN]: 'Experience with microservice architectures, REST and GraphQL APIs and event streaming platforms',
+                      [IT]: 'Esperienza con architetture a microservizi, API REST e GraphQL e piattaforme di event streaming',
                     },
                     {
                       [EN]: 'Experience with Agile methodologies like Scrum, Pair Programming and TDD',
                       [IT]: 'Esperienza con metodologie Agili tra cui Scrum, Pair Programming e TDD',
+                    },
+                    {
+                      [EN]: (
+                        <a className={linkClass} href={ckadCredlyLink}>
+                          CKAD certification
+                        </a>
+                      ),
+                      [IT]: (
+                        <a className={linkClass} href={ckadCredlyLink}>
+                          Certificazione CKAD
+                        </a>
+                      ),
                     },
                   ]
                 })()}
@@ -215,21 +225,20 @@ export default function IndexPage() {
                 title={lang === EN ? 'Communication and social skills' : 'Relazionali e organizzative'}
                 list={[
                   {
-                    [EN]: `Teamwork and leadership skills developed through work,
-                    academic and personal projects, such as the participation
-                    to Google Hash Code 2018 and 2019`,
-                    [IT]: `Ottime capacità di lavoro di squadra sviluppate non
-                    solo attraverso esperienze lavorative ma anche progetti
-                    accademici e partecipazione a eventi come Google Hash
-                    Code 2018 e 2019.`,
+                    [EN]: `Teamwork and leadership skills developed through work, academic and personal projects,
+                    such as the participation to events like Google Hash Code`,
+                    [IT]: `Ottime capacità di lavoro di squadra sviluppate attraverso esperienze lavorative,
+                    progetti accademici e partecipazione a eventi come Google Hash Code`,
                   },
                   {
-                    [EN]: `Good communication and listening skills gained through
-                    work experiences, I had to collaborate with both expert
-                    and non expert clients`,
-                    [IT]: `Buone capacità di comunicazione col cliente, sviluppate
-                    attraverso esperienze lavorative, grazie all’interazione con
-                    clienti tecnici e non tecnici.`,
+                    [EN]: `Good communication and listening skills with project managers,
+                    teammates and clients with varying degrees of technical knowledge`,
+                    [IT]: `Buone capacità di comunicazione con project manager, teammates e
+                    clienti a vari livelli di conoscenza tecnica`,
+                  },
+                  {
+                    [EN]: `Disposition towards writing documentation`,
+                    [IT]: `Propensione alla scrittura di documentazione`,
                   },
                   {
                     [EN]: `Excellent problem solving abilities and learning
@@ -237,8 +246,9 @@ export default function IndexPage() {
                     personal disposition I am eager to learn new concepts,
                     technologies and languages`,
                     [IT]: `Ottime capacità di problem solving e attitudine
-                    all’apprendimento di nuovi concetti, tecnologie e
-                    linguaggi.`,
+                    all’apprendimento: grazie sia agli studi accademici
+                    che alla predisposizione personale sono desideroso
+                    di imparare nuovi concetti, tecnologie e linguaggi.`,
                   },
                 ]}
               />
