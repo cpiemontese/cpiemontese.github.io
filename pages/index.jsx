@@ -197,7 +197,7 @@ export default function IndexPage () {
                   const techsAndFrameworks =
                     'Docker, Git, GraphQL, Kafka, Kubernetes, MongoDB, MySQL, Next.js, Node.js, React, Tailwindcss, Unity3D'
                   const ckadCredlyLink = 'https://www.credly.com/badges/9a267086-bd53-408e-b0c5-e9ce6d79dafb/public_url'
-                  const linkClass = 'text-green-600 dark:text-green-500'
+                  const linkClass = 'text-green-500 dark:text-green-400'
 
                   return [
                     {
