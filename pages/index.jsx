@@ -5,7 +5,7 @@ import CVElement from '../components/cv-element'
 
 const SectionTitle = ({ name }) => <h2 className="mb-6 uppercase text-3xl">{name}</h2>
 
-export default function IndexPage() {
+export default function IndexPage () {
   return (
     <Layout home>
       {({ lang }) => (
@@ -57,13 +57,25 @@ export default function IndexPage() {
               <CVElement
                 className="mb-8"
                 lang={lang}
+                title="Software engineer"
+                subtitle={`Prima Assicurazioni (Milan${lang === EN ? '' : 'o'})`}
+                period={`2022 - Present${lang === IT ? 'e' : ''}`}
+                list={[]}
+              />
+              <CVElement
+                className="mb-8"
+                lang={lang}
                 title="Backend developer"
                 subtitle={`Vidiemme (Milan${lang === EN ? '' : 'o'})`}
-                period={`2021 - Present${lang === IT ? 'e' : ''}`}
+                period={`2021 - 2022`}
                 list={[
                   {
-                    [EN]: 'Developed REST and GraphQL APIs and SSR applications using Typescript, AdonisJS and SQL databases',
-                    [IT]: 'Sviluppato API REST e GraphQL e applicazioni in SSR con Typescript, AdonisJS e database SQL',
+                    [EN]: 'Developed REST and GraphQL APIs',
+                    [IT]: 'Sviluppato API REST e GraphQL',
+                  },
+                  {
+                    [EN]: 'Developed Full applications using Typescript, AdonisJS and SQL databases',
+                    [IT]: 'Sviluppato applicazioni in SSR con Typescript, AdonisJS e database SQL',
                   },
                 ]}
               />
