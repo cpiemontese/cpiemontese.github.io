@@ -24,10 +24,6 @@ export default function IndexPage() {
                   <span className="ml-2">{lang === EN ? 'Milan, Italy' : 'Milano'}</span>
                 </div>
                 <div className="flex items-center">
-                  <FaPhoneAlt />
-                  <span className="ml-2">+39 348 12 37 382</span>
-                </div>
-                <div className="flex items-center">
                   <GrMail />
                   <a
                     className="ml-2 truncate text-green-500 dark:text-green-400"
