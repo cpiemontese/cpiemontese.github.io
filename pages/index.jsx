@@ -5,7 +5,7 @@ import CVElement from '../components/cv-element'
 
 const SectionTitle = ({ name }) => <h2 className="mb-6 uppercase text-3xl">{name}</h2>
 
-export default function IndexPage() {
+export default function IndexPage () {
   return (
     <Layout home>
       {({ lang }) => (
@@ -189,7 +189,7 @@ export default function IndexPage() {
                 lang={lang}
                 title={lang === EN ? 'Tecnical skills' : 'Informatiche'}
                 list={(function () {
-                  const languages = 'C, C++, C#, CSS, HTML, Javascript, Python, Typescript'
+                  const languages = 'C, C++, C#, CSS, Elixir, HTML, Javascript, Python, Rust, Typescript'
                   const techsAndFrameworks =
                     'Docker, Git, GraphQL, Kafka, Kubernetes, MongoDB, MySQL, Next.js, Node.js, React, Tailwindcss, Unity3D'
                   const ckadCredlyLink = 'https://www.credly.com/badges/9a267086-bd53-408e-b0c5-e9ce6d79dafb/public_url'
