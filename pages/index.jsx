@@ -5,7 +5,7 @@ import CVElement from '../components/cv-element'
 
 const SectionTitle = ({ name }) => <h2 className="mb-6 uppercase text-3xl">{name}</h2>
 
-export default function IndexPage() {
+export default function IndexPage () {
   return (
     <Layout home>
       {({ lang }) => (
@@ -30,12 +30,6 @@ export default function IndexPage() {
                     href="mailto:cristiano.piemontese@gmail.com"
                   >
                     cristiano.piemontese@gmail.com
-                  </a>
-                </div>
-                <div className="flex items-center">
-                  <FaSkype />
-                  <a className="ml-2 text-green-500 dark:text-green-400" href="skype:cristiano.piemontese?chat">
-                    cristiano.piemontese
                   </a>
                 </div>
                 <div className="flex items-center">
