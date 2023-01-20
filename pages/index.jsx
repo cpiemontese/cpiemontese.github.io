@@ -15,7 +15,7 @@ export default function IndexPage() {
               <div className="flex flex-col justify-between sm:w-3/5 border-gray-300 dark:border-gray-600 border-b-2 sm:border-b-0 mb-4 sm:mb-0 pb-4 sm:pb-0 sm:border-r-2 sm:mr-2">
                 <div className="sm:mb-6">
                   <h1 className="text-3xl font-bold">Cristiano Piemontese</h1>
-                  <h2 className="text-xl font-light text-green-500 dark:text-green-400">Full-stack developer</h2>
+                  <h2 className="text-xl font-light text-green-500 dark:text-green-400">Software Engineer</h2>
                 </div>
               </div>
               <div className="flex flex-col justify-center sm:w-2/5">
