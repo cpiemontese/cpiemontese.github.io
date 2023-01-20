@@ -21,7 +21,7 @@ export default function IndexPage() {
               <div className="flex flex-col justify-center sm:w-2/5">
                 <div className="flex items-center">
                   <FaMapMarkerAlt />
-                  <span className="ml-2">{lang === EN ? 'Milan, Italy' : 'Milano'}</span>
+                  <span className="ml-2">{lang === EN ? 'Bologna, Italy' : 'Bologna'}</span>
                 </div>
                 <div className="flex items-center">
                   <GrMail />
@@ -48,7 +48,7 @@ export default function IndexPage() {
                 className="mb-8"
                 lang={lang}
                 title="Software engineer"
-                subtitle={`Prima Assicurazioni (Milan${lang === EN ? '' : 'o'})`}
+                subtitle={`Prima Assicurazioni (Remot${lang === EN ? 'e' : 'o'})`}
                 period={`2022 - Present${lang === IT ? 'e' : ''}`}
                 list={[]}
               />
@@ -56,7 +56,7 @@ export default function IndexPage() {
                 className="mb-8"
                 lang={lang}
                 title="Backend developer"
-                subtitle={`Vidiemme (Milan${lang === EN ? '' : 'o'})`}
+                subtitle={`Vidiemme (Remot${lang === EN ? 'e' : 'o'})`}
                 period={`2021 - 2022`}
                 list={[
                   {
@@ -64,7 +64,7 @@ export default function IndexPage() {
                     [IT]: 'Sviluppato API REST e GraphQL',
                   },
                   {
-                    [EN]: 'Developed Full applications using Typescript, AdonisJS and SQL databases',
+                    [EN]: 'Developed Fullstack applications using Typescript, AdonisJS and SQL databases',
                     [IT]: 'Sviluppato applicazioni in SSR con Typescript, AdonisJS e database SQL',
                   },
                 ]}
