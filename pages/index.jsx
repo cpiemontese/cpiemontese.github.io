@@ -48,7 +48,7 @@ export default function IndexPage() {
                 className="mb-8"
                 lang={lang}
                 title="Software engineer"
-                subtitle={`Prima Assicurazioni (Remot${lang === EN ? 'e' : 'o'})`}
+                subtitle={`Prima (Remot${lang === EN ? 'e' : 'o'})`}
                 period={`2022 - Present${lang === IT ? 'e' : ''}`}
                 list={[]}
               />
