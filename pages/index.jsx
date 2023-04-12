@@ -5,7 +5,7 @@ import CVElement from '../components/cv-element'
 
 const SectionTitle = ({ name }) => <h2 className="mb-6 uppercase text-3xl">{name}</h2>
 
-export default function IndexPage() {
+export default function IndexPage () {
   return (
     <Layout home>
       {({ lang }) => (
@@ -15,7 +15,7 @@ export default function IndexPage() {
               <div className="flex flex-col justify-between sm:w-3/5 border-gray-300 dark:border-gray-600 border-b-2 sm:border-b-0 mb-4 sm:mb-0 pb-4 sm:pb-0 sm:border-r-2 sm:mr-2">
                 <div className="sm:mb-6">
                   <h1 className="text-3xl font-bold">Cristiano Piemontese</h1>
-                  <h2 className="text-xl font-light text-green-500 dark:text-green-400">Software Engineer</h2>
+                  <h2 className="text-xl font-light text-emerald-500 dark:text-emerald-400">Software Engineer</h2>
                 </div>
               </div>
               <div className="flex flex-col justify-center sm:w-2/5">
@@ -26,7 +26,7 @@ export default function IndexPage() {
                 <div className="flex items-center">
                   <GrMail />
                   <a
-                    className="ml-2 truncate text-green-500 dark:text-green-400"
+                    className="ml-2 truncate text-emerald-500 dark:text-emerald-400"
                     href="mailto:cristiano.piemontese@gmail.com"
                   >
                     cristiano.piemontese@gmail.com
@@ -34,7 +34,7 @@ export default function IndexPage() {
                 </div>
                 <div className="flex items-center">
                   <FaGithub />
-                  <a className="ml-2 text-green-500 dark:text-green-400" href="https://github.com/cpiemontese">
+                  <a className="ml-2 text-emerald-500 dark:text-emerald-400" href="https://github.com/cpiemontese">
                     cpiemontese
                   </a>
                 </div>
@@ -125,7 +125,7 @@ export default function IndexPage() {
                 <ul className="mt-4 list-disc list-outside">
                   <li>
                     {lang === EN ? 'Developed the current showcase site ' : 'Sviluppato l’attuale sito vetrina '}
-                    <a className="text-green-500 dark:text-green-400" href="https://www.mpinsegne.it">
+                    <a className="text-emerald-500 dark:text-emerald-400" href="https://www.mpinsegne.it">
                       www.mpinsegne.it
                     </a>
                   </li>
@@ -154,7 +154,7 @@ export default function IndexPage() {
                 grade={lang === EN ? 'Final mark: 110/110 cum laude' : 'Valutazione: 110/110 e lode'}
               >
                 <p>{lang === EN ? 'Thesis in' : 'Tesi di laurea in'} Emerging Programming Paradigms:</p>
-                <a className="text-green-500 dark:text-green-400" href="https://amslaurea.unibo.it/17293/">
+                <a className="text-emerald-500 dark:text-emerald-400" href="https://amslaurea.unibo.it/17293/">
                   {lang === EN
                     ? '“Developement of an Interactive Theorem Prover in ELPI”'
                     : '“Sviluppo di un Interactive Theorem Prover in ELPI”'}
@@ -169,7 +169,7 @@ export default function IndexPage() {
                 grade={lang === EN ? 'Final mark: 108/110' : 'Valutazione: 108/110'}
               >
                 <p>{lang === EN ? 'Thesis in' : 'Tesi di laurea in'} Computer Vision:</p>
-                <a className="text-green-500 dark:text-green-400" href="https://amslaurea.unibo.it/10883/">
+                <a className="text-emerald-500 dark:text-emerald-400" href="https://amslaurea.unibo.it/10883/">
                   {lang === EN
                     ? '“Design and implementation of an interactive didactic application for object recognition based on the SIFT algorithm”'
                     : '“Progettazione e implementazione di un’applicazione didattica interattiva per il riconoscimento di oggetti basata sull’algoritmo SIFT”'}
@@ -187,7 +187,7 @@ export default function IndexPage() {
                   const techsAndFrameworks =
                     'Docker, Git, GraphQL, Kafka, Kubernetes, MongoDB, MySQL, Next.js, Node.js, React, Tailwindcss, Unity3D'
                   const ckadCredlyLink = 'https://www.credly.com/badges/9a267086-bd53-408e-b0c5-e9ce6d79dafb/public_url'
-                  const linkClass = 'text-green-500 dark:text-green-400'
+                  const linkClass = 'text-emerald-500 dark:text-emerald-400'
 
                   return [
                     {
@@ -273,12 +273,12 @@ export default function IndexPage() {
               <CVElement className="" lang={lang} title={lang === EN ? 'Games' : 'Giochi'}>
                 <ul className="mt-4 list-disc list-outside">
                   <li>
-                    <a className="text-green-500 dark:text-green-400" href="/run-sparty-run">
+                    <a className="text-emerald-500 dark:text-emerald-400" href="/run-sparty-run">
                       Run Sparty, Run!
                     </a>{' '}
                     &ndash; {lang === EN ? 'final project for the' : 'progetto finale per la'}{' '}
                     <a
-                      className="text-green-500 dark:text-green-400"
+                      className="text-emerald-500 dark:text-emerald-400"
                       href="https://www.coursera.org/specializations/game-development"
                     >
                       Game Design and Development Specialization
