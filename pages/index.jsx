@@ -5,7 +5,7 @@ import CVElement from '../components/cv-element'
 
 const SectionTitle = ({ name }) => <h2 className="mb-6 uppercase text-3xl">{name}</h2>
 
-export default function IndexPage () {
+export default function IndexPage() {
   return (
     <Layout home>
       {({ lang }) => (
@@ -123,9 +123,7 @@ export default function IndexPage () {
                 period="2018"
               >
                 <ul className="mt-4 list-disc list-outside">
-                  <li>
-                    {lang === EN ? 'Developed the showcase website ' : 'Sviluppato il sito vetrina '}
-                  </li>
+                  <li>{lang === EN ? 'Developed the showcase website ' : 'Sviluppato il sito vetrina '}</li>
                 </ul>
               </CVElement>
               <CVElement
