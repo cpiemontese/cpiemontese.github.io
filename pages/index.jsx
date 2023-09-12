@@ -5,7 +5,7 @@ import CVElement from '../components/cv-element'
 
 const SectionTitle = ({ name }) => <h2 className="mb-6 uppercase text-3xl">{name}</h2>
 
-export default function IndexPage() {
+export default function IndexPage () {
   return (
     <Layout home>
       {({ lang }) => (
@@ -266,7 +266,7 @@ export default function IndexPage() {
               />
               <SectionTitle name={`${lang === EN ? 'Other projects' : 'Altri progetti'}`} />
               <CVElement className="" lang={lang} title={lang === EN ? 'Games' : 'Giochi'}>
-                <ul className="mt-4 list-disc list-outside">
+                <ul className="mt-4 mb-8 list-disc list-outside">
                   <li>
                     <a className="text-emerald-500 dark:text-emerald-400" href="/run-sparty-run">
                       Run Sparty, Run!
@@ -279,6 +279,16 @@ export default function IndexPage() {
                       Game Design and Development Specialization
                     </a>{' '}
                     {lang === EN ? 'at' : 'di'} Coursera
+                  </li>
+                </ul>
+              </CVElement>
+              <CVElement className="" lang={lang} title={lang === EN ? 'Articles' : 'Articoli'}>
+                <ul className="mt-4 list-disc list-outside">
+                  <li>
+                    <a className="text-emerald-500 dark:text-emerald-400" href="https://inside.helloprima.com/insurance-is-hard-from-sweetxml-to-saxy">
+                      Engineering
+                      Insurance is hard – From SweetXML to Saxy
+                    </a>
                   </li>
                 </ul>
               </CVElement>
