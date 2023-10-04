@@ -1,4 +1,4 @@
-export default function CVElement ({ className, lang, title, subtitle, period, list, grade, children }) {
+export default function CVElement({ className, lang, title, subtitle, period, list, grade, children }) {
   return (
     <div className={className}>
       <div className="mb-2">

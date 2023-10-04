@@ -9,7 +9,7 @@ export const siteTitle = `${name} Portfolio`
 export const IT = 'IT'
 export const EN = 'EN'
 
-export default function Layout ({ hasToggle, children }) {
+export default function Layout({ hasToggle, children }) {
   const [toggled, setToggled] = useState(false)
 
   const lang = toggled ? IT : EN
@@ -29,12 +29,13 @@ export default function Layout ({ hasToggle, children }) {
         <link rel="preconnect" href="https://fonts.gstatic.com" />
         <link href="https://fonts.googleapis.com/css2?family=Inter&family=Work+Sans&display=swap" rel="stylesheet" />
       </Head>
-      {
-        hasToggle ?
-          <header className="flex justify-end items-center my-4">
-            <Toggle toggled={toggled} setToggled={setToggled} />
-          </header> : <></>
-      }
+      {hasToggle ? (
+        <header className="flex justify-end items-center my-4">
+          <Toggle toggled={toggled} setToggled={setToggled} />
+        </header>
+      ) : (
+        <></>
+      )}
       <main>{children({ lang })}</main>
     </div>
   )

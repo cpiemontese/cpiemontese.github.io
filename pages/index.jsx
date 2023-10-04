@@ -6,11 +6,11 @@ import Link from 'next/link'
 
 const SectionTitle = ({ name }) => <h2 className="mb-6 uppercase text-3xl">{name}</h2>
 
-export default function IndexPage () {
+export default function IndexPage() {
   return (
     <Layout hasToggle={true}>
       {({ lang }) => (
-        <div className='pt-4 px-8 pb-8'>
+        <div className="pt-4 px-8 pb-8">
           <section className="pb-8 mb-8 border-b-2 border-gray-800 dark:border-gray-100">
             <div className="sm:flex">
               <div className="flex flex-col justify-between sm:w-3/5 border-gray-300 dark:border-gray-600 border-b-2 sm:border-b-0 mb-4 sm:mb-0 pb-4 sm:pb-0 sm:border-r-2 sm:mr-2">
