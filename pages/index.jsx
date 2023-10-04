@@ -2,14 +2,15 @@ import { GrMail } from 'react-icons/gr'
 import { FaMapMarkerAlt, FaPhoneAlt, FaSkype, FaGithub } from 'react-icons/fa'
 import Layout, { EN, IT } from '../components/layout'
 import CVElement from '../components/cv-element'
+import Link from 'next/link'
 
 const SectionTitle = ({ name }) => <h2 className="mb-6 uppercase text-3xl">{name}</h2>
 
-export default function IndexPage() {
+export default function IndexPage () {
   return (
-    <Layout home>
+    <Layout hasToggle={true}>
       {({ lang }) => (
-        <>
+        <div className='pt-4 px-8 pb-8'>
           <section className="pb-8 mb-8 border-b-2 border-gray-800 dark:border-gray-100">
             <div className="sm:flex">
               <div className="flex flex-col justify-between sm:w-3/5 border-gray-300 dark:border-gray-600 border-b-2 sm:border-b-0 mb-4 sm:mb-0 pb-4 sm:pb-0 sm:border-r-2 sm:mr-2">
@@ -265,6 +266,18 @@ export default function IndexPage() {
                 ]}
               />
               <SectionTitle name={`${lang === EN ? 'Other projects' : 'Altri progetti'}`} />
+              <CVElement className="" lang={lang} title={lang === EN ? 'Articles' : 'Articoli'}>
+                <ul className="mt-4 list-disc list-outside">
+                  <li>
+                    <a
+                      className="text-emerald-500 dark:text-emerald-400"
+                      href="https://inside.helloprima.com/insurance-is-hard-from-sweetxml-to-saxy"
+                    >
+                      Engineering Insurance is hard – From SweetXML to Saxy
+                    </a>
+                  </li>
+                </ul>
+              </CVElement>
               <CVElement className="" lang={lang} title={lang === EN ? 'Games' : 'Giochi'}>
                 <ul className="mt-4 mb-8 list-disc list-outside">
                   <li>
@@ -282,21 +295,18 @@ export default function IndexPage() {
                   </li>
                 </ul>
               </CVElement>
-              <CVElement className="" lang={lang} title={lang === EN ? 'Articles' : 'Articoli'}>
-                <ul className="mt-4 list-disc list-outside">
+              <CVElement className="" lang={lang} title="Tools">
+                <ul className="mt-4 mb-8 list-disc list-outside">
                   <li>
-                    <a
-                      className="text-emerald-500 dark:text-emerald-400"
-                      href="https://inside.helloprima.com/insurance-is-hard-from-sweetxml-to-saxy"
-                    >
-                      Engineering Insurance is hard – From SweetXML to Saxy
-                    </a>
+                    <Link className="text-emerald-500 dark:text-emerald-400" href="/scales-permutation-generator">
+                      {lang === EN ? 'Scales permutation generator' : 'Generatore di permutazioni di scale'}
+                    </Link>
                   </li>
                 </ul>
               </CVElement>
             </div>
           </section>
-        </>
+        </div>
       )}
     </Layout>
   )

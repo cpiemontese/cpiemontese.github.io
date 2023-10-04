@@ -1,7 +1,7 @@
 import Head from 'next/head'
 import { useState } from 'react'
 
-import Toggle from '../components/toggle'
+import Toggle from './toggle'
 
 const name = 'Cristiano Piemontese'
 export const siteTitle = `${name} Portfolio`
@@ -9,13 +9,13 @@ export const siteTitle = `${name} Portfolio`
 export const IT = 'IT'
 export const EN = 'EN'
 
-export default function Layout({ children }) {
+export default function Layout ({ hasToggle, children }) {
   const [toggled, setToggled] = useState(false)
 
   const lang = toggled ? IT : EN
 
   return (
-    <div className="max-w-4xl min-h-screen mx-auto pt-4 px-8 pb-8 overflow-hidden">
+    <div className="max-w-4xl min-h-screen mx-auto overflow-hidden">
       <Head>
         <link rel="icon" href="/favicon.ico" />
         <meta name="description" content={siteTitle} />
@@ -29,9 +29,12 @@ export default function Layout({ children }) {
         <link rel="preconnect" href="https://fonts.gstatic.com" />
         <link href="https://fonts.googleapis.com/css2?family=Inter&family=Work+Sans&display=swap" rel="stylesheet" />
       </Head>
-      <header className="flex justify-end items-center mb-4">
-        <Toggle toggled={toggled} setToggled={setToggled} />
-      </header>
+      {
+        hasToggle ?
+          <header className="flex justify-end items-center my-4">
+            <Toggle toggled={toggled} setToggled={setToggled} />
+          </header> : <></>
+      }
       <main>{children({ lang })}</main>
     </div>
   )

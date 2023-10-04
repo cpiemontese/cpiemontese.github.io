@@ -1,6 +1,4 @@
-import { useState } from 'react'
-
-export default function Toggle({ toggled, setToggled }) {
+export default function Toggle ({ toggled, setToggled }) {
   return (
     <div className="flex w-max items-center">
       <div>🇬🇧</div>
@@ -9,9 +7,8 @@ export default function Toggle({ toggled, setToggled }) {
         onClick={() => setToggled(!toggled)}
       >
         <div
-          className={`bg-white dark:bg-gray-900 w-3 h-3 rounded-full smooth ${
-            toggled ? 'translate-x-4' : 'translate-x-0'
-          }`}
+          className={`bg-white dark:bg-gray-900 w-3 h-3 rounded-full smooth ${toggled ? 'translate-x-4' : 'translate-x-0'
+            }`}
         ></div>
       </button>
       <div>🇮🇹</div>
