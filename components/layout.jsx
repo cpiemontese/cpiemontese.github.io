@@ -30,13 +30,13 @@ export default function Layout({ hasToggle, children }) {
         <link href="https://fonts.googleapis.com/css2?family=Inter&family=Work+Sans&display=swap" rel="stylesheet" />
       </Head>
       {hasToggle ? (
-        <header className="flex justify-end items-center my-4 px-8">
+        <header className="fixed flex justify-end h-8 max-w-4xl w-full items-center px-8 bg-gray-100 text-gray-800 dark:bg-gray-800 dark:text-gray-100">
           <Toggle toggled={toggled} setToggled={setToggled} />
         </header>
       ) : (
         <></>
       )}
-      <main>{children({ lang })}</main>
+      <main className={hasToggle ? 'mt-8' : ''}>{children({ lang })}</main>
     </div>
   )
 }
