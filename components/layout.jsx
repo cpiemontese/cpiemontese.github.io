@@ -30,7 +30,7 @@ export default function Layout({ hasToggle, children }) {
         <link href="https://fonts.googleapis.com/css2?family=Inter&family=Work+Sans&display=swap" rel="stylesheet" />
       </Head>
       {hasToggle ? (
-        <header className="flex justify-end items-center my-4">
+        <header className="flex justify-end items-center my-4 px-8">
           <Toggle toggled={toggled} setToggled={setToggled} />
         </header>
       ) : (
