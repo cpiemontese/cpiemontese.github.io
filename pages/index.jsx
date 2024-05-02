@@ -6,7 +6,7 @@ import Link from 'next/link'
 
 const SectionTitle = ({ name }) => <h2 className="mb-6 uppercase text-3xl">{name}</h2>
 
-export default function IndexPage () {
+export default function IndexPage() {
   return (
     <Layout hasToggle={true}>
       {({ lang }) => (
@@ -57,8 +57,8 @@ export default function IndexPage () {
                     [IT]: 'Sviluppato e mantenuto librerie open source e servizi core (emailing e generazione di PDF) scritti in Elixir e Rust',
                   },
                   {
-                    [EN]: 'Maintained Prima\'s Backstage instance',
-                    [IT]: 'Mantenuto l\'istanza di Backstage di Prima',
+                    [EN]: "Maintained Prima's Backstage instance",
+                    [IT]: "Mantenuto l'istanza di Backstage di Prima",
                   },
                   {
                     [EN]: 'Ran first Devex survey (and related interviews) in Prima',
