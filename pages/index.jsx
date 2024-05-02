@@ -178,7 +178,7 @@ export default function IndexPage() {
                 lang={lang}
                 title={lang === EN ? "Bachelor's Degree in Computer Science" : 'Laurea Triennale in Informatica'}
                 subtitle={`Alma Mater Studiorum - Universit${lang === EN ? 'y of Bologna' : 'à di Bologna'}`}
-                period="2018"
+                period="2016"
                 grade={lang === EN ? 'Final mark: 108/110' : 'Valutazione: 108/110'}
               >
                 <p>{lang === EN ? 'Thesis in' : 'Tesi di laurea in'} Computer Vision:</p>
@@ -194,7 +194,7 @@ export default function IndexPage() {
               <CVElement
                 className="mb-14"
                 lang={lang}
-                title={lang === EN ? 'Tecnical skills' : 'Informatiche'}
+                title={lang === EN ? 'Technical skills' : 'Informatiche'}
                 list={(function () {
                   const languages = 'C, C++, C#, CSS, Elixir, HTML, Javascript, Python, Rust, Typescript'
                   const techsAndFrameworks =
