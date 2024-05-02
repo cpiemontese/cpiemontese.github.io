@@ -6,7 +6,7 @@
     "dev": "next",
     "build": "next build",
     "start": "next start",
-    "export": "rm -rf _next && next export && cp -r out/* . && rm -rf out",
+    "export": "rm -rf _next && cp -r out/* . && rm -rf out",
     "deploy": "npm run build && git add . && git commit --no-verify -m '🚀 Deploy' && git push --no-verify",
     "format": "prettier --write ."
   },
