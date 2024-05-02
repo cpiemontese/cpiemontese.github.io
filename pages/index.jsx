@@ -51,7 +51,24 @@ export default function IndexPage () {
                 title="Software engineer"
                 subtitle={`Prima (Remot${lang === EN ? 'e' : 'o'})`}
                 period={`2022 - Present${lang === IT ? 'e' : ''}`}
-                list={[]}
+                list={[
+                  {
+                    [EN]: 'Developed and maintained open source libraries and core services (emailing and PDF generation) written in Elixir and Rust',
+                    [IT]: 'Sviluppato e mantenuto librerie open source e servizi core (emailing e generazione di PDF) scritti in Elixir e Rust',
+                  },
+                  {
+                    [EN]: 'Maintained Prima\'s Backstage instance',
+                    [IT]: 'Mantenuto l\'istanza di Backstage di Prima',
+                  },
+                  {
+                    [EN]: 'Ran first Devex survey (and related interviews) in Prima',
+                    [IT]: 'Svolto la prima survey di Devex (e relative interviste) in Prima',
+                  },
+                  {
+                    [EN]: 'Acted as main driver for planning/prioritizing work for my team',
+                    [IT]: 'Agito come principale motore per la pianificazione/prioritizzazione del lavoro per il mio team',
+                  },
+                ]}
               />
               <CVElement
                 className="mb-8"
@@ -224,9 +241,9 @@ export default function IndexPage () {
                 list={[
                   {
                     [EN]: `Teamwork and leadership skills developed through work, academic and personal projects,
-                    such as the participation to events like Google Hash Code`,
+                    such as the participation to events (like Google Hash Code)`,
                     [IT]: `Ottime capacità di lavoro di squadra sviluppate attraverso esperienze lavorative,
-                    progetti accademici e partecipazione a eventi come Google Hash Code`,
+                    progetti accademici e partecipazione a eventi (come Google Hash Code)`,
                   },
                   {
                     [EN]: `Good communication and listening skills with project managers,
@@ -246,7 +263,7 @@ export default function IndexPage () {
                     [IT]: `Ottime capacità di problem solving e attitudine
                     all’apprendimento: grazie sia agli studi accademici
                     che alla predisposizione personale sono desideroso
-                    di imparare nuovi concetti, tecnologie e linguaggi.`,
+                    di imparare nuovi concetti, tecnologie e linguaggi`,
                   },
                 ]}
               />
