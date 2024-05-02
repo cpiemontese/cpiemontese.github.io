@@ -61,8 +61,8 @@ export default function IndexPage() {
                     [IT]: "Mantenuto l'istanza di Backstage di Prima",
                   },
                   {
-                    [EN]: 'Ran first Devex survey (and related interviews) in Prima',
-                    [IT]: 'Svolto la prima survey di Devex (e relative interviste) in Prima',
+                    [EN]: 'Ran first Devex survey and related interviews',
+                    [IT]: 'Svolto la prima survey di Devex e relative interviste',
                   },
                   {
                     [EN]: 'Acted as main driver for planning/prioritizing work for my team',
