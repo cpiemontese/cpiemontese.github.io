@@ -6,7 +6,7 @@ import Link from 'next/link'
 
 const SectionTitle = ({ name }) => <h2 className="mb-6 uppercase text-3xl">{name}</h2>
 
-export default function IndexPage() {
+export default function IndexPage () {
   return (
     <Layout hasToggle={true}>
       {({ lang }) => (
@@ -57,8 +57,8 @@ export default function IndexPage() {
                     [IT]: 'Sviluppato e mantenuto librerie open source e servizi core (emailing e generazione di PDF) scritti in Elixir e Rust',
                   },
                   {
-                    [EN]: "Maintained Prima's Backstage instance",
-                    [IT]: "Mantenuto l'istanza di Backstage di Prima",
+                    [EN]: 'Maintained Prima\'s Backstage instance',
+                    [IT]: 'Mantenuto l\'istanza di Backstage di Prima',
                   },
                   {
                     [EN]: 'Ran first Devex survey (and related interviews) in Prima',
@@ -240,8 +240,8 @@ export default function IndexPage() {
                 title={lang === EN ? 'Communication and social skills' : 'Relazionali e organizzative'}
                 list={[
                   {
-                    [EN]: `Teamwork and leadership skills developed through work, academic and personal projects,
-                    such as the participation to events (like Google Hash Code)`,
+                    [EN]: `Excellent teamwork skills developed through work experiences, academic projects,
+                    and participation in events (such as Google Hash Code)`,
                     [IT]: `Ottime capacità di lavoro di squadra sviluppate attraverso esperienze lavorative,
                     progetti accademici e partecipazione a eventi (come Google Hash Code)`,
                   },
