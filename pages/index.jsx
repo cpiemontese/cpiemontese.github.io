@@ -57,7 +57,7 @@ export default function IndexPage() {
                     [IT]: 'Guidato un team di dev nello sviluppo di servizi core, librerie e miglioramenti generali della DevEx',
                   },
                   {
-                    [EN]: 'Took part in the Platform leadership team, contributing to the definition of Prima\'s platform vision and strategy',
+                    [EN]: "Took part in the Platform leadership team, contributing to the definition of Prima's platform vision and strategy",
                     [IT]: 'Ho fatto parte del Platform leadership team, contribuendo alla definizione della visione e della strategia della piattaforma di Prima',
                   },
                 ]}
