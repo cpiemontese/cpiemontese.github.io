@@ -48,9 +48,26 @@ export default function IndexPage() {
               <CVElement
                 className="mb-8"
                 lang={lang}
+                title="Associate engineering manager"
+                subtitle={`Prima (Remot${lang === EN ? 'e' : 'o'})`}
+                period={`2024 - Present${lang === IT ? 'e' : ''}`}
+                list={[
+                  {
+                    [EN]: 'Lead a team of devs in the development of core services, libraries and general DevEx improvements',
+                    [IT]: 'Guidato un team di dev nello sviluppo di servizi core, librerie e miglioramenti generali della DevEx',
+                  },
+                  {
+                    [EN]: 'Took part in the Platform leadership team, contributing to the definition of Prima\'s platform vision and strategy',
+                    [IT]: 'Ho fatto parte del Platform leadership team, contribuendo alla definizione della visione e della strategia della piattaforma di Prima',
+                  },
+                ]}
+              />
+              <CVElement
+                className="mb-8"
+                lang={lang}
                 title="Software engineer"
                 subtitle={`Prima (Remot${lang === EN ? 'e' : 'o'})`}
-                period={`2022 - Present${lang === IT ? 'e' : ''}`}
+                period={`2022 - 2024`}
                 list={[
                   {
                     [EN]: 'Developed and maintained open source libraries and core services (emailing and PDF generation) written in Elixir and Rust',
