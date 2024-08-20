@@ -211,11 +211,11 @@ export default function IndexPage() {
               <CVElement
                 className="mb-14"
                 lang={lang}
-                title={lang === EN ? 'Technical skills' : 'Informatiche'}
+                title={lang === EN ? 'Technical skills' : 'Tecniche'}
                 list={(function () {
                   const languages = 'C, C++, C#, CSS, Elixir, HTML, Javascript, Python, Rust, Typescript'
                   const techsAndFrameworks =
-                    'Docker, Git, GraphQL, Kafka, Kubernetes, MongoDB, MySQL, Next.js, Node.js, React, Tailwindcss, Unity3D'
+                    'Docker, Git, GraphQL, Kafka, Kubernetes, MongoDB, SQL, Next.js, Node.js, React, Tailwindcss, Unity3D'
                   const ckadCredlyLink = 'https://www.credly.com/badges/9a267086-bd53-408e-b0c5-e9ce6d79dafb/public_url'
                   const linkClass = 'text-emerald-500 dark:text-emerald-400'
 
@@ -225,12 +225,16 @@ export default function IndexPage() {
                       [IT]: `Linguaggi: ${languages}`,
                     },
                     {
-                      [EN]: `Technologies and frameworks: ${techsAndFrameworks}`,
-                      [IT]: `Tecnologie e frameworks: ${techsAndFrameworks}`,
+                      [EN]: `Technologies: ${techsAndFrameworks}`,
+                      [IT]: `Tecnologie: ${techsAndFrameworks}`,
                     },
                     {
                       [EN]: 'Experience with microservice architectures, REST and GraphQL APIs and event streaming platforms',
                       [IT]: 'Esperienza con architetture a microservizi, API REST e GraphQL e piattaforme di event streaming',
+                    },
+                    {
+                      [EN]: 'Experience with full stack development in Node.js, utilizing a variety of frameworks and tools',
+                      [IT]: 'Esperienza nello sviluppo full stack con Node.js, utilizzando una varietà di framework e strumenti',
                     },
                     {
                       [EN]: 'Experience with Agile methodologies like Scrum, Pair Programming and TDD',
@@ -254,7 +258,7 @@ export default function IndexPage() {
               <CVElement
                 className="mb-14"
                 lang={lang}
-                title={lang === EN ? 'Communication and social skills' : 'Relazionali e organizzative'}
+                title={'Soft skills'}
                 list={[
                   {
                     [EN]: `Excellent teamwork skills developed through work experiences, academic projects,
@@ -290,12 +294,16 @@ export default function IndexPage() {
                 title={lang === EN ? 'Languages' : 'Linguistiche'}
                 list={[
                   {
-                    [EN]: 'Italian: mother tongue',
-                    [IT]: 'Italiano: madrelingua',
+                    [EN]: '🇮🇹 Italian: mother tongue',
+                    [IT]: '🇮🇹 Italiano: madrelingua',
                   },
                   {
-                    [EN]: 'English: C1 (advanced)',
-                    [IT]: 'Inglese: C1 (advanced)',
+                    [EN]: '🇬🇧 English: C1 (advanced)',
+                    [IT]: '🇬🇧 Inglese: C1 (advanced)',
+                  },
+                  {
+                    [EN]: '🇨🇳 (Mandarin) Chinese: A2',
+                    [IT]: '🇨🇳 Cinese (Mandarino): A2',
                   },
                 ]}
               />
