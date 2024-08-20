@@ -273,7 +273,7 @@ export default function IndexPage() {
                     [IT]: `Disciplina e automotivazione`,
                   },
                   {
-                    [EN]: `Curiousity and continuous learning`,
+                    [EN]: `Curiosity and continuous learning`,
                     [IT]: `Curiosità e apprendimento continuo`,
                   },
                   {
@@ -292,16 +292,16 @@ export default function IndexPage() {
                 title={lang === EN ? 'Languages' : 'Linguistiche'}
                 list={[
                   {
-                    [EN]: '🇮🇹 Italian: mother tongue',
-                    [IT]: '🇮🇹 Italiano: madrelingua',
+                    [EN]: 'Italian: mother tongue',
+                    [IT]: 'Italiano: madrelingua',
                   },
                   {
-                    [EN]: '🇬🇧 English: C1 (advanced)',
-                    [IT]: '🇬🇧 Inglese: C1 (advanced)',
+                    [EN]: 'English: C1 (advanced)',
+                    [IT]: 'Inglese: C1 (advanced)',
                   },
                   {
-                    [EN]: '🇨🇳 (Mandarin) Chinese: A2',
-                    [IT]: '🇨🇳 Cinese (Mandarino): A2',
+                    [EN]: '(Mandarin) Chinese: A2 (pre-intermediate)',
+                    [IT]: 'Cinese (Mandarino): A2 (pre-intermediate)',
                   },
                 ]}
               />
