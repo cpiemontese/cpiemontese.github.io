@@ -261,30 +261,28 @@ export default function IndexPage() {
                 title={'Soft skills'}
                 list={[
                   {
-                    [EN]: `Excellent teamwork skills developed through work experiences, academic projects,
-                    and participation in events (such as Google Hash Code)`,
-                    [IT]: `Ottime capacità di lavoro di squadra sviluppate attraverso esperienze lavorative,
-                    progetti accademici e partecipazione a eventi (come Google Hash Code)`,
+                    [EN]: `Effective written and verbal communication`,
+                    [IT]: `Efficace comunicazione scritta e verbale`,
                   },
                   {
-                    [EN]: `Good communication and listening skills with project managers,
-                    teammates and clients with varying degrees of technical knowledge`,
-                    [IT]: `Buone capacità di comunicazione con project manager, teammates e
-                    clienti a vari livelli di conoscenza tecnica`,
+                    [EN]: `Strong presentation skills`,
+                    [IT]: `Spiccata capacità di presentazione`,
                   },
                   {
-                    [EN]: `Disposition towards writing documentation`,
-                    [IT]: `Propensione alla scrittura di documentazione`,
+                    [EN]: `Discipline and self-motivation`,
+                    [IT]: `Disciplina e automotivazione`,
                   },
                   {
-                    [EN]: `Excellent problem solving abilities and learning
-                    predisposition: thanks to both my academic studies and
-                    personal disposition I am eager to learn new concepts,
-                    technologies and languages`,
-                    [IT]: `Ottime capacità di problem solving e attitudine
-                    all’apprendimento: grazie sia agli studi accademici
-                    che alla predisposizione personale sono desideroso
-                    di imparare nuovi concetti, tecnologie e linguaggi`,
+                    [EN]: `Curiousity and continuous learning`,
+                    [IT]: `Curiosità e apprendimento continuo`,
+                  },
+                  {
+                    [EN]: `Active listening`,
+                    [IT]: `Ascolto attivo`,
+                  },
+                  {
+                    [EN]: `Team-oriented attitude and conflict resolution`,
+                    [IT]: `Orientamento al lavoro di squadra e risoluzione dei conflitti`,
                   },
                 ]}
               />
