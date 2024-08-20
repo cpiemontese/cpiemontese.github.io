@@ -53,8 +53,8 @@ export default function IndexPage() {
                 period={`2024 - Present${lang === IT ? 'e' : ''}`}
                 list={[
                   {
-                    [EN]: 'Lead a team of devs in the development of core services, libraries and general DevEx improvements',
-                    [IT]: 'Guidato un team di dev nello sviluppo di servizi core, librerie e miglioramenti generali della DevEx',
+                    [EN]: 'Lead a team in the development of core services, libraries and general DevEx improvements',
+                    [IT]: 'Guidato un team nello sviluppo di servizi core, librerie e miglioramenti generali della DevEx',
                   },
                   {
                     [EN]: "Took part in the Platform leadership team, contributing to the definition of Prima's platform vision and strategy",
