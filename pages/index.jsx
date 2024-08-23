@@ -333,6 +333,11 @@ export default function IndexPage() {
                     </a>{' '}
                     {lang === EN ? 'at' : 'di'} Coursera
                   </li>
+                  <li>
+                    <a className="text-emerald-500 dark:text-emerald-400" href="/yafbc">
+                      YAFBC (Yet another Flappy Bird clone)
+                    </a>
+                  </li>
                 </ul>
               </CVElement>
               <CVElement className="" lang={lang} title="Tools">
