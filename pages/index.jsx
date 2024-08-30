@@ -338,6 +338,11 @@ export default function IndexPage() {
                       YAFBC (Yet another Flappy Bird clone)
                     </a>
                   </li>
+                  <li>
+                    <a className="text-emerald-500 dark:text-emerald-400" href="/unity-pong-clone">
+                      YAPC (Yet another Pong clone)
+                    </a>
+                  </li>
                 </ul>
               </CVElement>
               <CVElement className="" lang={lang} title="Tools">
