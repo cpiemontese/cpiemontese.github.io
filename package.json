@@ -8,7 +8,7 @@
     "start": "next start",
     "export": "rm -rf _next && cp -r out/* . && rm -rf out",
     "deploy": "npm run build && npm run export && git add . && git commit --no-verify -m '🚀 Deploy' && git push --no-verify",
-    "format": "prettier --write ."
+    "lint": "prettier --check ."
   },
   "dependencies": {
     "eslint-config-next": "^14.2.3",
