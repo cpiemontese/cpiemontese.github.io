@@ -11,4 +11,7 @@ jobs:
         with:
           node-version: '20'
       - run: npm install
+      - run: |
+          git config --global user.email "cristiano.piemontese@gmail.com"
+          git config --global user.name "Cristiano Piemontese"
       - run: npm run deploy
