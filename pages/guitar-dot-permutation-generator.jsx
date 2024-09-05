@@ -56,10 +56,6 @@ export default function GuitarStringDotPermutationGenerator() {
   const [randomIndices, setRandomIndices] = useState(randomPermutation(0, stringPerDot.length - 1))
   const [currentIdx, setIdx] = useState(0)
 
-  console.log(randomIndices)
-  console.log(started)
-  console.log(ended)
-
   return (
     <Layout>
       {({ _lang }) => (
@@ -70,7 +66,7 @@ export default function GuitarStringDotPermutationGenerator() {
             onClick={() => {
               if (!started) {
                 setStarted(true)
-              } else if (currentIdx === stringPerDot.length - 1 && !ended) {
+              } else if (!ended && currentIdx === stringPerDot.length - 1) {
                 setEnded(true)
               } else if (ended) {
                 setEnded(false)
@@ -98,7 +94,6 @@ export default function GuitarStringDotPermutationGenerator() {
                 <div key="progress" className="text-3xl lg:text-4xl mt-8">
                   {currentIdx + 1} / {stringPerDot.length}
                 </div>
-                <progress key="progress-bar" className="" max={stringPerDot.length} value={currentIdx + 1} />
               </>
             )}
           </div>
