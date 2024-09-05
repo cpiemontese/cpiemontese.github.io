@@ -352,6 +352,13 @@ export default function IndexPage() {
                       {lang === EN ? 'Scales permutation generator' : 'Generatore di permutazioni di scale'}
                     </Link>
                   </li>
+                  <li>
+                    <Link className="text-emerald-500 dark:text-emerald-400" href="/guitar-dot-permutation-generator">
+                      {lang === EN
+                        ? 'Guitar dot permutation generator'
+                        : 'Generatore di permutazioni dei pallini della chitarra'}
+                    </Link>
+                  </li>
                 </ul>
               </CVElement>
             </div>
