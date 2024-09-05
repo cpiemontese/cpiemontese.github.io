@@ -1,7 +1,7 @@
 import { useState } from 'react'
 import Layout from '../components/layout'
 
-import { shuffle } from './utils'
+import { shuffle } from './_utils'
 
 function randomPermutation(from, to) {
   const result = []
