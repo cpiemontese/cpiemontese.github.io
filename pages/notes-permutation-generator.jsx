@@ -11,7 +11,7 @@ function shuffle(array) {
 }
 const notes = ['A', 'B', 'C', 'D', 'E', 'G', 'F', 'Ab', 'Bb', 'Db', 'Eb', 'Gb']
 
-export default function ScalesPermutationGenerator() {
+export default function NotesPermutationGenerator() {
   const [init, setInit] = useState(false)
   const [currentNotes, setNotes] = useState(shuffle(notes))
 
@@ -21,7 +21,7 @@ export default function ScalesPermutationGenerator() {
         <>
           <div
             id="scale"
-            className="flex flex-col sm:flex-row min-h-screen items-center place-content-evenly"
+            className="flex flex-col sm:flex-row min-h-screen items-center place-content-evenly select-none"
             onClick={() => {
               if (!init) setInit(true)
               setNotes(shuffle(currentNotes))

@@ -320,7 +320,7 @@ export default function IndexPage() {
               </CVElement>
               <CVElement className="" lang={lang} title={lang === EN ? 'Games' : 'Giochi'}>
                 <ul className="mt-4 mb-8 list-disc list-outside">
-                  <li>
+                  <li className="mb-2">
                     <a className="text-emerald-500 dark:text-emerald-400" href="/run-sparty-run">
                       Run Sparty, Run!
                     </a>{' '}
@@ -333,7 +333,7 @@ export default function IndexPage() {
                     </a>{' '}
                     {lang === EN ? 'at' : 'di'} Coursera
                   </li>
-                  <li>
+                  <li className="mb-2">
                     <a className="text-emerald-500 dark:text-emerald-400" href="/yafbc">
                       YAFBC (Yet another Flappy Bird clone)
                     </a>
@@ -347,9 +347,9 @@ export default function IndexPage() {
               </CVElement>
               <CVElement className="" lang={lang} title="Tools">
                 <ul className="mt-4 mb-8 list-disc list-outside">
-                  <li>
-                    <Link className="text-emerald-500 dark:text-emerald-400" href="/scales-permutation-generator">
-                      {lang === EN ? 'Scales permutation generator' : 'Generatore di permutazioni di scale'}
+                  <li className="mb-2">
+                    <Link className="text-emerald-500 dark:text-emerald-400" href="/notes-permutation-generator">
+                      {lang === EN ? 'Notes permutation generator' : 'Generatore di permutazioni di note'}
                     </Link>
                   </li>
                   <li>

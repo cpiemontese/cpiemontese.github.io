@@ -62,7 +62,7 @@ export default function GuitarStringDotPermutationGenerator() {
         <>
           <div
             id="scale"
-            className="flex flex-col min-h-screen items-center place-content-center"
+            className="flex flex-col min-h-screen items-center place-content-center select-none"
             onClick={() => {
               if (!started) {
                 setStarted(true)
