@@ -352,11 +352,16 @@ export default function IndexPage() {
                       {lang === EN ? 'Notes permutation generator' : 'Generatore di permutazioni di note'}
                     </Link>
                   </li>
-                  <li>
+                  <li className="mb-2">
                     <Link className="text-emerald-500 dark:text-emerald-400" href="/guitar-dot-permutation-generator">
                       {lang === EN
                         ? 'Guitar dot permutation generator'
                         : 'Generatore di permutazioni dei pallini della chitarra'}
+                    </Link>
+                  </li>
+                  <li>
+                    <Link className="text-emerald-500 dark:text-emerald-400" href="/turnaround-permutation-generator">
+                      {lang === EN ? 'Turnaround permutation generator' : 'Generatore di permutazioni di turnaround'}
                     </Link>
                   </li>
                 </ul>

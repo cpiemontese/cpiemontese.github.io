@@ -1,15 +1,5 @@
-import { useState } from 'react'
 import Layout from '../components/layout'
-
-import { shuffle } from '../lib/utils'
-
-function randomPermutation(from, to) {
-  const result = []
-  for (let i = from; i <= to; i++) {
-    result.push(i)
-  }
-  return shuffle(result)
-}
+import Permutation from '../components/permutation'
 
 const stringPerDot = [
   [1, 1],
@@ -51,52 +41,16 @@ const stringPerDot = [
 ]
 
 export default function GuitarStringDotPermutationGenerator() {
-  const [started, setStarted] = useState(false)
-  const [ended, setEnded] = useState(false)
-  const [randomIndices, setRandomIndices] = useState(randomPermutation(0, stringPerDot.length - 1))
-  const [currentIdx, setIdx] = useState(0)
-
   return (
     <Layout>
       {({ _lang }) => (
         <>
-          <div
-            id="scale"
-            className="flex flex-col min-h-screen items-center place-content-center select-none"
-            onClick={() => {
-              if (!started) {
-                setStarted(true)
-              } else if (!ended && currentIdx === stringPerDot.length - 1) {
-                setEnded(true)
-              } else if (ended) {
-                setEnded(false)
-                setStarted(true)
-                setIdx(0)
-                setRandomIndices(randomPermutation(0, stringPerDot.length - 1))
-              } else {
-                setIdx((currentIdx + 1) % stringPerDot.length)
-              }
+          <Permutation
+            elements={stringPerDot}
+            getElemFn={(elements, idx) => {
+              return `String ${elements[idx][0]} Dot ${elements[idx][1]}`
             }}
-          >
-            {!started ? (
-              <div className="text-5xl lg:text-6xl">Click here</div>
-            ) : ended ? (
-              <>
-                <div key="end" className="text-5xl lg:text-6xl">
-                  Restart?
-                </div>
-              </>
-            ) : (
-              <>
-                <div key="string-and-dot" className="text-5xl lg:text-6xl">
-                  String {stringPerDot[randomIndices[currentIdx]][0]} Dot {stringPerDot[randomIndices[currentIdx]][1]}
-                </div>
-                <div key="progress" className="text-3xl lg:text-4xl mt-8">
-                  {currentIdx + 1} / {stringPerDot.length}
-                </div>
-              </>
-            )}
-          </div>
+          />
         </>
       )}
     </Layout>
