@@ -353,10 +353,10 @@ export default function IndexPage() {
                     </Link>
                   </li>
                   <li className="mb-2">
-                    <Link className="text-emerald-500 dark:text-emerald-400" href="/guitar-dot-permutation-generator">
+                    <Link className="text-emerald-500 dark:text-emerald-400" href="/guitar-fret-permutation-generator">
                       {lang === EN
-                        ? 'Guitar dot permutation generator'
-                        : 'Generatore di permutazioni dei pallini della chitarra'}
+                        ? 'Guitar fret permutation generator'
+                        : 'Generatore di permutazioni di tasti della chitarra'}
                     </Link>
                   </li>
                   <li>
