@@ -1,5 +1,5 @@
-import Layout from '../components/layout'
-import Permutation from '../components/permutation'
+import Layout from '@/components/layout'
+import Permutation from '@/components/permutation'
 
 const turnarounds = [
   '1625',
@@ -28,7 +28,7 @@ const turnarounds = [
   '6347',
 ]
 
-export default function TurnaroundPermutationGenerator() {
+export default function TurnaroundPermutation() {
   return (
     <Layout>
       {({ _lang }) => (

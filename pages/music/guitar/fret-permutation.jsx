@@ -1,5 +1,5 @@
-import Layout from '../components/layout'
-import Permutation from '../components/permutation'
+import Layout from '@/components/layout'
+import Permutation from '@/components/permutation'
 
 const stringPerDot = [
   [1, 1],
@@ -40,7 +40,7 @@ const stringPerDot = [
   [6, 12],
 ]
 
-export default function GuitarStringDotPermutationGenerator() {
+export default function GuitarStringDotPermutation() {
   return (
     <Layout>
       {({ _lang }) => (

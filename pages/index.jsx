@@ -348,19 +348,19 @@ export default function IndexPage() {
               <CVElement className="" lang={lang} title="Tools">
                 <ul className="mt-4 mb-8 list-disc list-outside">
                   <li className="mb-2">
-                    <Link className="text-emerald-500 dark:text-emerald-400" href="/notes-permutation-generator">
+                    <Link className="text-emerald-500 dark:text-emerald-400" href="/music/notes-permutation">
                       {lang === EN ? 'Notes permutation generator' : 'Generatore di permutazioni di note'}
                     </Link>
                   </li>
                   <li className="mb-2">
-                    <Link className="text-emerald-500 dark:text-emerald-400" href="/guitar-fret-permutation-generator">
+                    <Link className="text-emerald-500 dark:text-emerald-400" href="/music/guitar/fret-permutation">
                       {lang === EN
                         ? 'Guitar fret permutation generator'
                         : 'Generatore di permutazioni di tasti della chitarra'}
                     </Link>
                   </li>
                   <li>
-                    <Link className="text-emerald-500 dark:text-emerald-400" href="/turnaround-permutation-generator">
+                    <Link className="text-emerald-500 dark:text-emerald-400" href="/music/turnaround-permutation">
                       {lang === EN ? 'Turnaround permutation generator' : 'Generatore di permutazioni di turnaround'}
                     </Link>
                   </li>
