@@ -40,7 +40,7 @@ const stringPerDot = [
   [6, 12],
 ]
 
-export default function GuitarStringDotPermutation() {
+export default function FretPermutation() {
   return (
     <Layout>
       {({ _lang }) => (
