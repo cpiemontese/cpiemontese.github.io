@@ -366,6 +366,13 @@ export default function IndexPage() {
                         : 'Generatore di permutazioni di triadi per la chitarra'}
                     </Link>
                   </li>
+                  <li className="mb-2">
+                    <Link className="text-emerald-500 dark:text-emerald-400" href="/music/guitar/quadriad-permutation">
+                      {lang === EN
+                        ? 'Guitar quadriad permutation generator'
+                        : 'Generatore di permutazioni di quadriadi per la chitarra'}
+                    </Link>
+                  </li>
                   <li>
                     <Link className="text-emerald-500 dark:text-emerald-400" href="/music/turnaround-permutation">
                       {lang === EN ? 'Turnaround permutation generator' : 'Generatore di permutazioni di turnaround'}
