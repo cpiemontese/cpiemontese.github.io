@@ -11,7 +11,7 @@ const stringCombinations = [
   [3, 1],
 ]
 
-const quadriadTypes = ['△', '-7', '7', 'ø7', '°7']
+const quadriadTypes = ['△', '-7', '7', 'ø7', '°']
 
 let zip = []
 for (let h = 0; h < notes.length; h++) {
