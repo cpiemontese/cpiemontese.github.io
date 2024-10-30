@@ -3,7 +3,7 @@ import Permutation from '@/components/permutation'
 
 const notes = ['A', 'B', 'C', 'D', 'E', 'G', 'F', 'Ab', 'Bb', 'Db', 'Eb', 'Gb']
 
-const strings = [1, 2, 3, 4, 5]
+const strings = [2, 3, 4, 5, 6]
 
 const stringCombinations = [
   [2, 2],
