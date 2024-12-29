@@ -78,7 +78,7 @@ export default function RandomIntervals() {
             {table[line].map((intervals, idx) => (
               <div
                 key={`interval-${idx}`}
-                className={`text-5xl lg:text-6xl ${idx === table[line].length - 1 ? '' : 'mb-8'}`}
+                className={`text-3xl md:text-5xl lg:text-6xl px-4 ${idx === table[line].length - 1 ? '' : 'mb-8'}`}
               >
                 {intervals.join(' ')}
               </div>

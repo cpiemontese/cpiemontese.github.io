@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react'
 
 import Layout from '../../components/layout'
+import { getRandomNote } from '../../lib/utils'
 
 const table = [
   '4',
@@ -93,15 +94,13 @@ const table = [
   '13',
 ]
 
-const notes = ['A', 'B', 'C', 'D', 'E', 'G', 'F', 'Ab', 'Bb', 'Db', 'Eb', 'Gb']
-
 export default function RandomIntervals() {
   const [interval, setInterval] = useState(0)
   const [init, setInit] = useState(false)
   const [startingNote, setStartingNote] = useState(null)
 
   useEffect(() => {
-    setStartingNote(notes[Math.floor(Math.random() * notes.length)])
+    setStartingNote(getRandomNote())
   }, [])
 
   return (
@@ -120,19 +119,25 @@ export default function RandomIntervals() {
               if (interval + 1 === table.length) {
                 setInit(false)
                 setInterval(0)
+                setStartingNote(getRandomNote())
               } else {
                 setInterval(interval + 1)
               }
             }}
           >
             {!init ? (
-              <div key="starting-note" className="text-5xl lg:text-6xl">
+              <div key="starting-note" className="text-3xl md:text-5xl lg:text-6xl">
                 Starting note: {startingNote}
               </div>
             ) : (
-              <div key="interval" className="text-5xl lg:text-6xl">
-                {table[interval]}
-              </div>
+              <>
+                <div key="interval" className="text-5xl lg:text-6xl mb-8">
+                  {table[interval]}
+                </div>
+                <div key="remainder" className="text-xl md:text-3xl lg:text-4xl">
+                  {interval + 1} / {table.length}
+                </div>
+              </>
             )}
           </div>
         </>

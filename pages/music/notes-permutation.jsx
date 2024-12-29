@@ -1,5 +1,6 @@
 import { useState } from 'react'
 import Layout from '@/components/layout'
+import { NOTES } from '../../lib/utils'
 
 function shuffle(array) {
   const arrayCopy = [...array]
@@ -9,11 +10,9 @@ function shuffle(array) {
   }
   return arrayCopy
 }
-const notes = ['A', 'B', 'C', 'D', 'E', 'G', 'F', 'Ab', 'Bb', 'Db', 'Eb', 'Gb']
-
 export default function NotesPermutation() {
   const [init, setInit] = useState(false)
-  const [currentNotes, setNotes] = useState(shuffle(notes))
+  const [currentNotes, setNotes] = useState(shuffle(NOTES))
 
   return (
     <Layout>
@@ -28,10 +27,10 @@ export default function NotesPermutation() {
             }}
           >
             {!init ? (
-              <div className="text-5xl lg:text-6xl">Click here</div>
+              <div className="text-3xl md:text-5xl lg:text-6xl">Click here</div>
             ) : (
-              currentNotes.map((note) => (
-                <div key={note} className="text-5xl lg:text-6xl">
+              currentNotes.map((note, idx) => (
+                <div key={note} className="text-3xl md:text-5xl lg:text-6xl">
                   {note}
                 </div>
               ))

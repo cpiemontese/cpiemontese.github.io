@@ -35,19 +35,19 @@ export default function Permutation({ elements, getElemFn = (elements, idx) => e
       }}
     >
       {!started ? (
-        <div className="text-5xl lg:text-6xl">Click here</div>
+        <div className="text-3xl md:text-5xl lg:text-6xl">Click here</div>
       ) : ended ? (
         <>
-          <div key="end" className="text-5xl lg:text-6xl">
+          <div key="end" className="text-3xl md:text-5xl lg:text-6xl">
             Restart?
           </div>
         </>
       ) : (
         <>
-          <div key="current" className="text-5xl lg:text-6xl">
+          <div key="current" className="text-3xl md:text-5xl lg:text-6xl">
             {getElemFn(elements, randomIndices[currentIdx])}
           </div>
-          <div key="progress" className="text-3xl lg:text-4xl mt-8">
+          <div key="progress" className="text-xl md:text-2xl lg:text-3xl mt-8">
             {currentIdx + 1} / {elements.length}
           </div>
         </>
