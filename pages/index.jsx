@@ -6,7 +6,7 @@ import Link from 'next/link'
 
 const SectionTitle = ({ name }) => <h2 className="mb-6 uppercase text-3xl">{name}</h2>
 
-export default function IndexPage () {
+export default function IndexPage() {
   return (
     <Layout hasToggle={true}>
       {({ lang }) => (

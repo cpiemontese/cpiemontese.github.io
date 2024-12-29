@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react'
 
-import Layout from '../components/layout'
+import Layout from '../../components/layout'
 
 const table = [
   [
