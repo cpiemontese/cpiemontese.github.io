@@ -358,6 +358,11 @@ export default function IndexPage() {
                     </Link>
                   </li>
                   <li className="mb-2">
+                    <Link className="text-emerald-500 dark:text-emerald-400" href="/music/cooldown">
+                      {lang === EN ? 'Cooldown' : 'Defaticamento'}
+                    </Link>
+                  </li>
+                  <li className="mb-2">
                     <Link className="text-emerald-500 dark:text-emerald-400" href="/music/guitar/fret-permutation">
                       {lang === EN
                         ? 'Guitar fret permutation generator'
