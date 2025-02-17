@@ -1,6 +1,6 @@
 import Layout from '@/components/layout'
 import Permutation from '@/components/permutation'
-import { NOTES } from '../../../lib/utils'
+import { NOTES, QUADRIAD_TYPES } from '../../../lib/utils'
 
 const strings = [2, 3, 4, 5, 6]
 
@@ -10,20 +10,18 @@ const stringCombinations = [
   [3, 1],
 ]
 
-const quadriadTypes = ['△', '-7', '7', 'ø7', '°']
-
 let zip = []
 for (let h = 0; h < NOTES.length; h++) {
   for (let i = 0; i < strings.length; i++) {
     for (let j = 0; j < stringCombinations.length; j++) {
-      for (let k = 0; k < quadriadTypes.length; k++) {
-        zip.push([NOTES[h], strings[i], stringCombinations[j], quadriadTypes[k]])
+      for (let k = 0; k < QUADRIAD_TYPES.length; k++) {
+        zip.push([NOTES[h], strings[i], stringCombinations[j], QUADRIAD_TYPES[k]])
       }
     }
   }
 }
 
-export default function TriadPermutation() {
+export default function QuadriadPermutation() {
   return (
     <Layout>
       {({ _lang }) => (

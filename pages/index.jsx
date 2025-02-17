@@ -349,12 +349,22 @@ export default function IndexPage() {
                 <ul className="mt-4 mb-8 list-disc list-outside">
                   <li className="mb-2">
                     <Link className="text-emerald-500 dark:text-emerald-400" href="/music/notes-permutation">
-                      {lang === EN ? 'Notes permutation generator' : 'Generatore di permutazioni di note'}
+                      {lang === EN ? 'Notes permutation' : 'Permutazioni di note'}
                     </Link>
                   </li>
                   <li className="mb-2">
                     <Link className="text-emerald-500 dark:text-emerald-400" href="/music/natural-intervals">
                       {lang === EN ? 'Natural intervals' : 'Intevalli naturali'}
+                    </Link>
+                  </li>
+                  <li className="mb-2">
+                    <Link className="text-emerald-500 dark:text-emerald-400" href="/music/chords">
+                      {lang === EN ? 'Chords' : 'Accordi'}
+                    </Link>
+                  </li>
+                  <li className="mb-2">
+                    <Link className="text-emerald-500 dark:text-emerald-400" href="/music/turnaround-permutation">
+                      Turnaround
                     </Link>
                   </li>
                   <li className="mb-2">
@@ -364,28 +374,17 @@ export default function IndexPage() {
                   </li>
                   <li className="mb-2">
                     <Link className="text-emerald-500 dark:text-emerald-400" href="/music/guitar/fret-permutation">
-                      {lang === EN
-                        ? 'Guitar fret permutation generator'
-                        : 'Generatore di permutazioni di tasti della chitarra'}
+                      {lang === EN ? 'Guitar frets' : 'Tasti della chitarra'}
                     </Link>
                   </li>
                   <li className="mb-2">
                     <Link className="text-emerald-500 dark:text-emerald-400" href="/music/guitar/triad-permutation">
-                      {lang === EN
-                        ? 'Guitar triad permutation generator'
-                        : 'Generatore di permutazioni di triadi per la chitarra'}
-                    </Link>
-                  </li>
-                  <li className="mb-2">
-                    <Link className="text-emerald-500 dark:text-emerald-400" href="/music/guitar/quadriad-permutation">
-                      {lang === EN
-                        ? 'Guitar quadriad permutation generator'
-                        : 'Generatore di permutazioni di quadriadi per la chitarra'}
+                      {lang === EN ? 'Guitar triads' : 'Triadi per la chitarra'}
                     </Link>
                   </li>
                   <li>
-                    <Link className="text-emerald-500 dark:text-emerald-400" href="/music/turnaround-permutation">
-                      {lang === EN ? 'Turnaround permutation generator' : 'Generatore di permutazioni di turnaround'}
+                    <Link className="text-emerald-500 dark:text-emerald-400" href="/music/guitar/quadriad-permutation">
+                      {lang === EN ? 'Guitar quadriads' : 'Quadriadi per la chitarra'}
                     </Link>
                   </li>
                 </ul>
