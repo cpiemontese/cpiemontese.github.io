@@ -374,17 +374,22 @@ export default function IndexPage() {
                   </li>
                   <li className="mb-2">
                     <Link className="text-emerald-500 dark:text-emerald-400" href="/music/guitar/fret-permutation">
-                      {lang === EN ? 'Guitar frets' : 'Tasti della chitarra'}
+                      {lang === EN ? 'Guitar frets' : 'Tasti chitarra'}
                     </Link>
                   </li>
                   <li className="mb-2">
                     <Link className="text-emerald-500 dark:text-emerald-400" href="/music/guitar/triad-permutation">
-                      {lang === EN ? 'Guitar triads' : 'Triadi per la chitarra'}
+                      {lang === EN ? 'Guitar triads' : 'Triadi per chitarra'}
+                    </Link>
+                  </li>
+                  <li className="mb-2">
+                    <Link className="text-emerald-500 dark:text-emerald-400" href="/music/guitar/quadriad-permutation">
+                      {lang === EN ? 'Guitar quadriads' : 'Quadriadi per chitarra'}
                     </Link>
                   </li>
                   <li>
-                    <Link className="text-emerald-500 dark:text-emerald-400" href="/music/guitar/quadriad-permutation">
-                      {lang === EN ? 'Guitar quadriads' : 'Quadriadi per la chitarra'}
+                    <Link className="text-emerald-500 dark:text-emerald-400" href="/music/guitar/harmonization">
+                      {lang === EN ? 'Guitar harmonization' : 'Armonizzazione per chitarra'}
                     </Link>
                   </li>
                 </ul>
