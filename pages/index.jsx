@@ -306,18 +306,6 @@ export default function IndexPage() {
                 ]}
               />
               <SectionTitle name={`${lang === EN ? 'Other projects' : 'Altri progetti'}`} />
-              <CVElement className="" lang={lang} title={lang === EN ? 'Articles' : 'Articoli'}>
-                <ul className="mt-4 mb-8 list-disc list-outside">
-                  <li>
-                    <a
-                      className="text-emerald-500 dark:text-emerald-400"
-                      href="https://inside.helloprima.com/insurance-is-hard-from-sweetxml-to-saxy"
-                    >
-                      Engineering Insurance is hard – From SweetXML to Saxy
-                    </a>
-                  </li>
-                </ul>
-              </CVElement>
               <CVElement className="" lang={lang} title={lang === EN ? 'Games' : 'Giochi'}>
                 <ul className="mt-4 mb-8 list-disc list-outside">
                   <li className="mb-2">
