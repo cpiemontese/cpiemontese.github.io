@@ -331,17 +331,37 @@ export default function IndexPage() {
                     >
                       Game Design and Development Specialization
                     </a>{' '}
-                    {lang === EN ? 'at' : 'di'} Coursera
+                    {lang === EN ? 'at' : 'di'} Coursera (
+                    <a
+                      className="text-emerald-500 dark:text-emerald-400"
+                      href="https://github.com/cpiemontese/run-sparty-run"
+                    >
+                      repo
+                    </a>
+                    )
                   </li>
                   <li className="mb-2">
                     <a className="text-emerald-500 dark:text-emerald-400" href="/yafbc">
                       YAFBC (Yet another Flappy Bird clone)
+                    </a>{' '}
+                    (
+                    <a className="text-emerald-500 dark:text-emerald-400" href="https://github.com/cpiemontese/yafbc">
+                      repo
                     </a>
+                    )
                   </li>
                   <li>
                     <a className="text-emerald-500 dark:text-emerald-400" href="/unity-pong-clone">
                       YAPC (Yet another Pong clone)
+                    </a>{' '}
+                    (
+                    <a
+                      className="text-emerald-500 dark:text-emerald-400"
+                      href="https://github.com/cpiemontese/unity-pong-clone"
+                    >
+                      repo
                     </a>
+                    )
                   </li>
                 </ul>
               </CVElement>
