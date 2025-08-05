@@ -20,7 +20,7 @@ for (let h = 0; h < NOTES.length; h++) {
 export default function TriadArpeggios() {
   return (
     <Layout>
-      {({ _lang }) => (
+      {({}) => (
         <>
           <Permutation
             elements={zip}

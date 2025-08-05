@@ -387,17 +387,22 @@ export default function IndexPage() {
                   </li>
                   <li className="mb-2">
                     <Link className="text-emerald-500 dark:text-emerald-400" href="/music/guitar/triad-arpeggios">
-                      {lang === EN ? 'Guitar triads' : 'Triadi per chitarra'}
+                      {lang === EN ? 'Triad arpeggios (guitar)' : 'Triadi arpeggiate (chitarra)'}
                     </Link>
                   </li>
                   <li className="mb-2">
                     <Link className="text-emerald-500 dark:text-emerald-400" href="/music/guitar/quadriad-arpeggios">
-                      {lang === EN ? 'Guitar quadriads' : 'Quadriadi per chitarra'}
+                      {lang === EN ? 'Quadriad arpeggios (guitar)' : 'Quadriadi arpeggiate (chitarra)'}
+                    </Link>
+                  </li>
+                  <li className="mb-2">
+                    <Link className="text-emerald-500 dark:text-emerald-400" href="/music/guitar/triads">
+                      {lang === EN ? 'Triads (guitar)' : 'Triadi (chitarra)'}
                     </Link>
                   </li>
                   <li>
-                    <Link className="text-emerald-500 dark:text-emerald-400" href="/music/guitar/harmonization">
-                      {lang === EN ? 'Guitar harmonization' : 'Armonizzazione per chitarra'}
+                    <Link className="text-emerald-500 dark:text-emerald-400" href="/music/guitar/seventh-chords">
+                      {lang === EN ? '7th chords (guitar)' : 'Accordi di 7a (chitarra)'}
                     </Link>
                   </li>
                 </ul>

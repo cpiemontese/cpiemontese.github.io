@@ -14,10 +14,10 @@ for (let h = 0; h < NOTES.length; h++) {
   }
 }
 
-export default function Harmonization() {
+export default function Triads() {
   return (
     <Layout>
-      {({ _lang }) => (
+      {({}) => (
         <>
           <Permutation
             elements={zip}
