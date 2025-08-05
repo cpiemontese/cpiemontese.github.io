@@ -1,5 +1,5 @@
 import { GrMail } from 'react-icons/gr'
-import { FaMapMarkerAlt, FaPhoneAlt, FaSkype, FaGithub } from 'react-icons/fa'
+import { FaMapMarkerAlt, FaGithub } from 'react-icons/fa'
 import Layout, { EN, IT } from '../components/layout'
 import CVElement from '../components/cv-element'
 import Link from 'next/link'
@@ -386,12 +386,12 @@ export default function IndexPage() {
                     </Link>
                   </li>
                   <li className="mb-2">
-                    <Link className="text-emerald-500 dark:text-emerald-400" href="/music/guitar/triad-permutation">
+                    <Link className="text-emerald-500 dark:text-emerald-400" href="/music/guitar/triad-arpeggios">
                       {lang === EN ? 'Guitar triads' : 'Triadi per chitarra'}
                     </Link>
                   </li>
                   <li className="mb-2">
-                    <Link className="text-emerald-500 dark:text-emerald-400" href="/music/guitar/quadriad-permutation">
+                    <Link className="text-emerald-500 dark:text-emerald-400" href="/music/guitar/quadriad-arpeggios">
                       {lang === EN ? 'Guitar quadriads' : 'Quadriadi per chitarra'}
                     </Link>
                   </li>
