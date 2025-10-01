@@ -1,14 +1,7 @@
 import { useState } from 'react'
 
-import { shuffle } from '../lib/utils'
+import { randomPermutation } from '../lib/utils'
 
-function randomPermutation(from, to) {
-  const result = []
-  for (let i = from; i <= to; i++) {
-    result.push(i)
-  }
-  return shuffle(result)
-}
 export default function Permutation({ elements, getElemFn = (elements, idx) => elements[idx] }) {
   const [started, setStarted] = useState(false)
   const [ended, setEnded] = useState(false)

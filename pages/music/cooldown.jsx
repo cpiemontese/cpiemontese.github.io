@@ -1,6 +1,6 @@
 import { useEffect, useMemo, useRef, useState } from 'react'
 import Layout from '../../components/layout'
-import { getRandomNote } from '../../lib/utils'
+import { getRandomNote, randomPermutation } from '../../lib/utils'
 
 const table = [
   '4',
@@ -109,6 +109,7 @@ export default function RandomIntervals() {
   const [running, setRunning] = useState(false)
   const [showRecap, setShowRecap] = useState(false)
   const [startingNote, setStartingNote] = useState(null)
+  const [randomIndices, setRandomIndices] = useState([])
 
   // timings
   const lastTickRef = useRef(null)
@@ -119,6 +120,7 @@ export default function RandomIntervals() {
 
   useEffect(() => {
     setStartingNote(getRandomNote())
+    setRandomIndices(randomPermutation(0, table.length))
   }, [])
 
   // Derived stats for recap
@@ -166,6 +168,7 @@ export default function RandomIntervals() {
       setRunning(false)
       setIdx(0)
       setStartingNote(getRandomNote())
+      setRandomIndices(randomPermutation(0, table.length))
       lastTickRef.current = null
       return
     }
@@ -215,7 +218,7 @@ export default function RandomIntervals() {
 
             {running && (
               <>
-                <div className="text-5xl lg:text-6xl mb-8">{table[idx]}</div>
+                <div className="text-5xl lg:text-6xl mb-8">{table[randomIndices[idx]]}</div>
                 <div className="text-xl md:text-3xl lg:text-4xl">
                   {idx + 1} / {table.length}
                 </div>
@@ -260,11 +263,11 @@ export default function RandomIntervals() {
                   <table className="w-full text-sm">
                     <thead className="sticky top-0 bg-gray-800">
                       <tr>
-                        <th className="text-left px-3 py-2">Int.</th>
-                        <th className="text-right px-3 py-2">#</th>
-                        <th className="text-right px-3 py-2">Avg</th>
-                        <th className="text-right px-3 py-2">Min</th>
-                        <th className="text-right px-3 py-2">Max</th>
+                        <th className="px-3 py-2">Int.</th>
+                        <th className="px-3 py-2">#</th>
+                        <th className="px-3 py-2">Avg</th>
+                        <th className="px-3 py-2">Min</th>
+                        <th className="px-3 py-2">Max</th>
                       </tr>
                     </thead>
                     <tbody>
@@ -273,10 +276,10 @@ export default function RandomIntervals() {
                         .map(([name, s]) => (
                           <tr key={name} className="odd:bg-gray-500">
                             <td className="px-3 py-2 font-mono">{name}</td>
-                            <td className="px-3 py-2 text-right">{s.count}</td>
-                            <td className="px-3 py-2 text-right">{fmt(s.avg)}</td>
-                            <td className="px-3 py-2 text-right">{fmt(s.min)}</td>
-                            <td className="px-3 py-2 text-right">{fmt(s.max)}</td>
+                            <td className="px-3 py-2">{s.count}</td>
+                            <td className="px-3 py-2">{fmt(s.avg)}</td>
+                            <td className="px-3 py-2">{fmt(s.min)}</td>
+                            <td className="px-3 py-2">{fmt(s.max)}</td>
                           </tr>
                         ))}
                     </tbody>
