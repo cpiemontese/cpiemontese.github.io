@@ -1,97 +1,8 @@
 import { useEffect, useMemo, useRef, useState } from 'react'
 import Layout from '../../components/layout'
-import { getRandomNote, randomPermutation } from '../../lib/utils'
+import { getRandomInterval, getRandomNote } from '../../lib/utils'
 
-const table = [
-  '4',
-  '1',
-  '13b',
-  '7',
-  '5#',
-  '11',
-  '3',
-  '2#',
-  '1',
-  '4',
-  '6b',
-  '3',
-  '7b',
-  '5#',
-  '11#',
-  '6b',
-  '1',
-  '3b',
-  '5#',
-  '6',
-  '7',
-  '3',
-  '5#',
-  '13',
-  '11',
-  '1',
-  '6b',
-  '5b',
-  '3b',
-  '13b',
-  '1',
-  '7b',
-  '5',
-  '11#',
-  '6b',
-  '3',
-  '5#',
-  '4',
-  '6b',
-  '7b',
-  '5b',
-  '4',
-  '3b',
-  '2',
-  '5#',
-  '11',
-  '7b',
-  '5',
-  '6b',
-  '13',
-  '5#',
-  '4',
-  '11#',
-  '13b',
-  '7',
-  '5',
-  '6b',
-  '4',
-  '1',
-  '6',
-  '5',
-  '3b',
-  '4',
-  '6b',
-  '1',
-  '5b',
-  '1',
-  '2b',
-  '2',
-  '2#',
-  '3b',
-  '3',
-  '4',
-  '4#',
-  '5b',
-  '5',
-  '5#',
-  '6b',
-  '6',
-  '7b',
-  '7',
-  '9b',
-  '9',
-  '9#',
-  '11',
-  '11#',
-  '13b',
-  '13',
-]
+const EXERCISE_LENGTH = 100
 
 // Small formatter for milliseconds → human friendly
 const fmt = (ms) => {
@@ -105,11 +16,11 @@ const fmt = (ms) => {
 }
 
 export default function RandomIntervals() {
-  const [idx, setIdx] = useState(0)
+  const [count, setCount] = useState(0)
   const [running, setRunning] = useState(false)
+  const [interval, setInterval] = useState(null)
   const [showRecap, setShowRecap] = useState(false)
   const [startingNote, setStartingNote] = useState(null)
-  const [randomIndices, setRandomIndices] = useState([])
 
   // timings
   const lastTickRef = useRef(null)
@@ -120,7 +31,7 @@ export default function RandomIntervals() {
 
   useEffect(() => {
     setStartingNote(getRandomNote())
-    setRandomIndices(randomPermutation(0, table.length))
+    setInterval(getRandomInterval())
   }, [])
 
   // Derived stats for recap
@@ -155,7 +66,7 @@ export default function RandomIntervals() {
     // keep the current startingNote; it was just shown to the user
     setByInterval({})
     setAllDurations([])
-    setIdx(0)
+    setCount(0)
     setShowRecap(false)
     setRunning(true)
     lastTickRef.current = performance.now()
@@ -166,9 +77,9 @@ export default function RandomIntervals() {
     if (showRecap) {
       setShowRecap(false)
       setRunning(false)
-      setIdx(0)
+      setCount(0)
       setStartingNote(getRandomNote())
-      setRandomIndices(randomPermutation(0, table.length))
+      setInterval(getRandomInterval())
       lastTickRef.current = null
       return
     }
@@ -181,7 +92,7 @@ export default function RandomIntervals() {
 
     // Session running: record current duration + advance
     const now = performance.now()
-    const label = table[idx]
+    const label = interval
     const last = lastTickRef.current
 
     if (last != null && label != null) {
@@ -194,12 +105,13 @@ export default function RandomIntervals() {
     }
 
     // End of sequence → show recap (do not change starting note here)
-    if (idx + 1 === table.length) {
+    if (count + 1 === EXERCISE_LENGTH) {
       setRunning(false)
       setShowRecap(true)
       lastTickRef.current = null
     } else {
-      setIdx((i) => i + 1)
+      setCount((i) => i + 1)
+      setInterval((interval) => getRandomInterval(interval))
       lastTickRef.current = now
     }
   }
@@ -218,9 +130,9 @@ export default function RandomIntervals() {
 
             {running && (
               <>
-                <div className="text-5xl lg:text-6xl mb-8">{table[randomIndices[idx]]}</div>
+                <div className="text-5xl lg:text-6xl mb-8">{interval}</div>
                 <div className="text-xl md:text-3xl lg:text-4xl">
-                  {idx + 1} / {table.length}
+                  {count + 1} / {EXERCISE_LENGTH}
                 </div>
               </>
             )}
