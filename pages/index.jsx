@@ -48,9 +48,30 @@ export default function IndexPage() {
               <CVElement
                 className="mb-8"
                 lang={lang}
+                title="Software engineer"
+                subtitle={`Prima (Remot${lang === EN ? 'e' : 'o'})`}
+                period={`2025 - Present${lang === IT ? 'e' : ''}`}
+                list={[
+                  {
+                    [EN]: 'Returned to an IC position with increased ownership over internal developer tooling and planning',
+                    [IT]: 'Sono tornato a un ruolo da IC con una maggiore responsabilità sull’internal developer tooling e sulla pianificazione',
+                  },
+                  {
+                    [EN]: 'Partnered with the Engineering Manager to shape pitch (ShapeUp) proposals and drive prioritization for the team',
+                    [IT]: 'Ho collaborato con l’Engineering Manager nella definizione di proposte pitch (ShapeUp) e nella prioritizzazione del lavoro del team',
+                  },
+                  {
+                    [EN]: 'Played a central role in planning and scoping work, ensuring alignment and unblocking the team when needed',
+                    [IT]: 'Ho avuto un ruolo centrale nella pianificazione e nello scoping delle attività, garantendo allineamento e sbloccando il team quando necessario',
+                  },
+                ]}
+              />
+              <CVElement
+                className="mb-8"
+                lang={lang}
                 title="Associate engineering manager"
                 subtitle={`Prima (Remot${lang === EN ? 'e' : 'o'})`}
-                period={`2024 - Present${lang === IT ? 'e' : ''}`}
+                period={`2024 - 2025`}
                 list={[
                   {
                     [EN]: 'Lead a team in the development of core services, libraries and general DevEx improvements',
