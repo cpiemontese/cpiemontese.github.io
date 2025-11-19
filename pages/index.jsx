@@ -195,6 +195,8 @@ export default function IndexPage() {
                   },
                 ]}
               />
+            </div>
+            <div className="md:w-1/2 md:ml-12">
               <SectionTitle name={lang === EN ? 'Education' : 'Formazione'} />
               <CVElement
                 className="mb-6"
@@ -212,7 +214,7 @@ export default function IndexPage() {
                 </a>
               </CVElement>
               <CVElement
-                className="mb-14 md:mb-0"
+                className="mb-14"
                 lang={lang}
                 title={lang === EN ? "Bachelor's Degree in Computer Science" : 'Laurea Triennale in Informatica'}
                 subtitle={`Alma Mater Studiorum - Universit${lang === EN ? 'y of Bologna' : 'à di Bologna'}`}
@@ -226,8 +228,6 @@ export default function IndexPage() {
                     : '“Progettazione e implementazione di un’applicazione didattica interattiva per il riconoscimento di oggetti basata sull’algoritmo SIFT”'}
                 </a>
               </CVElement>
-            </div>
-            <div className="md:w-1/2 md:ml-12">
               <SectionTitle name={`${lang === EN ? 'Skills' : 'Competenze'}`} />
               <CVElement
                 className="mb-14"
