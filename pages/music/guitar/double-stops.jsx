@@ -2,7 +2,7 @@ import Layout from '@/components/layout'
 import Permutation from '@/components/permutation'
 import { NOTES } from '../../../lib/utils'
 
-const types = ['major', 'minor', 'dominant']
+const types = ['△', '-7', '7']
 
 const stringCombinations = ['4-3', '3-2', '2-1']
 
@@ -30,7 +30,7 @@ export default function DoubleStops() {
               const [note, type, combination, order] = elements[idx]
               return (
                 <div className="flex flex-col items-center">
-                  <div>{`${note} ${type}`}</div>
+                  <div>{`${note}${type}`}</div>
                   <div>{`${combination}`}</div>
                   <div>{`${order}`}</div>
                 </div>
