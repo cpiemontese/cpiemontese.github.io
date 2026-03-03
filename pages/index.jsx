@@ -374,6 +374,15 @@ export default function IndexPage() {
                   </li>
                 </ul>
               </CVElement>
+              <CVElement className="" lang={lang} title={lang === EN ? 'Articles' : 'Articoli'}>
+                <ul className="mt-4 mb-8 list-disc list-outside">
+                  <li className="mb-2">
+                    <a className="text-emerald-500 dark:text-emerald-400" href="/articles/xml_parsing">
+                      XML Parsing in Elixir: how to bring down your memory usage and not get OOM Killed by k8s
+                    </a>
+                  </li>
+                </ul>
+              </CVElement>
               <CVElement className="" lang={lang} title="Tools">
                 <ul className="mt-4 mb-8 list-disc list-outside">
                   <li className="mb-2">
