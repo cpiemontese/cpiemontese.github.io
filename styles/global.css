@@ -33,3 +33,19 @@ h5,
 h6 {
   font-family: 'Inter', sans-serif;
 }
+
+/* Fix spacing/background for highlighted code inside Tailwind Typography */
+.prose pre {
+  padding: 0;
+  background: transparent;
+}
+
+.prose pre code.hljs {
+  display: block;
+  padding: 1rem 1.25rem; /* scegli tu quanto */
+  border-radius: 0.75rem; /* opzionale */
+}
+
+.prose pre code.hljs {
+  overflow-x: auto;
+}
