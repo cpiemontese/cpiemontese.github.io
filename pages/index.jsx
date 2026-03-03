@@ -53,16 +53,20 @@ export default function IndexPage() {
                 period={`2025 - Present${lang === IT ? 'e' : ''}`}
                 list={[
                   {
-                    [EN]: 'Returned to an IC position with increased ownership over internal developer tooling and planning',
-                    [IT]: 'Sono tornato a un ruolo da IC con una maggiore responsabilità sull’internal developer tooling e sulla pianificazione',
+                    [EN]: 'Returned to an IC role with ownership over internal developer tooling and platform hygiene initiatives',
+                    [IT]: 'Sono tornato a un ruolo da IC con responsabilità sull’internal developer tooling e su iniziative di platform hygiene',
                   },
                   {
-                    [EN]: 'Partnered with the Engineering Manager to shape pitch (ShapeUp) proposals and drive prioritization for the team',
-                    [IT]: 'Ho collaborato con l’Engineering Manager nella definizione di proposte pitch (ShapeUp) e nella prioritizzazione del lavoro del team',
+                    [EN]: 'Leading a large-scale repository rationalization effort (~50–60 repos), driving deprecation, consolidation and ownership clarity',
+                    [IT]: 'Sto guidando un’iniziativa di razionalizzazione di ~50–60 repository, gestendo deprecazioni, consolidamenti e chiarimento delle ownership',
                   },
                   {
-                    [EN]: 'Played a central role in planning and scoping work, ensuring alignment and unblocking the team when needed',
-                    [IT]: 'Ho avuto un ruolo centrale nella pianificazione e nello scoping delle attività, garantendo allineamento e sbloccando il team quando necessario',
+                    [EN]: 'Shaping and pitching documentation automation initiatives (docs-as-code) to improve knowledge discoverability and reduce operational friction',
+                    [IT]: 'Sto definendo e proponendo iniziative di automazione della documentazione (docs-as-code) per migliorare la reperibilità delle informazioni e ridurre frizioni operative',
+                  },
+                  {
+                    [EN]: 'Partnering on scoping and prioritization of platform-level technical initiatives',
+                    [IT]: 'Collaboro alla definizione dello scoping e della prioritizzazione di iniziative tecniche di livello platform',
                   },
                 ]}
               />
@@ -74,12 +78,28 @@ export default function IndexPage() {
                 period={`2024 - 2025`}
                 list={[
                   {
-                    [EN]: 'Lead a team in the development of core services, libraries and general DevEx improvements',
-                    [IT]: 'Guidato un team nello sviluppo di servizi core, librerie e miglioramenti generali della DevEx',
+                    [EN]: 'Led a team responsible for core backend services and internal developer experience improvements',
+                    [IT]: 'Ho guidato un team responsabile di core backend services e miglioramenti di Developer Experience',
                   },
                   {
-                    [EN]: "Took part in the Platform leadership team, contributing to the definition of Prima's platform vision and strategy",
-                    [IT]: 'Ho fatto parte del Platform leadership team, contribuendo alla definizione della visione e della strategia della piattaforma di Prima',
+                    [EN]: 'Provided technical direction during the redesign and stabilization of high-throughput services',
+                    [IT]: 'Ho fornito direzione tecnica durante la fase di redesign e stabilizzazione di servizi ad alto volume',
+                  },
+                  {
+                    [EN]: 'Led architectural discussions and cluster migration efforts for the email delivery platform',
+                    [IT]: 'Ho guidato discussioni architetturali e iniziative di migrazione tra cluster per la piattaforma di invio email',
+                  },
+                  {
+                    [EN]: 'Contributed to Platform technical strategy and long-term architectural direction',
+                    [IT]: 'Ho contribuito alla strategia tecnica Platform e alla direzione architetturale di lungo periodo',
+                  },
+                  {
+                    [EN]: 'Drove cross-team prioritization of infrastructure and reliability initiatives',
+                    [IT]: 'Ho guidato la prioritizzazione cross-team di iniziative infrastrutturali e di affidabilità',
+                  },
+                  {
+                    [EN]: 'Led stability improvements in the document pipeline, reducing incidents from 5–6/year to 0',
+                    [IT]: 'Ho guidato miglioramenti di stabilità nel servizio di generazione documenti, riducendo gli incident da 5–6/anno a 0',
                   },
                 ]}
               />
@@ -91,20 +111,16 @@ export default function IndexPage() {
                 period={`2022 - 2024`}
                 list={[
                   {
-                    [EN]: 'Developed and maintained open source libraries and core services (emailing and PDF generation) written in Elixir and Rust',
-                    [IT]: 'Sviluppato e mantenuto librerie open source e servizi core (emailing e generazione di PDF) scritti in Elixir e Rust',
+                    [EN]: 'Contributed to the evolution and maintenance of production email delivery services handling ~10M emails/month',
+                    [IT]: 'Ho contribuito all’evoluzione e alla manutenzione di servizi di invio email in produzione (~10M email/mese)',
                   },
                   {
-                    [EN]: "Maintained Prima's Backstage instance",
-                    [IT]: "Mantenuto l'istanza di Backstage di Prima",
+                    [EN]: 'Worked on the stabilization and architectural evolution of a document generation service processing ~3M documents/month',
+                    [IT]: 'Ho lavorato alla stabilizzazione e all’evoluzione architetturale di un servizio di generazione documentale (~3M documenti/mese)',
                   },
                   {
-                    [EN]: 'Ran first Devex survey and related interviews',
-                    [IT]: 'Svolto la prima survey di Devex e relative interviste',
-                  },
-                  {
-                    [EN]: 'Acted as main driver for planning/prioritizing work for my team',
-                    [IT]: 'Agito come principale motore per la pianificazione/prioritizzazione del lavoro per il mio team',
+                    [EN]: 'Supported regulatory compliance (EU regulations, IVASS) through archival processes and S3 lifecycle policies',
+                    [IT]: 'Ho supportato la conformità normativa (regolamentazioni UE, IVASS) tramite processi di archiviazione e policy di lifecycle su S3',
                   },
                 ]}
               />
