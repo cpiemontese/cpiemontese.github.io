@@ -378,7 +378,7 @@ export default function IndexPage() {
                 <ul className="mt-4 mb-8 list-disc list-outside">
                   <li className="mb-2">
                     <a className="text-emerald-500 dark:text-emerald-400" href="/articles/xml_parsing">
-                      XML Parsing in Elixir: how to bring down your memory usage and not get OOM Killed by k8s
+                      Avoiding OOM Kills in Kubernetes: Switching from DOM to SAX in Elixir
                     </a>
                   </li>
                 </ul>

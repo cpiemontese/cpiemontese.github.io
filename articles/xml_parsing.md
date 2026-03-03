@@ -1,6 +1,10 @@
-# XML Parsing in Elixir: how to bring down your memory usage and not get OOM Killed by k8s
+# Avoiding OOM Kills in Kubernetes: Switching from DOM to SAX in Elixir
 
 ## Introduction
+
+> TL;DR: Parsing large XML files with SweetXML (DOM-based) caused memory spikes
+> up to 9GiB. Switching to a SAX-based parser (Saxy) reduced memory usage by
+> ~90% and halved runtime.
 
 A key part of the insurance business is deciding who to insure. Many properties
 are taken into consideration and one of the most important ones is whether an
@@ -68,6 +72,9 @@ these tough, we found **Saxy**, which proved to be both ergonomic and fast.
 The translation from a DOM implementation using XPath to a SAX one is not
 straightforward, since with XPath you can just query a document whereas with SAX
 you have to build your internal representation from sequential events.
+
+The key idea is that we build the structure incrementally as events arrive,
+instead of querying a pre-built tree.
 
 Let's suppose we have a simple XML as input:
 
