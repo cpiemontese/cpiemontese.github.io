@@ -38,7 +38,10 @@ export async function getStaticProps({ params }) {
 export default function ArticlePage({ contentHtml }) {
   return (
     <main className="mx-auto max-w-3xl px-6 py-12">
-      <article className="prose prose-lg dark:prose-invert" dangerouslySetInnerHTML={{ __html: contentHtml }} />
+      <article
+        className="prose prose-lg max-w-none dark:prose-invert"
+        dangerouslySetInnerHTML={{ __html: contentHtml }}
+      />
     </main>
   )
 }
