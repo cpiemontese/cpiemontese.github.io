@@ -248,13 +248,12 @@ export default function IndexPage() {
               <CVElement
                 className="mb-14"
                 lang={lang}
-                title={lang === EN ? 'Technical skills' : 'Tecniche'}
+                title={lang === EN ? 'Core Technologies' : 'Tecnologie Core'}
                 list={(function () {
-                  const languages = 'C, C++, C#, CSS, Elixir, HTML, Javascript, Python, Rust, Typescript'
-                  const techsAndFrameworks =
-                    'Docker, Git, GraphQL, Kafka, Kubernetes, MongoDB, SQL, Next.js, Node.js, React, Tailwindcss, Unity3D'
-                  const ckadCredlyLink = 'https://www.credly.com/badges/9a267086-bd53-408e-b0c5-e9ce6d79dafb/public_url'
-                  const linkClass = 'text-emerald-500 dark:text-emerald-400'
+                  const languages = 'Elixir, Node.js, Python, Rust, Typescript'
+                  const infraAndCloud = 'Kubernetes, Docker, AWS (SES, SQS, S3)'
+                  const dataAndMessaging = 'Postgres/SQL, MongoDB, Kafka, RabbitMQ'
+                  const architecture = 'Distributed systems, event-driven systems, service reliability, observability'
 
                   return [
                     {
@@ -262,32 +261,12 @@ export default function IndexPage() {
                       [IT]: `Linguaggi: ${languages}`,
                     },
                     {
-                      [EN]: `Technologies: ${techsAndFrameworks}`,
-                      [IT]: `Tecnologie: ${techsAndFrameworks}`,
+                      [EN]: `Infrastructure & Cloud: ${infraAndCloud}`,
+                      [IT]: `Infrastruttura & Cloud: ${infraAndCloud}`,
                     },
                     {
-                      [EN]: 'Experience with microservice architectures, REST and GraphQL APIs and event streaming platforms',
-                      [IT]: 'Esperienza con architetture a microservizi, API REST e GraphQL e piattaforme di event streaming',
-                    },
-                    {
-                      [EN]: 'Experience with full stack development in Node.js, utilizing a variety of frameworks and tools',
-                      [IT]: 'Esperienza nello sviluppo full stack con Node.js, utilizzando una varietà di framework e strumenti',
-                    },
-                    {
-                      [EN]: 'Experience with Agile methodologies like Scrum, Pair Programming and TDD',
-                      [IT]: 'Esperienza con metodologie Agili tra cui Scrum, Pair Programming e TDD',
-                    },
-                    {
-                      [EN]: (
-                        <a className={linkClass} href={ckadCredlyLink}>
-                          CKAD certification
-                        </a>
-                      ),
-                      [IT]: (
-                        <a className={linkClass} href={ckadCredlyLink}>
-                          Certificazione CKAD
-                        </a>
-                      ),
+                      [EN]: `Data & Messaging: ${dataAndMessaging}`,
+                      [IT]: `Data & Messaging: ${dataAndMessaging}`,
                     },
                   ]
                 })()}
@@ -295,31 +274,31 @@ export default function IndexPage() {
               <CVElement
                 className="mb-14"
                 lang={lang}
-                title={'Soft skills'}
+                title={lang === 'EN' ? 'How I Work' : 'Come Lavoro'}
                 list={[
                   {
-                    [EN]: `Effective written and verbal communication`,
-                    [IT]: `Efficace comunicazione scritta e verbale`,
+                    [EN]: `I prefer clarity over cleverness`,
+                    [IT]: `Preferisco la chiarezza all’astuzia`,
                   },
                   {
-                    [EN]: `Strong presentation skills`,
-                    [IT]: `Spiccata capacità di presentazione`,
+                    [EN]: `I make trade-offs explicit and document decisions when they matter`,
+                    [IT]: `Rendo espliciti i trade-off e documento le decisioni quando sono rilevanti`,
                   },
                   {
-                    [EN]: `Discipline and self-motivation`,
-                    [IT]: `Disciplina e automotivazione`,
+                    [EN]: `I optimize for long-term maintainability rather than short-term speed`,
+                    [IT]: `Ottimizzo per la manutenibilità nel lungo periodo piuttosto che per la velocità nel breve`,
                   },
                   {
-                    [EN]: `Curiosity and continuous learning`,
-                    [IT]: `Curiosità e apprendimento continuo`,
+                    [EN]: `I care about operational behavior as much as code structure`,
+                    [IT]: `Mi interessa il comportamento operativo tanto quanto la struttura del codice`,
                   },
                   {
-                    [EN]: `Active listening`,
-                    [IT]: `Ascolto attivo`,
+                    [EN]: `I value direct communication and constructive disagreement`,
+                    [IT]: `Valorizzo la comunicazione diretta e il confronto costruttivo`,
                   },
                   {
-                    [EN]: `Team-oriented attitude and conflict resolution`,
-                    [IT]: `Orientamento al lavoro di squadra e risoluzione dei conflitti`,
+                    [EN]: `I treat small projects with the same discipline as production systems`,
+                    [IT]: `Tratto i progetti piccoli con la stessa disciplina dei sistemi in produzione`,
                   },
                 ]}
               />
