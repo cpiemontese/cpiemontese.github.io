@@ -416,6 +416,11 @@ export default function IndexPage() {
                     </Link>
                   </li>
                   <li className="mb-2">
+                    <Link className="text-emerald-500 dark:text-emerald-400" href="/music/guitar/double-stops-251">
+                      {lang === EN ? 'Double stops 251' : '251 a bicordi'}
+                    </Link>
+                  </li>
+                  <li className="mb-2">
                     <Link className="text-emerald-500 dark:text-emerald-400" href="/music/guitar/triad-arpeggios">
                       {lang === EN ? 'Triad arpeggios (guitar)' : 'Triadi arpeggiate (chitarra)'}
                     </Link>

@@ -3,9 +3,7 @@ import Permutation from '@/components/permutation'
 import { NOTES } from '../../../lib/utils'
 
 const types = ['△', '-7', '7']
-
 const stringCombinations = ['4-3', '3-2', '2-1']
-
 const order = ['37', '73']
 
 let zip = []
