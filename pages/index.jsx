@@ -378,8 +378,17 @@ export default function IndexPage() {
                   </li>
                 </ul>
               </CVElement>
-              <CVElement className="" lang={lang} title="Tools">
+              <CVElement
+                className=""
+                lang={lang}
+                title={lang === EN ? 'Music Practice Tools' : 'Strumenti di pratica musicale'}
+              >
                 <ul className="mt-4 mb-8 list-disc list-outside">
+                  <li className="mb-2">
+                    <Link className="text-emerald-500 dark:text-emerald-400" href="/music/manual-interval-trainer">
+                      {lang === EN ? 'Manual interval trainer' : 'Interval trainer manuale'}
+                    </Link>
+                  </li>
                   <li className="mb-2">
                     <Link className="text-emerald-500 dark:text-emerald-400" href="/music/notes-permutation">
                       {lang === EN ? 'Notes permutation' : 'Permutazioni di note'}
@@ -400,11 +409,9 @@ export default function IndexPage() {
                       Turnaround
                     </Link>
                   </li>
-                  <li className="mb-2">
-                    <Link className="text-emerald-500 dark:text-emerald-400" href="/music/manual-interval-trainer">
-                      {lang === EN ? 'Manual interval trainer' : 'Interval trainer manuale'}
-                    </Link>
-                  </li>
+                </ul>
+                <h4 className="text-lg font-semibold mb-2">{lang === EN ? 'Guitar' : 'Chitarra'}</h4>
+                <ul className="mt-4 mb-8 list-disc list-outside">
                   <li className="mb-2">
                     <Link className="text-emerald-500 dark:text-emerald-400" href="/music/guitar/fret-permutation">
                       {lang === EN ? 'Guitar frets' : 'Tasti chitarra'}
