@@ -77,10 +77,22 @@ function normalizeBuffer(floatBuffer) {
   return normalized
 }
 
+function getModeLabel(lang, mode) {
+  if (mode === MODE_1) {
+    return lang === EN ? 'Random notes' : 'Note casuali'
+  }
+
+  if (mode === MODE_2) {
+    return lang === EN ? 'Rooted intervals' : 'Intervalli da root'
+  }
+
+  return lang === EN ? 'Chained intervals' : 'Intervalli concatenati'
+}
+
 export default function MicIntervalTrainerPage() {
   const [mode, setMode] = useState(MODE_1)
   const [minutes, setMinutes] = useState(2)
-  const [targetNote, setTargetNote] = useState(() => getRandomNote())
+  const [targetNote, setTargetNote] = useState(null)
   const [isRunning, setIsRunning] = useState(false)
   const [isShowingRecap, setIsShowingRecap] = useState(false)
   const [correctAnswers, setCorrectAnswers] = useState(0)
@@ -90,6 +102,7 @@ export default function MicIntervalTrainerPage() {
   const [detectedPitchClass, setDetectedPitchClass] = useState(null)
   const [centsToTarget, setCentsToTarget] = useState(null)
   const [inputLevel, setInputLevel] = useState(0)
+  const [isDebugEnabled, setIsDebugEnabled] = useState(false)
 
   const detectorsRef = useRef([])
   const audioContextRef = useRef(null)
@@ -100,7 +113,7 @@ export default function MicIntervalTrainerPage() {
   const sessionEndAtRef = useRef(null)
   const matchedFramesRef = useRef(0)
   const lastAdvanceAtRef = useRef(0)
-  const targetNoteRef = useRef(targetNote)
+  const targetNoteRef = useRef(null)
 
   const sessionDurationMs = useMemo(() => minutes * 60 * 1000, [minutes])
 
@@ -191,6 +204,12 @@ export default function MicIntervalTrainerPage() {
     if (!pitchInfo) {
       setDetectedPitchClass(null)
       setCentsToTarget(null)
+      matchedFramesRef.current = 0
+      rafRef.current = requestAnimationFrame(runDetectionLoop)
+      return
+    }
+
+    if (!targetNoteRef.current) {
       matchedFramesRef.current = 0
       rafRef.current = requestAnimationFrame(runDetectionLoop)
       return
@@ -290,86 +309,127 @@ export default function MicIntervalTrainerPage() {
               {lang === EN ? 'Microphone interval trainer' : 'Interval trainer microfono'}
             </h1>
 
-            <div className="w-full max-w-xl mb-6 border rounded-lg p-4">
-              <p className="mb-2 text-sm text-gray-500">{lang === EN ? 'Mode' : 'Modalita'}</p>
-              <div className="flex flex-wrap justify-center gap-2 mb-4">
+            <div className="w-full max-w-xl mb-4 flex justify-center px-1">
+              <div className="inline-flex flex-wrap items-center justify-center gap-2 rounded-full bg-gray-100 dark:bg-gray-800 px-2 py-1 md:px-3 md:py-2">
+                <div className="text-[11px] md:text-xs text-gray-500">
+                  {isRunning
+                    ? `${getModeLabel(lang, mode)} • ${minutes}m`
+                    : lang === EN
+                    ? 'Set mode and duration, then start'
+                    : 'Imposta modalita e durata, poi avvia'}
+                </div>
                 <button
-                  className={`px-3 py-2 rounded border ${mode === MODE_1 ? 'bg-emerald-600 text-white' : ''}`}
-                  onClick={() => setMode(MODE_1)}
-                  disabled={isRunning}
+                  className={`px-3 py-1 rounded-full text-[11px] md:text-xs transition-colors ${
+                    isDebugEnabled
+                      ? 'bg-emerald-600 text-white'
+                      : 'bg-gray-200 text-gray-700 dark:bg-gray-700 dark:text-gray-200'
+                  }`}
+                  onClick={() => setIsDebugEnabled((prev) => !prev)}
                 >
-                  {lang === EN ? '1. Random note stream' : '1. Stream note random'}
+                  {isDebugEnabled ? 'Debug: on' : 'Debug: off'}
                 </button>
-                <button
-                  className={`px-3 py-2 rounded border ${mode === MODE_2 ? 'bg-emerald-600 text-white' : ''}`}
-                  onClick={() => setMode(MODE_2)}
-                  disabled
-                  title={lang === EN ? 'Coming in next step' : 'In arrivo nel prossimo step'}
-                >
-                  {lang === EN ? '2. Interval from root' : '2. Intervallo da root'}
-                </button>
-                <button
-                  className={`px-3 py-2 rounded border ${mode === MODE_3 ? 'bg-emerald-600 text-white' : ''}`}
-                  onClick={() => setMode(MODE_3)}
-                  disabled
-                  title={lang === EN ? 'Coming in next step' : 'In arrivo nel prossimo step'}
-                >
-                  {lang === EN ? '3. Chained intervals' : '3. Intervalli concatenati'}
-                </button>
-              </div>
-
-              <p className="mb-2 text-sm text-gray-500">{lang === EN ? 'Duration' : 'Durata'}</p>
-              <div className="flex justify-center gap-2">
-                {[1, 2, 3, 4, 5].map((value) => (
-                  <button
-                    key={value}
-                    className={`px-3 py-2 rounded border ${minutes === value ? 'bg-emerald-600 text-white' : ''}`}
-                    onClick={() => setMinutes(value)}
-                    disabled={isRunning}
-                  >
-                    {value}m
-                  </button>
-                ))}
               </div>
             </div>
 
             {!isRunning && !isShowingRecap && (
-              <>
-                <p className="text-2xl md:text-4xl mb-6">
-                  {lang === EN ? 'Target note' : 'Nota target'}: <span className="font-mono">{targetNote}</span>
+              <div className="w-full max-w-xl mb-6 p-2">
+                <p className="mb-2 text-sm text-gray-500">{lang === EN ? 'Mode' : 'Modalita'}</p>
+                <div className="flex flex-wrap justify-center gap-2 mb-4">
+                  <button
+                    className={`px-3 py-2 rounded-full text-sm transition-colors ${
+                      mode === MODE_1
+                        ? 'bg-emerald-600 text-white'
+                        : 'bg-gray-200 text-gray-700 dark:bg-gray-700 dark:text-gray-200'
+                    }`}
+                    onClick={() => setMode(MODE_1)}
+                    disabled={isRunning}
+                  >
+                    {lang === EN ? 'Random notes' : 'Note casuali'}
+                  </button>
+                  <button
+                    className={`px-3 py-2 rounded-full text-sm transition-colors ${
+                      mode === MODE_2
+                        ? 'bg-emerald-600 text-white'
+                        : 'bg-gray-200 text-gray-500 dark:bg-gray-700 dark:text-gray-400'
+                    }`}
+                    onClick={() => setMode(MODE_2)}
+                    disabled
+                    title={lang === EN ? 'Coming in next step' : 'In arrivo nel prossimo step'}
+                  >
+                    {lang === EN ? 'Rooted intervals' : 'Intervalli da root'}
+                  </button>
+                  <button
+                    className={`px-3 py-2 rounded-full text-sm transition-colors ${
+                      mode === MODE_3
+                        ? 'bg-emerald-600 text-white'
+                        : 'bg-gray-200 text-gray-500 dark:bg-gray-700 dark:text-gray-400'
+                    }`}
+                    onClick={() => setMode(MODE_3)}
+                    disabled
+                    title={lang === EN ? 'Coming in next step' : 'In arrivo nel prossimo step'}
+                  >
+                    {lang === EN ? 'Chained intervals' : 'Intervalli concatenati'}
+                  </button>
+                </div>
+
+                <p className="mb-2 text-sm text-gray-500">{lang === EN ? 'Duration' : 'Durata'}</p>
+                <div className="flex justify-center gap-2">
+                  {[1, 2, 3, 4, 5].map((value) => (
+                    <button
+                      key={value}
+                      className={`px-3 py-2 rounded-full text-sm transition-colors ${
+                        minutes === value
+                          ? 'bg-emerald-600 text-white'
+                          : 'bg-gray-200 text-gray-700 dark:bg-gray-700 dark:text-gray-200'
+                      }`}
+                      onClick={() => setMinutes(value)}
+                      disabled={isRunning}
+                    >
+                      {value}m
+                    </button>
+                  ))}
+                </div>
+
+                <p className="mt-4 text-xs text-gray-500">
+                  {lang === EN
+                    ? 'Microphone access is required to run this trainer.'
+                    : 'Per usare questo trainer e necessario consentire l accesso al microfono.'}
                 </p>
-                <button className="px-4 py-2 border rounded" onClick={startSession}>
-                  {lang === EN ? 'Start with microphone' : 'Avvia con microfono'}
+              </div>
+            )}
+
+            {!isRunning && !isShowingRecap && (
+              <>
+                <button className="px-5 py-2 rounded-full bg-emerald-600 text-white" onClick={startSession}>
+                  {lang === EN ? 'Start' : 'Avvia'}
                 </button>
               </>
             )}
 
             {isRunning && (
               <>
-                <p className="text-2xl md:text-4xl mb-2">
-                  {lang === EN ? 'Play' : 'Suona'}: <span className="font-mono">{targetNote}</span>
+                <p className="text-xs uppercase tracking-wide text-gray-500 mb-2">
+                  {lang === EN ? 'Target note' : 'Nota target'}
                 </p>
+                <p className="text-6xl md:text-7xl font-mono leading-none mb-3">{targetNote}</p>
                 <p className="text-lg mb-2">
                   {lang === EN ? 'Time left' : 'Tempo rimanente'}: {formatRemaining(remainingMs)}
                 </p>
                 <p className="text-lg mb-6">
                   {lang === EN ? 'Completed' : 'Completati'}: {correctAnswers}
                 </p>
-                <p className="text-sm mb-6 text-gray-500">
-                  {lang === EN ? 'Detected Hz' : 'Hz rilevati'}:{' '}
-                  {detectedFrequency ? detectedFrequency.toFixed(1) : '-'}
-                </p>
-                <p className="text-sm mb-6 text-gray-500">
-                  {lang === EN ? 'Input level' : 'Livello input'}: {inputLevel.toFixed(4)}
-                </p>
-                <p className="text-sm mb-6 text-gray-500">
-                  {lang === EN ? 'Detected note' : 'Nota rilevata'}:{' '}
-                  {detectedPitchClass != null ? PITCH_CLASS_LABELS[detectedPitchClass] : '-'}
-                  {' | '}
-                  {lang === EN ? 'cents to target' : 'cents da target'}:{' '}
-                  {centsToTarget != null && Number.isFinite(centsToTarget) ? centsToTarget.toFixed(1) : '-'}
-                </p>
-                <button className="px-4 py-2 border rounded" onClick={stopSession}>
+                {isDebugEnabled && (
+                  <p className="text-xs mb-6 text-gray-500 font-mono bg-gray-100 dark:bg-gray-800 rounded-full px-4 py-2">
+                    Hz {detectedFrequency ? detectedFrequency.toFixed(1) : '-'} | In {inputLevel.toFixed(4)} | Note{' '}
+                    {detectedPitchClass != null ? PITCH_CLASS_LABELS[detectedPitchClass] : '-'} | Ct{' '}
+                    {centsToTarget != null && Number.isFinite(centsToTarget) ? centsToTarget.toFixed(1) : '-'} | F{' '}
+                    {matchedFramesRef.current}/{MATCH_FRAMES_REQUIRED}
+                  </p>
+                )}
+                <button
+                  className="px-5 py-2 rounded-full bg-gray-200 text-gray-800 dark:bg-gray-700 dark:text-gray-100"
+                  onClick={stopSession}
+                >
                   {lang === EN ? 'Stop' : 'Ferma'}
                 </button>
               </>
