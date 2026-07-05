@@ -1,5 +1,6 @@
 import { useEffect, useMemo, useRef, useState } from 'react'
 import Layout, { EN } from '../../components/layout'
+import { TrainerPromptCard, TrainerStatusPill } from '../../components/trainer-ui'
 import { getRandomInterval, getRandomNote } from '../../lib/utils'
 
 const SESSION_LENGTH = 100
@@ -23,7 +24,6 @@ export default function ManualIntervalTrainerPage() {
 
   const lastAnswerAtRef = useRef(null)
 
-  const [durationsByInterval, setDurationsByInterval] = useState({})
   const [allDurations, setAllDurations] = useState([])
 
   useEffect(() => {
@@ -31,41 +31,15 @@ export default function ManualIntervalTrainerPage() {
     setCurrentInterval(getRandomInterval())
   }, [])
 
+  // Keep recap intentionally simple: only total time and average time per answered note.
   const recap = useMemo(() => {
-    const perInterval = Object.fromEntries(
-      Object.entries(durationsByInterval).map(([name, values]) => {
-        if (!values.length) {
-          return [name, { count: 0, avg: null, min: null, max: null }]
-        }
-
-        const total = values.reduce((acc, value) => acc + value, 0)
-        const avg = total / values.length
-        const min = Math.min(...values)
-        const max = Math.max(...values)
-
-        return [name, { count: values.length, avg, min, max }]
-      })
-    )
-
-    const totalAnswers = allDurations.length
+    const totalNotes = allDurations.length
     const totalTime = allDurations.reduce((acc, value) => acc + value, 0)
-    const globalAvg = totalAnswers ? totalTime / totalAnswers : null
-    const fastest = totalAnswers ? Math.min(...allDurations) : null
-    const slowest = totalAnswers ? Math.max(...allDurations) : null
-
-    let mostChallenging = null
-    for (const [name, stats] of Object.entries(perInterval)) {
-      if (!stats.count) continue
-      if (!mostChallenging || stats.avg > mostChallenging.avg) {
-        mostChallenging = { name, avg: stats.avg, count: stats.count }
-      }
-    }
-
-    return { perInterval, totalAnswers, totalTime, globalAvg, fastest, slowest, mostChallenging }
-  }, [durationsByInterval, allDurations])
+    const avgPerNote = totalNotes ? totalTime / totalNotes : null
+    return { totalTime, avgPerNote }
+  }, [allDurations])
 
   const startSession = () => {
-    setDurationsByInterval({})
     setAllDurations([])
     setRound(0)
     setIsShowingRecap(false)
@@ -74,6 +48,7 @@ export default function ManualIntervalTrainerPage() {
   }
 
   const handleMainAreaClick = () => {
+    // Same gesture for all states: start, progress, then reset after recap.
     if (isShowingRecap) {
       setIsShowingRecap(false)
       setIsRunning(false)
@@ -90,17 +65,11 @@ export default function ManualIntervalTrainerPage() {
     }
 
     const now = performance.now()
-    const answeredInterval = currentInterval
     const previousAnswerAt = lastAnswerAtRef.current
 
-    if (previousAnswerAt != null && answeredInterval != null) {
+    // Track the time needed to answer the current note/interval prompt.
+    if (previousAnswerAt != null && currentInterval != null) {
       const answerDuration = now - previousAnswerAt
-
-      setDurationsByInterval((prev) => {
-        const values = prev[answeredInterval] ? [...prev[answeredInterval], answerDuration] : [answerDuration]
-        return { ...prev, [answeredInterval]: values }
-      })
-
       setAllDurations((prev) => [...prev, answerDuration])
     }
 
@@ -119,101 +88,73 @@ export default function ManualIntervalTrainerPage() {
   return (
     <Layout>
       {({ lang }) => (
-        <div className="flex min-h-screen">
+        <div className="relative flex min-h-screen">
           <div
-            className="flex-1 flex flex-col items-center place-content-center select-none"
+            className="relative z-10 flex-1 flex flex-col items-center place-content-center select-none px-4"
             onClick={handleMainAreaClick}
           >
-            <h1 className="text-xl md:text-2xl mb-8 text-center">
+            <h1 className="text-2xl md:text-4xl mb-8 text-center font-semibold tracking-tight">
               {lang === EN ? 'Manual interval trainer' : 'Interval trainer manuale'}
             </h1>
 
+            {isRunning && (
+              <div className="w-full max-w-xl mb-5 flex justify-center px-1">
+                <TrainerStatusPill className="shadow-sm">
+                  <div className="text-sm md:text-base text-gray-600 dark:text-gray-300 tracking-wide">
+                    {`Round ${round + 1}/${SESSION_LENGTH}`}
+                  </div>
+                </TrainerStatusPill>
+              </div>
+            )}
+
             {!isRunning && !isShowingRecap && (
               <div className="text-center">
-                <div className="text-3xl md:text-5xl lg:text-6xl">
-                  {lang === EN ? 'Starting note' : 'Nota di partenza'}: {startingNote}
-                </div>
-                <p className="mt-4 text-gray-600">
+                <TrainerPromptCard>
+                  <p className="text-3xl md:text-5xl font-mono font-semibold leading-tight text-emerald-700 dark:text-emerald-300">
+                    {lang === EN ? `Start from ${startingNote || '-'}` : `Parti da ${startingNote || '-'}`}
+                  </p>
+                </TrainerPromptCard>
+                <p className="mt-4 text-sm md:text-base text-gray-600 dark:text-gray-300">
                   {lang === EN ? 'Click anywhere to start.' : 'Clicca ovunque per iniziare.'}
                 </p>
               </div>
             )}
 
             {isRunning && (
-              <>
-                <div className="text-5xl lg:text-6xl mb-8">{currentInterval}</div>
-                <div className="text-xl md:text-3xl lg:text-4xl">
-                  {round + 1} / {SESSION_LENGTH}
-                </div>
-              </>
+              <div className="text-center">
+                <TrainerPromptCard>
+                  <p className="text-4xl md:text-6xl font-mono font-semibold leading-tight text-emerald-700 dark:text-emerald-300">
+                    {currentInterval}
+                  </p>
+                </TrainerPromptCard>
+                <p className="mt-2 text-sm md:text-base text-gray-600 dark:text-gray-300">
+                  {lang === EN ? 'Click to confirm and go next' : 'Clicca per confermare e andare avanti'}
+                </p>
+              </div>
             )}
 
             {isShowingRecap && (
-              <div className="w-full max-w-3xl mx-auto p-6 text-center">
-                <h2 className="text-2xl font-semibold mb-4">{lang === EN ? 'Session recap' : 'Riepilogo sessione'}</h2>
+              <div className="w-full max-w-2xl mx-auto p-6 text-center rounded-3xl border border-gray-200/70 dark:border-gray-700/60 bg-white/80 dark:bg-gray-900/60 backdrop-blur">
+                <h2 className="text-2xl md:text-3xl font-semibold mb-6">
+                  {lang === EN ? 'Session recap' : 'Riepilogo sessione'}
+                </h2>
 
-                <div className="grid grid-cols-2 md:grid-cols-3 gap-3 text-sm mb-6">
-                  <div className="p-3 rounded-lg">
-                    <div className="text-gray-500">{lang === EN ? 'Total answers' : 'Risposte totali'}</div>
-                    <div className="text-lg font-medium">{recap.totalAnswers}</div>
-                  </div>
-                  <div className="p-3 rounded-lg">
-                    <div className="text-gray-500">{lang === EN ? 'Total time' : 'Tempo totale'}</div>
-                    <div className="text-lg font-medium">{formatDuration(recap.totalTime)}</div>
-                  </div>
-                  <div className="p-3 rounded-lg">
-                    <div className="text-gray-500">{lang === EN ? 'Global average' : 'Media globale'}</div>
-                    <div className="text-lg font-medium">{formatDuration(recap.globalAvg)}</div>
-                  </div>
-                  <div className="p-3 rounded-lg">
-                    <div className="text-gray-500">{lang === EN ? 'Fastest (single)' : 'Piu veloce (singola)'}</div>
-                    <div className="text-lg font-medium">{formatDuration(recap.fastest)}</div>
-                  </div>
-                  <div className="p-3 rounded-lg">
-                    <div className="text-gray-500">{lang === EN ? 'Slowest (single)' : 'Piu lenta (singola)'}</div>
-                    <div className="text-lg font-medium">{formatDuration(recap.slowest)}</div>
-                  </div>
-                  <div className="p-3 rounded-lg">
-                    <div className="text-gray-500">
-                      {lang === EN ? 'Most challenging interval' : 'Intervallo piu difficile'}
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4 text-sm mb-6">
+                  <div className="p-4 rounded-2xl bg-emerald-50/70 dark:bg-emerald-900/20">
+                    <div className="text-gray-600 dark:text-gray-300">
+                      {lang === EN ? 'Total time' : 'Tempo totale'}
                     </div>
-                    <div className="text-lg font-medium">
-                      {recap.mostChallenging
-                        ? `${recap.mostChallenging.name} (${formatDuration(recap.mostChallenging.avg)})`
-                        : '-'}
+                    <div className="text-2xl font-semibold mt-1">{formatDuration(recap.totalTime)}</div>
+                  </div>
+                  <div className="p-4 rounded-2xl bg-sky-50/70 dark:bg-sky-900/20">
+                    <div className="text-gray-600 dark:text-gray-300">
+                      {lang === EN ? 'Average per note' : 'Media per nota'}
                     </div>
+                    <div className="text-2xl font-semibold mt-1">{formatDuration(recap.avgPerNote)}</div>
                   </div>
                 </div>
 
-                <h3 className="mt-6 mb-2 font-medium">{lang === EN ? 'By interval' : 'Per intervallo'}</h3>
-                <div className="max-h-[45vh] overflow-auto border rounded-lg">
-                  <table className="w-full text-sm">
-                    <thead className="sticky top-0 bg-gray-800">
-                      <tr>
-                        <th className="px-3 py-2">Int.</th>
-                        <th className="px-3 py-2">#</th>
-                        <th className="px-3 py-2">Avg</th>
-                        <th className="px-3 py-2">Min</th>
-                        <th className="px-3 py-2">Max</th>
-                      </tr>
-                    </thead>
-                    <tbody>
-                      {Object.entries(recap.perInterval)
-                        .sort((a, b) => (b[1].avg ?? 0) - (a[1].avg ?? 0))
-                        .map(([name, stats]) => (
-                          <tr key={name} className="odd:bg-gray-500">
-                            <td className="px-3 py-2 font-mono">{name}</td>
-                            <td className="px-3 py-2">{stats.count}</td>
-                            <td className="px-3 py-2">{formatDuration(stats.avg)}</td>
-                            <td className="px-3 py-2">{formatDuration(stats.min)}</td>
-                            <td className="px-3 py-2">{formatDuration(stats.max)}</td>
-                          </tr>
-                        ))}
-                    </tbody>
-                  </table>
-                </div>
-
-                <p className="mt-6 text-gray-600">
+                <p className="mt-6 text-sm md:text-base text-gray-600 dark:text-gray-300">
                   {lang === EN ? 'Click anywhere to start over.' : 'Clicca ovunque per ricominciare.'}
                 </p>
               </div>

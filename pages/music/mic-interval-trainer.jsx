@@ -1,6 +1,7 @@
 import { useEffect, useMemo, useRef, useState } from 'react'
 import { YIN } from 'pitchfinder'
 import Layout, { EN } from '../../components/layout'
+import { TrainerPromptCard, TrainerStatusPill } from '../../components/trainer-ui'
 import { getRandomNote, NOTE_TO_PITCH_CLASS, NOTES } from '../../lib/utils'
 
 const MODE_1 = 'mode-1'
@@ -178,6 +179,7 @@ export default function MicIntervalTrainerPage() {
   }, [activeInterval])
 
   const buildMode2Prompt = (previousRoot = null, previousInterval = null) => {
+    // Mode 2 asks direct interval construction from the displayed root.
     const root = rootMode === ROOT_FIXED ? fixedRoot : getRandomNote(previousRoot)
     const interval = getTrainerInterval(previousInterval)
     const rootPitchClass = NOTE_TO_PITCH_CLASS[root]
@@ -187,6 +189,7 @@ export default function MicIntervalTrainerPage() {
   }
 
   const buildChainedPrompt = (note, previousInterval = null) => {
+    // Mode 3 asks reverse reasoning: "displayed note is the X of which note?"
     const interval = getTrainerInterval(previousInterval)
     const notePitchClass = NOTE_TO_PITCH_CLASS[note]
     const targetPitchClass = (notePitchClass - getIntervalSemitones(interval) + 12) % 12
@@ -269,6 +272,7 @@ export default function MicIntervalTrainerPage() {
       return
     }
 
+    // Normalize to keep pitch detection stable across very soft/loud inputs.
     const normalizedBuffer = normalizeBuffer(floatBuffer)
     const frequency = detectFrequency(normalizedBuffer)
     setDetectedFrequency(frequency)
@@ -293,6 +297,7 @@ export default function MicIntervalTrainerPage() {
     setDetectedPitchClass(pitchInfo.pitchClass)
     setCentsToTarget(centsOffTarget)
 
+    // Treat note as correct when detected pitch class is within tolerance.
     const isInTune = centsOffTarget <= TOLERANCE_CENTS
 
     if (isInTune) {
@@ -368,6 +373,7 @@ export default function MicIntervalTrainerPage() {
     lastAdvanceAtRef.current = 0
 
     try {
+      // Open mic stream and start a lightweight RAF loop for real-time checks.
       const stream = await navigator.mediaDevices.getUserMedia({ audio: true })
       const context = new window.AudioContext()
       await context.resume()
@@ -421,7 +427,7 @@ export default function MicIntervalTrainerPage() {
             </h1>
 
             <div className="w-full max-w-xl mb-4 flex justify-center px-1">
-              <div className="inline-flex flex-wrap items-center justify-center gap-2 rounded-full bg-gray-100 dark:bg-gray-800 px-2 py-1 md:px-3 md:py-2">
+              <TrainerStatusPill>
                 <div className="text-sm md:text-base text-gray-500">
                   {isRunning
                     ? `${getModeLabel(lang, mode)} • ${minutes}m`
@@ -429,7 +435,7 @@ export default function MicIntervalTrainerPage() {
                     ? 'Set mode and duration, then start'
                     : 'Imposta modalità e durata, poi avvia'}
                 </div>
-              </div>
+              </TrainerStatusPill>
             </div>
 
             {!isRunning && !isShowingRecap && (
@@ -545,7 +551,7 @@ export default function MicIntervalTrainerPage() {
                   {lang === EN ? 'Start' : 'Avvia'}
                 </button>
                 <button
-                  className={`mt-3 px-4 py-2 rounded-full text-sm transition-colors ${
+                  className={`mt-3 px-4 py-2 rounded-full text-xs transition-colors ${
                     isDebugEnabled
                       ? 'bg-emerald-600 text-white'
                       : 'bg-gray-200 text-gray-700 dark:bg-gray-700 dark:text-gray-200'
@@ -560,14 +566,14 @@ export default function MicIntervalTrainerPage() {
             {isRunning && (
               <>
                 {mode === MODE_1 ? (
-                  <div className="mb-3 inline-flex items-center justify-center rounded-2xl border border-emerald-300/60 bg-emerald-50 px-6 py-4 dark:border-emerald-500/40 dark:bg-emerald-900/20">
+                  <TrainerPromptCard>
                     <p className="text-3xl md:text-5xl font-mono font-semibold leading-tight text-emerald-700 dark:text-emerald-300">
                       {targetNote || '-'}
                     </p>
-                  </div>
+                  </TrainerPromptCard>
                 ) : (
                   <>
-                    <div className="mb-3 inline-flex items-center justify-center rounded-2xl border border-emerald-300/60 bg-emerald-50 px-6 py-4 dark:border-emerald-500/40 dark:bg-emerald-900/20">
+                    <TrainerPromptCard>
                       <p className="text-3xl md:text-5xl font-mono font-semibold leading-tight text-emerald-700 dark:text-emerald-300">
                         {mode === MODE_2
                           ? lang === EN
@@ -577,7 +583,7 @@ export default function MicIntervalTrainerPage() {
                           ? `${activeRoot || '-'} is ${activeInterval || '-'} of?`
                           : `${activeRoot || '-'} è ${activeInterval || '-'} di?`}
                       </p>
-                    </div>
+                    </TrainerPromptCard>
                   </>
                 )}
                 <p className="text-lg mb-2">
@@ -601,7 +607,7 @@ export default function MicIntervalTrainerPage() {
                   {lang === EN ? 'Stop' : 'Ferma'}
                 </button>
                 <button
-                  className={`mt-3 px-4 py-2 rounded-full text-sm transition-colors ${
+                  className={`mt-3 px-4 py-2 rounded-full text-xs transition-colors ${
                     isDebugEnabled
                       ? 'bg-emerald-600 text-white'
                       : 'bg-gray-200 text-gray-700 dark:bg-gray-700 dark:text-gray-200'
