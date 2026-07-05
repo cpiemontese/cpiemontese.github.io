@@ -401,8 +401,8 @@ export default function IndexPage() {
                     </Link>
                   </li>
                   <li className="mb-2">
-                    <Link className="text-emerald-500 dark:text-emerald-400" href="/music/cooldown">
-                      {lang === EN ? 'Cooldown' : 'Defaticamento'}
+                    <Link className="text-emerald-500 dark:text-emerald-400" href="/music/manual-interval-trainer">
+                      {lang === EN ? 'Manual interval trainer' : 'Interval trainer manuale'}
                     </Link>
                   </li>
                   <li className="mb-2">
