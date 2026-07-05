@@ -1,11 +1,13 @@
 import { useEffect, useMemo, useRef, useState } from 'react'
 import { YIN } from 'pitchfinder'
 import Layout, { EN } from '../../components/layout'
-import { getRandomNote, NOTE_TO_PITCH_CLASS } from '../../lib/utils'
+import { getRandomInterval, getRandomNote, NOTE_TO_PITCH_CLASS, NOTES } from '../../lib/utils'
 
 const MODE_1 = 'mode-1'
 const MODE_2 = 'mode-2'
 const MODE_3 = 'mode-3'
+const ROOT_RANDOM = 'root-random'
+const ROOT_FIXED = 'root-fixed'
 
 const TOLERANCE_CENTS = 70
 const MATCH_FRAMES_REQUIRED = 2
@@ -14,6 +16,30 @@ const MIN_FREQUENCY_HZ = 60
 const MAX_FREQUENCY_HZ = 1400
 const MIN_RMS = 0.0003
 const PITCH_CLASS_LABELS = ['C', 'C#', 'D', 'Eb', 'E', 'F', 'F#', 'G', 'Ab', 'A', 'Bb', 'B']
+const INTERVAL_TO_SEMITONES = {
+  '1': 0,
+  '2b': 1,
+  '9b': 1,
+  '2': 2,
+  '9': 2,
+  '2#': 3,
+  '9#': 3,
+  '3b': 3,
+  '3': 4,
+  '4': 5,
+  '11': 5,
+  '4#': 6,
+  '11#': 6,
+  '5b': 6,
+  '5': 7,
+  '5#': 8,
+  '6b': 8,
+  '13b': 8,
+  '6': 9,
+  '13': 9,
+  '7b': 10,
+  '7': 11,
+}
 
 const midiFromFrequency = (frequency) => 69 + 12 * Math.log2(frequency / 440)
 
@@ -89,10 +115,22 @@ function getModeLabel(lang, mode) {
   return lang === EN ? 'Chained intervals' : 'Intervalli concatenati'
 }
 
+function getPitchClassLabel(pitchClass) {
+  return PITCH_CLASS_LABELS[((pitchClass % 12) + 12) % 12]
+}
+
+function getIntervalSemitones(intervalLabel) {
+  return INTERVAL_TO_SEMITONES[intervalLabel] ?? 0
+}
+
 export default function MicIntervalTrainerPage() {
   const [mode, setMode] = useState(MODE_1)
   const [minutes, setMinutes] = useState(2)
+  const [rootMode, setRootMode] = useState(ROOT_RANDOM)
+  const [fixedRoot, setFixedRoot] = useState('C')
   const [targetNote, setTargetNote] = useState(null)
+  const [activeRoot, setActiveRoot] = useState(null)
+  const [activeInterval, setActiveInterval] = useState(null)
   const [isRunning, setIsRunning] = useState(false)
   const [isShowingRecap, setIsShowingRecap] = useState(false)
   const [correctAnswers, setCorrectAnswers] = useState(0)
@@ -120,6 +158,15 @@ export default function MicIntervalTrainerPage() {
   useEffect(() => {
     targetNoteRef.current = targetNote
   }, [targetNote])
+
+  const buildMode2Prompt = (previousRoot = null, previousInterval = null) => {
+    const root = rootMode === ROOT_FIXED ? fixedRoot : getRandomNote(previousRoot)
+    const interval = getRandomInterval(previousInterval)
+    const rootPitchClass = NOTE_TO_PITCH_CLASS[root]
+    const targetPitchClass = (rootPitchClass + getIntervalSemitones(interval)) % 12
+    const target = getPitchClassLabel(targetPitchClass)
+    return { root, interval, target }
+  }
 
   const detectFrequency = (floatBuffer) => {
     for (const detector of detectorsRef.current) {
@@ -229,9 +276,21 @@ export default function MicIntervalTrainerPage() {
 
       if (hasHold && isOutOfCooldown) {
         setCorrectAnswers((prev) => prev + 1)
-        const nextTarget = getRandomNote(targetNoteRef.current)
-        targetNoteRef.current = nextTarget
-        setTargetNote(nextTarget)
+
+        if (mode === MODE_2) {
+          const nextPrompt = buildMode2Prompt(activeRoot, activeInterval)
+          targetNoteRef.current = nextPrompt.target
+          setTargetNote(nextPrompt.target)
+          setActiveRoot(nextPrompt.root)
+          setActiveInterval(nextPrompt.interval)
+        } else {
+          const nextTarget = getRandomNote(targetNoteRef.current)
+          targetNoteRef.current = nextTarget
+          setTargetNote(nextTarget)
+          setActiveRoot(null)
+          setActiveInterval(null)
+        }
+
         matchedFramesRef.current = 0
         lastAdvanceAtRef.current = now
       }
@@ -246,9 +305,21 @@ export default function MicIntervalTrainerPage() {
     setErrorMessage(null)
     setIsShowingRecap(false)
     setCorrectAnswers(0)
-    const firstTarget = getRandomNote(targetNoteRef.current)
-    targetNoteRef.current = firstTarget
-    setTargetNote(firstTarget)
+
+    if (mode === MODE_2) {
+      const firstPrompt = buildMode2Prompt(activeRoot, activeInterval)
+      targetNoteRef.current = firstPrompt.target
+      setTargetNote(firstPrompt.target)
+      setActiveRoot(firstPrompt.root)
+      setActiveInterval(firstPrompt.interval)
+    } else {
+      const firstTarget = getRandomNote(targetNoteRef.current)
+      targetNoteRef.current = firstTarget
+      setTargetNote(firstTarget)
+      setActiveRoot(null)
+      setActiveInterval(null)
+    }
+
     setDetectedFrequency(null)
     setDetectedPitchClass(null)
     setCentsToTarget(null)
@@ -353,7 +424,6 @@ export default function MicIntervalTrainerPage() {
                         : 'bg-gray-200 text-gray-500 dark:bg-gray-700 dark:text-gray-400'
                     }`}
                     onClick={() => setMode(MODE_2)}
-                    disabled
                     title={lang === EN ? 'Coming in next step' : 'In arrivo nel prossimo step'}
                   >
                     {lang === EN ? 'Rooted intervals' : 'Intervalli da root'}
@@ -371,6 +441,50 @@ export default function MicIntervalTrainerPage() {
                     {lang === EN ? 'Chained intervals' : 'Intervalli concatenati'}
                   </button>
                 </div>
+
+                {mode === MODE_2 && (
+                  <div className="mb-4">
+                    <p className="mb-2 text-sm text-gray-500">{lang === EN ? 'Root behavior' : 'Comportamento root'}</p>
+                    <div className="flex flex-wrap justify-center gap-2 mb-3">
+                      <button
+                        className={`px-3 py-2 rounded-full text-sm transition-colors ${
+                          rootMode === ROOT_RANDOM
+                            ? 'bg-emerald-600 text-white'
+                            : 'bg-gray-200 text-gray-700 dark:bg-gray-700 dark:text-gray-200'
+                        }`}
+                        onClick={() => setRootMode(ROOT_RANDOM)}
+                      >
+                        {lang === EN ? 'Random root' : 'Root casuale'}
+                      </button>
+                      <button
+                        className={`px-3 py-2 rounded-full text-sm transition-colors ${
+                          rootMode === ROOT_FIXED
+                            ? 'bg-emerald-600 text-white'
+                            : 'bg-gray-200 text-gray-700 dark:bg-gray-700 dark:text-gray-200'
+                        }`}
+                        onClick={() => setRootMode(ROOT_FIXED)}
+                      >
+                        {lang === EN ? 'Fixed root' : 'Root fissa'}
+                      </button>
+                    </div>
+
+                    {rootMode === ROOT_FIXED && (
+                      <div className="flex justify-center">
+                        <select
+                          className="px-3 py-2 rounded-full text-sm bg-gray-200 text-gray-700 dark:bg-gray-700 dark:text-gray-200"
+                          value={fixedRoot}
+                          onChange={(event) => setFixedRoot(event.target.value)}
+                        >
+                          {NOTES.map((note) => (
+                            <option key={note} value={note}>
+                              {note}
+                            </option>
+                          ))}
+                        </select>
+                      </div>
+                    )}
+                  </div>
+                )}
 
                 <p className="mb-2 text-sm text-gray-500">{lang === EN ? 'Duration' : 'Durata'}</p>
                 <div className="flex justify-center gap-2">
@@ -408,10 +522,26 @@ export default function MicIntervalTrainerPage() {
 
             {isRunning && (
               <>
-                <p className="text-xs uppercase tracking-wide text-gray-500 mb-2">
-                  {lang === EN ? 'Target note' : 'Nota target'}
-                </p>
-                <p className="text-6xl md:text-7xl font-mono leading-none mb-3">{targetNote}</p>
+                {mode === MODE_1 ? (
+                  <>
+                    <p className="text-xs uppercase tracking-wide text-gray-500 mb-2">
+                      {lang === EN ? 'Target note' : 'Nota target'}
+                    </p>
+                    <p className="text-6xl md:text-7xl font-mono leading-none mb-3">{targetNote}</p>
+                  </>
+                ) : (
+                  <>
+                    <div className="mb-3 inline-flex flex-col items-center rounded-2xl border border-emerald-300/60 bg-emerald-50 px-6 py-3 dark:border-emerald-500/40 dark:bg-emerald-900/20">
+                      <p className="text-[11px] uppercase tracking-wide text-emerald-700 dark:text-emerald-300">
+                        {lang === EN ? 'Root' : 'Root'}
+                      </p>
+                      <p className="text-4xl md:text-5xl font-mono font-semibold leading-none text-emerald-700 dark:text-emerald-300">
+                        {activeRoot || '-'}
+                      </p>
+                    </div>
+                    <p className="text-6xl md:text-7xl font-mono leading-none mb-3">{activeInterval || '-'}</p>
+                  </>
+                )}
                 <p className="text-lg mb-2">
                   {lang === EN ? 'Time left' : 'Tempo rimanente'}: {formatRemaining(remainingMs)}
                 </p>
