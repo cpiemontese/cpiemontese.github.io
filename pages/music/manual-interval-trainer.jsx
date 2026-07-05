@@ -134,20 +134,20 @@ export default function ManualIntervalTrainerPage() {
             )}
 
             {isShowingRecap && (
-              <div className="w-full max-w-2xl mx-auto p-6 text-center rounded-3xl border border-gray-200/70 dark:border-gray-700/60 bg-white/80 dark:bg-gray-900/60 backdrop-blur">
+              <div className="w-full max-w-2xl mx-auto p-6 text-center rounded-3xl border border-gray-200/70 dark:border-gray-700/60 bg-white/80 dark:bg-gray-900/40 backdrop-blur">
                 <h2 className="text-2xl md:text-3xl font-semibold mb-6">
                   {lang === EN ? 'Session recap' : 'Riepilogo sessione'}
                 </h2>
 
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4 text-sm mb-6">
-                  <div className="p-4 rounded-2xl bg-emerald-50/70 dark:bg-emerald-900/20">
-                    <div className="text-gray-600 dark:text-gray-300">
+                  <div className="rounded-xl bg-white/80 dark:bg-gray-900/60 p-3">
+                    <div className="text-gray-500 dark:text-gray-300">
                       {lang === EN ? 'Total time' : 'Tempo totale'}
                     </div>
                     <div className="text-2xl font-semibold mt-1">{formatDuration(recap.totalTime)}</div>
                   </div>
-                  <div className="p-4 rounded-2xl bg-sky-50/70 dark:bg-sky-900/20">
-                    <div className="text-gray-600 dark:text-gray-300">
+                  <div className="rounded-xl bg-white/80 dark:bg-gray-900/60 p-3">
+                    <div className="text-gray-500 dark:text-gray-300">
                       {lang === EN ? 'Average per note' : 'Media per nota'}
                     </div>
                     <div className="text-2xl font-semibold mt-1">{formatDuration(recap.avgPerNote)}</div>

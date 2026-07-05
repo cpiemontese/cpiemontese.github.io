@@ -132,6 +132,28 @@ function getTrainerInterval(previousInterval = null) {
   return pickFrom[idx]
 }
 
+function getSelectableButtonClass(isSelected) {
+  const common = 'px-3 py-2 rounded-full text-sm transition-colors'
+  if (isSelected) {
+    return `${common} bg-emerald-600 text-white dark:bg-emerald-600 dark:text-white`
+  }
+
+  return `${common} bg-gray-200 text-gray-700 hover:bg-emerald-600 hover:text-white dark:bg-gray-700 dark:text-gray-200 dark:hover:bg-emerald-600`
+}
+
+const ACTION_BUTTON_CLASS =
+  'px-5 py-2 rounded-full transition-colors bg-gray-200 text-gray-800 hover:bg-emerald-600 hover:text-white dark:bg-gray-700 dark:text-gray-100 dark:hover:bg-emerald-600'
+
+const DEBUG_BUTTON_BASE_CLASS =
+  'mt-3 px-4 py-2 rounded-full text-xs transition-colors bg-gray-200 text-gray-700 hover:bg-emerald-600 hover:text-white dark:bg-gray-700 dark:text-gray-200 dark:hover:bg-emerald-600'
+
+function getDebugButtonClass(isEnabled) {
+  if (isEnabled) {
+    return 'mt-3 px-4 py-2 rounded-full text-xs transition-colors bg-emerald-600 text-white dark:bg-emerald-600 dark:text-white'
+  }
+  return DEBUG_BUTTON_BASE_CLASS
+}
+
 export default function MicIntervalTrainerPage() {
   const [mode, setMode] = useState(MODE_1)
   const [minutes, setMinutes] = useState(2)
@@ -158,11 +180,14 @@ export default function MicIntervalTrainerPage() {
   const streamRef = useRef(null)
   const rafRef = useRef(null)
   const sessionEndAtRef = useRef(null)
+  const sessionStartedAtRef = useRef(null)
   const matchedFramesRef = useRef(0)
   const lastAdvanceAtRef = useRef(0)
   const targetNoteRef = useRef(null)
   const activeRootRef = useRef(null)
   const activeIntervalRef = useRef(null)
+
+  const [sessionElapsedMs, setSessionElapsedMs] = useState(null)
 
   const sessionDurationMs = useMemo(() => minutes * 60 * 1000, [minutes])
 
@@ -239,6 +264,9 @@ export default function MicIntervalTrainerPage() {
   }, [])
 
   const endSession = () => {
+    if (sessionStartedAtRef.current) {
+      setSessionElapsedMs(Math.max(0, performance.now() - sessionStartedAtRef.current))
+    }
     setIsRunning(false)
     setIsShowingRecap(true)
     cleanupAudio()
@@ -392,6 +420,8 @@ export default function MicIntervalTrainerPage() {
 
       setRemainingMs(sessionDurationMs)
       setIsRunning(true)
+      sessionStartedAtRef.current = performance.now()
+      setSessionElapsedMs(null)
       sessionEndAtRef.current = performance.now() + sessionDurationMs
       runDetectionLoop()
     } catch (error) {
@@ -402,12 +432,7 @@ export default function MicIntervalTrainerPage() {
   }
 
   const stopSession = () => {
-    setIsRunning(false)
-    setDetectedFrequency(null)
-    setDetectedPitchClass(null)
-    setCentsToTarget(null)
-    setInputLevel(0)
-    cleanupAudio()
+    endSession()
   }
 
   const formatRemaining = (value) => {
@@ -417,14 +442,25 @@ export default function MicIntervalTrainerPage() {
     return `${m}:${String(s).padStart(2, '0')}`
   }
 
+  const formatElapsed = (value) => {
+    if (value == null || !Number.isFinite(value)) return '-'
+    const seconds = value / 1000
+    if (seconds < 10) return `${seconds.toFixed(2)}s`
+    if (seconds < 60) return `${seconds.toFixed(1)}s`
+    const m = Math.floor(seconds / 60)
+    const s = Math.round(seconds % 60)
+    return `${m}m ${s}s`
+  }
+
+  const notesPerSecond =
+    sessionElapsedMs && sessionElapsedMs > 0 ? (correctAnswers / (sessionElapsedMs / 1000)).toFixed(2) : '0.00'
+
   return (
     <Layout>
       {({ lang }) => (
         <div className="flex min-h-screen">
           <div className="flex-1 flex flex-col items-center justify-center p-6 text-center">
-            <h1 className="text-xl md:text-2xl mb-6">
-              {lang === EN ? 'Microphone interval trainer' : 'Interval trainer microfono'}
-            </h1>
+            <h1 className="text-xl md:text-2xl mb-6">{lang === EN ? 'Interval trainer' : 'Interval trainer'}</h1>
 
             <div className="w-full max-w-xl mb-4 flex justify-center px-1">
               <TrainerStatusPill>
@@ -443,34 +479,16 @@ export default function MicIntervalTrainerPage() {
                 <p className="mb-2 text-sm text-gray-500">{lang === EN ? 'Mode' : 'Modalita'}</p>
                 <div className="flex flex-wrap justify-center gap-2 mb-4">
                   <button
-                    className={`px-3 py-2 rounded-full text-sm transition-colors ${
-                      mode === MODE_1
-                        ? 'bg-emerald-600 text-white'
-                        : 'bg-gray-200 text-gray-700 dark:bg-gray-700 dark:text-gray-200'
-                    }`}
+                    className={getSelectableButtonClass(mode === MODE_1)}
                     onClick={() => setMode(MODE_1)}
                     disabled={isRunning}
                   >
                     {lang === EN ? 'Random notes' : 'Note casuali'}
                   </button>
-                  <button
-                    className={`px-3 py-2 rounded-full text-sm transition-colors ${
-                      mode === MODE_2
-                        ? 'bg-emerald-600 text-white'
-                        : 'bg-gray-200 text-gray-700 dark:bg-gray-700 dark:text-gray-200'
-                    }`}
-                    onClick={() => setMode(MODE_2)}
-                  >
+                  <button className={getSelectableButtonClass(mode === MODE_2)} onClick={() => setMode(MODE_2)}>
                     {lang === EN ? 'Rooted intervals' : 'Intervalli da root'}
                   </button>
-                  <button
-                    className={`px-3 py-2 rounded-full text-sm transition-colors ${
-                      mode === MODE_3
-                        ? 'bg-emerald-600 text-white'
-                        : 'bg-gray-200 text-gray-700 dark:bg-gray-700 dark:text-gray-200'
-                    }`}
-                    onClick={() => setMode(MODE_3)}
-                  >
+                  <button className={getSelectableButtonClass(mode === MODE_3)} onClick={() => setMode(MODE_3)}>
                     {lang === EN ? 'Chained intervals' : 'Intervalli concatenati'}
                   </button>
                 </div>
@@ -480,21 +498,13 @@ export default function MicIntervalTrainerPage() {
                     <p className="mb-2 text-sm text-gray-500">{lang === EN ? 'Root behavior' : 'Comportamento root'}</p>
                     <div className="flex flex-wrap justify-center gap-2 mb-3">
                       <button
-                        className={`px-3 py-2 rounded-full text-sm transition-colors ${
-                          rootMode === ROOT_RANDOM
-                            ? 'bg-emerald-600 text-white'
-                            : 'bg-gray-200 text-gray-700 dark:bg-gray-700 dark:text-gray-200'
-                        }`}
+                        className={getSelectableButtonClass(rootMode === ROOT_RANDOM)}
                         onClick={() => setRootMode(ROOT_RANDOM)}
                       >
                         {lang === EN ? 'Random root' : 'Root casuale'}
                       </button>
                       <button
-                        className={`px-3 py-2 rounded-full text-sm transition-colors ${
-                          rootMode === ROOT_FIXED
-                            ? 'bg-emerald-600 text-white'
-                            : 'bg-gray-200 text-gray-700 dark:bg-gray-700 dark:text-gray-200'
-                        }`}
+                        className={getSelectableButtonClass(rootMode === ROOT_FIXED)}
                         onClick={() => setRootMode(ROOT_FIXED)}
                       >
                         {lang === EN ? 'Fixed root' : 'Root fissa'}
@@ -524,11 +534,7 @@ export default function MicIntervalTrainerPage() {
                   {[1, 2, 3, 4, 5].map((value) => (
                     <button
                       key={value}
-                      className={`px-3 py-2 rounded-full text-sm transition-colors ${
-                        minutes === value
-                          ? 'bg-emerald-600 text-white'
-                          : 'bg-gray-200 text-gray-700 dark:bg-gray-700 dark:text-gray-200'
-                      }`}
+                      className={getSelectableButtonClass(minutes === value)}
                       onClick={() => setMinutes(value)}
                       disabled={isRunning}
                     >
@@ -547,15 +553,11 @@ export default function MicIntervalTrainerPage() {
 
             {!isRunning && !isShowingRecap && (
               <>
-                <button className="px-5 py-2 rounded-full bg-emerald-600 text-white" onClick={startSession}>
+                <button className={ACTION_BUTTON_CLASS} onClick={startSession}>
                   {lang === EN ? 'Start' : 'Avvia'}
                 </button>
                 <button
-                  className={`mt-3 px-4 py-2 rounded-full text-xs transition-colors ${
-                    isDebugEnabled
-                      ? 'bg-emerald-600 text-white'
-                      : 'bg-gray-200 text-gray-700 dark:bg-gray-700 dark:text-gray-200'
-                  }`}
+                  className={getDebugButtonClass(isDebugEnabled)}
                   onClick={() => setIsDebugEnabled((prev) => !prev)}
                 >
                   {isDebugEnabled ? 'Debug: on' : 'Debug: off'}
@@ -600,18 +602,11 @@ export default function MicIntervalTrainerPage() {
                     {matchedFramesRef.current}/{MATCH_FRAMES_REQUIRED}
                   </p>
                 )}
-                <button
-                  className="px-5 py-2 rounded-full bg-gray-200 text-gray-800 dark:bg-gray-700 dark:text-gray-100"
-                  onClick={stopSession}
-                >
+                <button className={ACTION_BUTTON_CLASS} onClick={stopSession}>
                   {lang === EN ? 'Stop' : 'Ferma'}
                 </button>
                 <button
-                  className={`mt-3 px-4 py-2 rounded-full text-xs transition-colors ${
-                    isDebugEnabled
-                      ? 'bg-emerald-600 text-white'
-                      : 'bg-gray-200 text-gray-700 dark:bg-gray-700 dark:text-gray-200'
-                  }`}
+                  className={getDebugButtonClass(isDebugEnabled)}
                   onClick={() => setIsDebugEnabled((prev) => !prev)}
                 >
                   {isDebugEnabled ? 'Debug: on' : 'Debug: off'}
@@ -620,15 +615,34 @@ export default function MicIntervalTrainerPage() {
             )}
 
             {isShowingRecap && (
-              <div className="w-full max-w-xl border rounded-lg p-6">
-                <h2 className="text-xl font-semibold mb-4">{lang === EN ? 'Session recap' : 'Riepilogo sessione'}</h2>
-                <p className="mb-2">
-                  {lang === EN ? 'Duration' : 'Durata'}: {minutes} {lang === EN ? 'minutes' : 'minuti'}
+              <div className="w-full max-w-2xl mx-auto p-6 text-center rounded-3xl border border-gray-200/70 dark:border-gray-700/60 bg-white/80 dark:bg-gray-900/40 backdrop-blur">
+                <h2 className="text-2xl md:text-3xl font-semibold mb-6">
+                  {lang === EN ? 'Session recap' : 'Riepilogo sessione'}
+                </h2>
+
+                <div className="grid grid-cols-1 md:grid-cols-3 gap-4 text-sm mb-6">
+                  <div className="rounded-xl bg-white/80 dark:bg-gray-900/60 p-3">
+                    <p className="text-xs text-gray-500 mb-1">
+                      {lang === EN ? 'Effective duration' : 'Durata effettiva'}
+                    </p>
+                    <p className="text-lg font-semibold">{formatElapsed(sessionElapsedMs)}</p>
+                  </div>
+                  <div className="rounded-xl bg-white/80 dark:bg-gray-900/60 p-3">
+                    <p className="text-xs text-gray-500 mb-1">{lang === EN ? 'Completed notes' : 'Note completate'}</p>
+                    <p className="text-lg font-semibold">{correctAnswers}</p>
+                  </div>
+                  <div className="rounded-xl bg-white/80 dark:bg-gray-900/60 p-3">
+                    <p className="text-xs text-gray-500 mb-1">{lang === EN ? 'Notes per second' : 'Note al secondo'}</p>
+                    <p className="text-lg font-semibold">{notesPerSecond}</p>
+                  </div>
+                </div>
+
+                <p className="mb-5 text-sm text-gray-500">
+                  {lang === EN ? 'Selected duration' : 'Durata selezionata'}: {minutes}{' '}
+                  {lang === EN ? 'minutes' : 'minuti'}
                 </p>
-                <p className="mb-4">
-                  {lang === EN ? 'Completed intervals/notes' : 'Intervalli/note completati'}: {correctAnswers}
-                </p>
-                <button className="px-4 py-2 border rounded" onClick={() => setIsShowingRecap(false)}>
+
+                <button className={ACTION_BUTTON_CLASS} onClick={() => setIsShowingRecap(false)}>
                   {lang === EN ? 'Try again' : 'Riprova'}
                 </button>
               </div>
