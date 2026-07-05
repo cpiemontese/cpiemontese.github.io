@@ -9,7 +9,7 @@ export const siteTitle = `${name} Portfolio`
 export const IT = 'IT'
 export const EN = 'EN'
 
-export default function Layout({ hasToggle, children }) {
+export default function Layout({ hasToggle = true, children }) {
   const [toggled, setToggled] = useState(false)
 
   const lang = toggled ? IT : EN

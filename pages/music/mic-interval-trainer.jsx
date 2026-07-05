@@ -422,23 +422,13 @@ export default function MicIntervalTrainerPage() {
 
             <div className="w-full max-w-xl mb-4 flex justify-center px-1">
               <div className="inline-flex flex-wrap items-center justify-center gap-2 rounded-full bg-gray-100 dark:bg-gray-800 px-2 py-1 md:px-3 md:py-2">
-                <div className="text-[11px] md:text-xs text-gray-500">
+                <div className="text-sm md:text-base text-gray-500">
                   {isRunning
                     ? `${getModeLabel(lang, mode)} • ${minutes}m`
                     : lang === EN
                     ? 'Set mode and duration, then start'
-                    : 'Imposta modalita e durata, poi avvia'}
+                    : 'Imposta modalità e durata, poi avvia'}
                 </div>
-                <button
-                  className={`px-3 py-1 rounded-full text-[11px] md:text-xs transition-colors ${
-                    isDebugEnabled
-                      ? 'bg-emerald-600 text-white'
-                      : 'bg-gray-200 text-gray-700 dark:bg-gray-700 dark:text-gray-200'
-                  }`}
-                  onClick={() => setIsDebugEnabled((prev) => !prev)}
-                >
-                  {isDebugEnabled ? 'Debug: on' : 'Debug: off'}
-                </button>
               </div>
             </div>
 
@@ -554,6 +544,16 @@ export default function MicIntervalTrainerPage() {
                 <button className="px-5 py-2 rounded-full bg-emerald-600 text-white" onClick={startSession}>
                   {lang === EN ? 'Start' : 'Avvia'}
                 </button>
+                <button
+                  className={`mt-3 px-4 py-2 rounded-full text-sm transition-colors ${
+                    isDebugEnabled
+                      ? 'bg-emerald-600 text-white'
+                      : 'bg-gray-200 text-gray-700 dark:bg-gray-700 dark:text-gray-200'
+                  }`}
+                  onClick={() => setIsDebugEnabled((prev) => !prev)}
+                >
+                  {isDebugEnabled ? 'Debug: on' : 'Debug: off'}
+                </button>
               </>
             )}
 
@@ -599,6 +599,16 @@ export default function MicIntervalTrainerPage() {
                   onClick={stopSession}
                 >
                   {lang === EN ? 'Stop' : 'Ferma'}
+                </button>
+                <button
+                  className={`mt-3 px-4 py-2 rounded-full text-sm transition-colors ${
+                    isDebugEnabled
+                      ? 'bg-emerald-600 text-white'
+                      : 'bg-gray-200 text-gray-700 dark:bg-gray-700 dark:text-gray-200'
+                  }`}
+                  onClick={() => setIsDebugEnabled((prev) => !prev)}
+                >
+                  {isDebugEnabled ? 'Debug: on' : 'Debug: off'}
                 </button>
               </>
             )}
