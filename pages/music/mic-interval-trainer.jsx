@@ -1,7 +1,7 @@
 import { useEffect, useMemo, useRef, useState } from 'react'
 import { YIN } from 'pitchfinder'
 import Layout, { EN } from '../../components/layout'
-import { getRandomInterval, getRandomNote, NOTE_TO_PITCH_CLASS, NOTES } from '../../lib/utils'
+import { getRandomNote, NOTE_TO_PITCH_CLASS, NOTES } from '../../lib/utils'
 
 const MODE_1 = 'mode-1'
 const MODE_2 = 'mode-2'
@@ -15,6 +15,7 @@ const ADVANCE_COOLDOWN_MS = 250
 const MIN_FREQUENCY_HZ = 60
 const MAX_FREQUENCY_HZ = 1400
 const MIN_RMS = 0.0003
+const TRAINER_INTERVALS = ['1', '2b', '2', '3b', '3', '4', '5b', '5', '6b', '6', '7b', '7']
 const PITCH_CLASS_LABELS = ['C', 'C#', 'D', 'Eb', 'E', 'F', 'F#', 'G', 'Ab', 'A', 'Bb', 'B']
 const INTERVAL_TO_SEMITONES = {
   '1': 0,
@@ -123,6 +124,13 @@ function getIntervalSemitones(intervalLabel) {
   return INTERVAL_TO_SEMITONES[intervalLabel] ?? 0
 }
 
+function getTrainerInterval(previousInterval = null) {
+  const options = TRAINER_INTERVALS.filter((interval) => interval !== previousInterval)
+  const pickFrom = options.length > 0 ? options : TRAINER_INTERVALS
+  const idx = Math.floor(Math.random() * pickFrom.length)
+  return pickFrom[idx]
+}
+
 export default function MicIntervalTrainerPage() {
   const [mode, setMode] = useState(MODE_1)
   const [minutes, setMinutes] = useState(2)
@@ -152,6 +160,8 @@ export default function MicIntervalTrainerPage() {
   const matchedFramesRef = useRef(0)
   const lastAdvanceAtRef = useRef(0)
   const targetNoteRef = useRef(null)
+  const activeRootRef = useRef(null)
+  const activeIntervalRef = useRef(null)
 
   const sessionDurationMs = useMemo(() => minutes * 60 * 1000, [minutes])
 
@@ -159,13 +169,29 @@ export default function MicIntervalTrainerPage() {
     targetNoteRef.current = targetNote
   }, [targetNote])
 
+  useEffect(() => {
+    activeRootRef.current = activeRoot
+  }, [activeRoot])
+
+  useEffect(() => {
+    activeIntervalRef.current = activeInterval
+  }, [activeInterval])
+
   const buildMode2Prompt = (previousRoot = null, previousInterval = null) => {
     const root = rootMode === ROOT_FIXED ? fixedRoot : getRandomNote(previousRoot)
-    const interval = getRandomInterval(previousInterval)
+    const interval = getTrainerInterval(previousInterval)
     const rootPitchClass = NOTE_TO_PITCH_CLASS[root]
     const targetPitchClass = (rootPitchClass + getIntervalSemitones(interval)) % 12
     const target = getPitchClassLabel(targetPitchClass)
     return { root, interval, target }
+  }
+
+  const buildChainedPrompt = (note, previousInterval = null) => {
+    const interval = getTrainerInterval(previousInterval)
+    const notePitchClass = NOTE_TO_PITCH_CLASS[note]
+    const targetPitchClass = (notePitchClass - getIntervalSemitones(interval) + 12) % 12
+    const target = getPitchClassLabel(targetPitchClass)
+    return { root: note, interval, target }
   }
 
   const detectFrequency = (floatBuffer) => {
@@ -278,7 +304,14 @@ export default function MicIntervalTrainerPage() {
         setCorrectAnswers((prev) => prev + 1)
 
         if (mode === MODE_2) {
-          const nextPrompt = buildMode2Prompt(activeRoot, activeInterval)
+          const nextPrompt = buildMode2Prompt(activeRootRef.current, activeIntervalRef.current)
+          targetNoteRef.current = nextPrompt.target
+          setTargetNote(nextPrompt.target)
+          setActiveRoot(nextPrompt.root)
+          setActiveInterval(nextPrompt.interval)
+        } else if (mode === MODE_3) {
+          const chainedRoot = targetNoteRef.current
+          const nextPrompt = buildChainedPrompt(chainedRoot, activeIntervalRef.current)
           targetNoteRef.current = nextPrompt.target
           setTargetNote(nextPrompt.target)
           setActiveRoot(nextPrompt.root)
@@ -307,7 +340,14 @@ export default function MicIntervalTrainerPage() {
     setCorrectAnswers(0)
 
     if (mode === MODE_2) {
-      const firstPrompt = buildMode2Prompt(activeRoot, activeInterval)
+      const firstPrompt = buildMode2Prompt(activeRootRef.current, activeIntervalRef.current)
+      targetNoteRef.current = firstPrompt.target
+      setTargetNote(firstPrompt.target)
+      setActiveRoot(firstPrompt.root)
+      setActiveInterval(firstPrompt.interval)
+    } else if (mode === MODE_3) {
+      const firstRoot = getRandomNote(activeRootRef.current)
+      const firstPrompt = buildChainedPrompt(firstRoot, activeIntervalRef.current)
       targetNoteRef.current = firstPrompt.target
       setTargetNote(firstPrompt.target)
       setActiveRoot(firstPrompt.root)
@@ -421,10 +461,9 @@ export default function MicIntervalTrainerPage() {
                     className={`px-3 py-2 rounded-full text-sm transition-colors ${
                       mode === MODE_2
                         ? 'bg-emerald-600 text-white'
-                        : 'bg-gray-200 text-gray-500 dark:bg-gray-700 dark:text-gray-400'
+                        : 'bg-gray-200 text-gray-700 dark:bg-gray-700 dark:text-gray-200'
                     }`}
                     onClick={() => setMode(MODE_2)}
-                    title={lang === EN ? 'Coming in next step' : 'In arrivo nel prossimo step'}
                   >
                     {lang === EN ? 'Rooted intervals' : 'Intervalli da root'}
                   </button>
@@ -432,11 +471,9 @@ export default function MicIntervalTrainerPage() {
                     className={`px-3 py-2 rounded-full text-sm transition-colors ${
                       mode === MODE_3
                         ? 'bg-emerald-600 text-white'
-                        : 'bg-gray-200 text-gray-500 dark:bg-gray-700 dark:text-gray-400'
+                        : 'bg-gray-200 text-gray-700 dark:bg-gray-700 dark:text-gray-200'
                     }`}
                     onClick={() => setMode(MODE_3)}
-                    disabled
-                    title={lang === EN ? 'Coming in next step' : 'In arrivo nel prossimo step'}
                   >
                     {lang === EN ? 'Chained intervals' : 'Intervalli concatenati'}
                   </button>
@@ -523,23 +560,24 @@ export default function MicIntervalTrainerPage() {
             {isRunning && (
               <>
                 {mode === MODE_1 ? (
-                  <>
-                    <p className="text-xs uppercase tracking-wide text-gray-500 mb-2">
-                      {lang === EN ? 'Target note' : 'Nota target'}
+                  <div className="mb-3 inline-flex items-center justify-center rounded-2xl border border-emerald-300/60 bg-emerald-50 px-6 py-4 dark:border-emerald-500/40 dark:bg-emerald-900/20">
+                    <p className="text-3xl md:text-5xl font-mono font-semibold leading-tight text-emerald-700 dark:text-emerald-300">
+                      {targetNote || '-'}
                     </p>
-                    <p className="text-6xl md:text-7xl font-mono leading-none mb-3">{targetNote}</p>
-                  </>
+                  </div>
                 ) : (
                   <>
-                    <div className="mb-3 inline-flex flex-col items-center rounded-2xl border border-emerald-300/60 bg-emerald-50 px-6 py-3 dark:border-emerald-500/40 dark:bg-emerald-900/20">
-                      <p className="text-[11px] uppercase tracking-wide text-emerald-700 dark:text-emerald-300">
-                        {lang === EN ? 'Root' : 'Root'}
-                      </p>
-                      <p className="text-4xl md:text-5xl font-mono font-semibold leading-none text-emerald-700 dark:text-emerald-300">
-                        {activeRoot || '-'}
+                    <div className="mb-3 inline-flex items-center justify-center rounded-2xl border border-emerald-300/60 bg-emerald-50 px-6 py-4 dark:border-emerald-500/40 dark:bg-emerald-900/20">
+                      <p className="text-3xl md:text-5xl font-mono font-semibold leading-tight text-emerald-700 dark:text-emerald-300">
+                        {mode === MODE_2
+                          ? lang === EN
+                            ? `${activeInterval || '-'} of ${activeRoot || '-'}`
+                            : `${activeInterval || '-'} di ${activeRoot || '-'}`
+                          : lang === EN
+                          ? `${activeRoot || '-'} is ${activeInterval || '-'} of?`
+                          : `${activeRoot || '-'} è ${activeInterval || '-'} di?`}
                       </p>
                     </div>
-                    <p className="text-6xl md:text-7xl font-mono leading-none mb-3">{activeInterval || '-'}</p>
                   </>
                 )}
                 <p className="text-lg mb-2">
