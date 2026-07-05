@@ -385,6 +385,11 @@ export default function IndexPage() {
               >
                 <ul className="mt-4 mb-8 list-disc list-outside">
                   <li className="mb-2">
+                    <Link className="text-emerald-500 dark:text-emerald-400" href="/music/mic-interval-trainer">
+                      {lang === EN ? 'Microphone interval trainer' : 'Interval trainer microfono'}
+                    </Link>
+                  </li>
+                  <li className="mb-2">
                     <Link className="text-emerald-500 dark:text-emerald-400" href="/music/manual-interval-trainer">
                       {lang === EN ? 'Manual interval trainer' : 'Interval trainer manuale'}
                     </Link>
