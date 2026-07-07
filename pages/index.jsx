@@ -394,69 +394,6 @@ export default function IndexPage() {
                       {lang === EN ? 'Note trainer' : 'Trainer note'}
                     </Link>
                   </li>
-                  <li className="mb-2">
-                    <Link className="text-emerald-500 dark:text-emerald-400" href="/music/notes-permutation">
-                      {lang === EN ? 'Notes permutation' : 'Permutazioni di note'}
-                    </Link>
-                  </li>
-                  <li className="mb-2">
-                    <Link className="text-emerald-500 dark:text-emerald-400" href="/music/natural-intervals">
-                      {lang === EN ? 'Natural intervals' : 'Intervalli naturali'}
-                    </Link>
-                  </li>
-                  <li className="mb-2">
-                    <Link className="text-emerald-500 dark:text-emerald-400" href="/music/chords">
-                      {lang === EN ? 'Chords' : 'Accordi'}
-                    </Link>
-                  </li>
-                  <li className="mb-2">
-                    <Link className="text-emerald-500 dark:text-emerald-400" href="/music/turnaround-permutation">
-                      Turnaround
-                    </Link>
-                  </li>
-                </ul>
-                <h4 className="text-lg font-semibold mb-2">{lang === EN ? 'Guitar' : 'Chitarra'}</h4>
-                <ul className="mt-4 mb-8 list-disc list-outside">
-                  <li className="mb-2">
-                    <Link className="text-emerald-500 dark:text-emerald-400" href="/music/guitar/fret-permutation">
-                      {lang === EN ? 'Guitar frets' : 'Tasti chitarra'}
-                    </Link>
-                  </li>
-                  <li className="mb-2">
-                    <Link className="text-emerald-500 dark:text-emerald-400" href="/music/guitar/double-stops">
-                      {lang === EN ? 'Double stops' : 'Bicordi'}
-                    </Link>
-                  </li>
-                  <li className="mb-2">
-                    <Link className="text-emerald-500 dark:text-emerald-400" href="/music/guitar/double-stops-251">
-                      {lang === EN ? 'Double stops 251' : '251 a bicordi'}
-                    </Link>
-                  </li>
-                  <li className="mb-2">
-                    <Link className="text-emerald-500 dark:text-emerald-400" href="/music/guitar/four-notes-voicings">
-                      {lang === EN ? 'Four note voicings' : 'Voicing a quattro voci'}
-                    </Link>
-                  </li>
-                  <li className="mb-2">
-                    <Link className="text-emerald-500 dark:text-emerald-400" href="/music/guitar/triad-arpeggios">
-                      {lang === EN ? 'Triad arpeggios (guitar)' : 'Triadi arpeggiate (chitarra)'}
-                    </Link>
-                  </li>
-                  <li className="mb-2">
-                    <Link className="text-emerald-500 dark:text-emerald-400" href="/music/guitar/quadriad-arpeggios">
-                      {lang === EN ? 'Quadriad arpeggios (guitar)' : 'Quadriadi arpeggiate (chitarra)'}
-                    </Link>
-                  </li>
-                  <li className="mb-2">
-                    <Link className="text-emerald-500 dark:text-emerald-400" href="/music/guitar/triads">
-                      {lang === EN ? 'Triads (guitar)' : 'Triadi (chitarra)'}
-                    </Link>
-                  </li>
-                  <li>
-                    <Link className="text-emerald-500 dark:text-emerald-400" href="/music/guitar/seventh-chords">
-                      {lang === EN ? '7th chords (guitar)' : 'Accordi di 7a (chitarra)'}
-                    </Link>
-                  </li>
                 </ul>
               </CVElement>
             </div>
