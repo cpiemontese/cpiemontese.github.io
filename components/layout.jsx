@@ -15,7 +15,7 @@ export default function Layout({ hasToggle = true, children }) {
   const lang = toggled ? IT : EN
 
   return (
-    <div className="max-w-4xl min-h-screen mx-auto overflow-hidden">
+    <div className="max-w-4xl min-h-screen mx-auto overflow-hidden bg-[#020617]">
       <Head>
         <link rel="icon" href="/favicon.ico" />
         <meta name="description" content={siteTitle} />
@@ -28,13 +28,13 @@ export default function Layout({ hasToggle = true, children }) {
         <meta name="og:title" content={siteTitle} />
       </Head>
       {hasToggle ? (
-        <header className="fixed flex justify-end h-8 max-w-4xl w-full items-center px-8 bg-gray-100 text-gray-800 dark:bg-gray-800 dark:text-gray-100">
+        <header className="fixed z-10 flex justify-end h-10 max-w-4xl w-full items-center px-6 sm:px-8 bg-slate-900/85 text-slate-100 border-b border-slate-700/80 backdrop-blur">
           <Toggle toggled={toggled} setToggled={setToggled} />
         </header>
       ) : (
         <></>
       )}
-      <main className={hasToggle ? 'mt-8' : ''}>{children({ lang })}</main>
+      <main className={hasToggle ? 'mt-10' : ''}>{children({ lang })}</main>
     </div>
   )
 }

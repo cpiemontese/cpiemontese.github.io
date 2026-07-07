@@ -70,7 +70,7 @@ export default function RandomIntervals() {
         <>
           <div
             id="intervals"
-            className="flex flex-col min-h-screen items-center place-content-center select-none"
+            className="flex flex-col min-h-screen items-center place-content-center select-none px-4 text-slate-100"
             onClick={() => {
               setLine(getLine())
             }}
@@ -78,7 +78,9 @@ export default function RandomIntervals() {
             {table[line].map((intervals, idx) => (
               <div
                 key={`interval-${idx}`}
-                className={`text-3xl md:text-5xl lg:text-6xl px-4 ${idx === table[line].length - 1 ? '' : 'mb-8'}`}
+                className={`rounded-2xl border border-slate-700/80 bg-slate-900 px-8 py-6 text-3xl md:text-5xl lg:text-6xl shadow-xl shadow-black/20 ${
+                  idx === table[line].length - 1 ? '' : 'mb-4'
+                }`}
               >
                 {intervals.join(' ')}
               </div>

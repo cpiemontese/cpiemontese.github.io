@@ -4,46 +4,48 @@ import Layout, { EN, IT } from '../components/layout'
 import CVElement from '../components/cv-element'
 import Link from 'next/link'
 
-const SectionTitle = ({ name }) => <h2 className="mb-6 uppercase text-3xl">{name}</h2>
+const SectionTitle = ({ name }) => (
+  <div className="mb-6">
+    <h2 className="uppercase text-3xl tracking-wide text-slate-100">{name}</h2>
+    <div className="mt-2 h-px bg-gradient-to-r from-emerald-500 via-emerald-400/80 to-transparent" />
+  </div>
+)
 
 export default function IndexPage() {
   return (
     <Layout hasToggle={true}>
       {({ lang }) => (
-        <div className="pt-4 px-8 pb-8">
-          <section className="pb-8 mb-8 border-b-2 border-gray-800 dark:border-gray-100">
-            <div className="sm:flex">
-              <div className="flex flex-col justify-between sm:w-3/5 border-gray-300 dark:border-gray-600 border-b-2 sm:border-b-0 mb-4 sm:mb-0 pb-4 sm:pb-0 sm:border-r-2 sm:mr-2">
+        <div className="pt-6 px-6 pb-10 text-slate-200 sm:rounded-2xl sm:shadow-2xl sm:shadow-black/40 sm:px-8">
+          <section className="pb-8 mb-10 rounded-2xl border border-slate-700/80 bg-slate-900 p-6 shadow-xl shadow-black/25">
+            <div className="sm:flex sm:items-stretch">
+              <div className="flex flex-col justify-between sm:w-3/5 border-b border-emerald-500/70 sm:border-b-0 mb-4 sm:mb-0 pb-4 sm:pb-0 sm:border-r sm:pr-5 sm:mr-5 sm:border-emerald-500/60">
                 <div className="sm:mb-6">
-                  <h1 className="text-3xl font-bold">Cristiano Piemontese</h1>
-                  <h2 className="text-xl font-light text-emerald-500 dark:text-emerald-400">Software Engineer</h2>
+                  <h1 className="text-3xl font-bold text-slate-50 drop-shadow-sm">Cristiano Piemontese</h1>
+                  <h2 className="text-xl font-light text-emerald-300">Software Engineer</h2>
                 </div>
               </div>
-              <div className="flex flex-col justify-center sm:w-2/5">
+              <div className="flex flex-col justify-center sm:w-2/5 text-slate-200">
                 <div className="flex items-center">
                   <FaMapMarkerAlt />
                   <span className="ml-2">{lang === EN ? 'Bologna, Italy' : 'Bologna'}</span>
                 </div>
                 <div className="flex items-center">
                   <GrMail />
-                  <a
-                    className="ml-2 truncate text-emerald-500 dark:text-emerald-400"
-                    href="mailto:cristiano.piemontese@gmail.com"
-                  >
+                  <a className="ml-2 truncate cv-link" href="mailto:cristiano.piemontese@gmail.com">
                     cristiano.piemontese@gmail.com
                   </a>
                 </div>
                 <div className="flex items-center">
                   <FaGithub />
-                  <a className="ml-2 text-emerald-500 dark:text-emerald-400" href="https://github.com/cpiemontese">
+                  <a className="ml-2 cv-link" href="https://github.com/cpiemontese">
                     cpiemontese
                   </a>
                 </div>
               </div>
             </div>
           </section>
-          <section className="md:flex">
-            <div className="md:w-1/2 md:mr-12">
+          <section className="md:flex md:gap-10">
+            <div className="md:w-1/2">
               <SectionTitle name={`${lang === EN ? 'Work Experience' : 'Esperienza Lavorativa'}`} />
               <CVElement
                 className="mb-8"
@@ -194,7 +196,7 @@ export default function IndexPage() {
                 subtitle="EMMEPI s.r.l. (Bologna)"
                 period="2018"
               >
-                <ul className="mt-4 list-disc list-outside">
+                <ul className="mt-4 list-disc list-outside pl-5 marker:text-slate-500">
                   <li>{lang === EN ? 'Developed the showcase website ' : 'Sviluppato il sito vetrina '}</li>
                 </ul>
               </CVElement>
@@ -212,7 +214,7 @@ export default function IndexPage() {
                 ]}
               />
             </div>
-            <div className="md:w-1/2 md:ml-12">
+            <div className="md:w-1/2">
               <SectionTitle name={lang === EN ? 'Education' : 'Formazione'} />
               <CVElement
                 className="mb-6"
@@ -223,7 +225,7 @@ export default function IndexPage() {
                 grade={lang === EN ? 'Final mark: 110/110 cum laude' : 'Valutazione: 110/110 e lode'}
               >
                 <p>{lang === EN ? 'Thesis in' : 'Tesi di laurea in'} Emerging Programming Paradigms:</p>
-                <a className="text-emerald-500 dark:text-emerald-400" href="https://amslaurea.unibo.it/17293/">
+                <a className="cv-link" href="https://amslaurea.unibo.it/17293/">
                   {lang === EN
                     ? '“Developement of an Interactive Theorem Prover in ELPI”'
                     : '“Sviluppo di un Interactive Theorem Prover in ELPI”'}
@@ -238,7 +240,7 @@ export default function IndexPage() {
                 grade={lang === EN ? 'Final mark: 108/110' : 'Valutazione: 108/110'}
               >
                 <p>{lang === EN ? 'Thesis in' : 'Tesi di laurea in'} Computer Vision:</p>
-                <a className="text-emerald-500 dark:text-emerald-400" href="https://amslaurea.unibo.it/10883/">
+                <a className="cv-link" href="https://amslaurea.unibo.it/10883/">
                   {lang === EN
                     ? '“Design and implementation of an interactive didactic application for object recognition based on the SIFT algorithm”'
                     : '“Progettazione e implementazione di un’applicazione didattica interattiva per il riconoscimento di oggetti basata sull’algoritmo SIFT”'}
@@ -322,57 +324,48 @@ export default function IndexPage() {
                 ]}
               />
               <SectionTitle name={`${lang === EN ? 'Other projects' : 'Altri progetti'}`} />
-              <CVElement className="" lang={lang} title={lang === EN ? 'Games' : 'Giochi'}>
-                <ul className="mt-4 mb-8 list-disc list-outside">
+              <CVElement className="mb-8" lang={lang} title={lang === EN ? 'Games' : 'Giochi'}>
+                <ul className="mt-4 mb-0 list-disc list-outside pl-5 marker:text-slate-500">
                   <li className="mb-2">
-                    <a className="text-emerald-500 dark:text-emerald-400" href="/run-sparty-run">
+                    <a className="cv-link" href="/run-sparty-run">
                       Run Sparty, Run!
                     </a>{' '}
                     &ndash; {lang === EN ? 'final project for the' : 'progetto finale per la'}{' '}
-                    <a
-                      className="text-emerald-500 dark:text-emerald-400"
-                      href="https://www.coursera.org/specializations/game-development"
-                    >
+                    <a className="cv-link" href="https://www.coursera.org/specializations/game-development">
                       Game Design and Development Specialization
                     </a>{' '}
                     {lang === EN ? 'at' : 'di'} Coursera (
-                    <a
-                      className="text-emerald-500 dark:text-emerald-400"
-                      href="https://github.com/cpiemontese/run-sparty-run"
-                    >
+                    <a className="cv-link" href="https://github.com/cpiemontese/run-sparty-run">
                       repo
                     </a>
                     )
                   </li>
                   <li className="mb-2">
-                    <a className="text-emerald-500 dark:text-emerald-400" href="/yafbc">
+                    <a className="cv-link" href="/yafbc">
                       YAFBC (Yet another Flappy Bird clone)
                     </a>{' '}
                     (
-                    <a className="text-emerald-500 dark:text-emerald-400" href="https://github.com/cpiemontese/yafbc">
+                    <a className="cv-link" href="https://github.com/cpiemontese/yafbc">
                       repo
                     </a>
                     )
                   </li>
                   <li>
-                    <a className="text-emerald-500 dark:text-emerald-400" href="/unity-pong-clone">
+                    <a className="cv-link" href="/unity-pong-clone">
                       YAPC (Yet another Pong clone)
                     </a>{' '}
                     (
-                    <a
-                      className="text-emerald-500 dark:text-emerald-400"
-                      href="https://github.com/cpiemontese/unity-pong-clone"
-                    >
+                    <a className="cv-link" href="https://github.com/cpiemontese/unity-pong-clone">
                       repo
                     </a>
                     )
                   </li>
                 </ul>
               </CVElement>
-              <CVElement className="" lang={lang} title={lang === EN ? 'Articles' : 'Articoli'}>
-                <ul className="mt-4 mb-8 list-disc list-outside">
+              <CVElement className="mb-8" lang={lang} title={lang === EN ? 'Articles' : 'Articoli'}>
+                <ul className="mt-4 mb-0 list-disc list-outside pl-5 marker:text-slate-500">
                   <li className="mb-2">
-                    <a className="text-emerald-500 dark:text-emerald-400" href="/articles/xml_parsing">
+                    <a className="cv-link" href="/articles/xml_parsing">
                       Avoiding OOM Kills in Kubernetes: Switching from DOM to SAX in Elixir
                     </a>
                   </li>
@@ -383,77 +376,77 @@ export default function IndexPage() {
                 lang={lang}
                 title={lang === EN ? 'Music Practice Tools' : 'Strumenti di pratica musicale'}
               >
-                <ul className="mt-4 mb-8 list-disc list-outside">
+                <ul className="mt-4 mb-8 list-disc list-outside pl-5 marker:text-slate-500">
                   <li className="mb-2">
-                    <Link className="text-emerald-500 dark:text-emerald-400" href="/music/mic-interval-trainer">
+                    <Link className="cv-link" href="/music/mic-interval-trainer">
                       Interval trainer
                     </Link>
                   </li>
                   <li className="mb-2">
-                    <Link className="text-emerald-500 dark:text-emerald-400" href="/music/manual-interval-trainer">
+                    <Link className="cv-link" href="/music/manual-interval-trainer">
                       {lang === EN ? 'Manual interval trainer' : 'Interval trainer manuale'}
                     </Link>
                   </li>
                   <li className="mb-2">
-                    <Link className="text-emerald-500 dark:text-emerald-400" href="/music/notes-permutation">
+                    <Link className="cv-link" href="/music/notes-permutation">
                       {lang === EN ? 'Notes permutation' : 'Permutazioni di note'}
                     </Link>
                   </li>
                   <li className="mb-2">
-                    <Link className="text-emerald-500 dark:text-emerald-400" href="/music/natural-intervals">
+                    <Link className="cv-link" href="/music/natural-intervals">
                       {lang === EN ? 'Natural intervals' : 'Intevalli naturali'}
                     </Link>
                   </li>
                   <li className="mb-2">
-                    <Link className="text-emerald-500 dark:text-emerald-400" href="/music/chords">
+                    <Link className="cv-link" href="/music/chords">
                       {lang === EN ? 'Chords' : 'Accordi'}
                     </Link>
                   </li>
                   <li className="mb-2">
-                    <Link className="text-emerald-500 dark:text-emerald-400" href="/music/turnaround-permutation">
+                    <Link className="cv-link" href="/music/turnaround-permutation">
                       Turnaround
                     </Link>
                   </li>
                 </ul>
                 <h4 className="text-lg font-semibold mb-2">{lang === EN ? 'Guitar' : 'Chitarra'}</h4>
-                <ul className="mt-4 mb-8 list-disc list-outside">
+                <ul className="mt-4 mb-8 list-disc list-outside pl-5 marker:text-slate-500">
                   <li className="mb-2">
-                    <Link className="text-emerald-500 dark:text-emerald-400" href="/music/guitar/fret-permutation">
+                    <Link className="cv-link" href="/music/guitar/fret-permutation">
                       {lang === EN ? 'Guitar frets' : 'Tasti chitarra'}
                     </Link>
                   </li>
                   <li className="mb-2">
-                    <Link className="text-emerald-500 dark:text-emerald-400" href="/music/guitar/double-stops">
+                    <Link className="cv-link" href="/music/guitar/double-stops">
                       {lang === EN ? 'Double stops' : 'Bicordi'}
                     </Link>
                   </li>
                   <li className="mb-2">
-                    <Link className="text-emerald-500 dark:text-emerald-400" href="/music/guitar/double-stops-251">
+                    <Link className="cv-link" href="/music/guitar/double-stops-251">
                       {lang === EN ? 'Double stops 251' : '251 a bicordi'}
                     </Link>
                   </li>
                   <li className="mb-2">
-                    <Link className="text-emerald-500 dark:text-emerald-400" href="/music/guitar/four-notes-voicings">
+                    <Link className="cv-link" href="/music/guitar/four-notes-voicings">
                       {lang === EN ? 'Four note voicings' : 'Voicing a quattro voci'}
                     </Link>
                   </li>
                   <li className="mb-2">
-                    <Link className="text-emerald-500 dark:text-emerald-400" href="/music/guitar/triad-arpeggios">
+                    <Link className="cv-link" href="/music/guitar/triad-arpeggios">
                       {lang === EN ? 'Triad arpeggios (guitar)' : 'Triadi arpeggiate (chitarra)'}
                     </Link>
                   </li>
                   <li className="mb-2">
-                    <Link className="text-emerald-500 dark:text-emerald-400" href="/music/guitar/quadriad-arpeggios">
+                    <Link className="cv-link" href="/music/guitar/quadriad-arpeggios">
                       {lang === EN ? 'Quadriad arpeggios (guitar)' : 'Quadriadi arpeggiate (chitarra)'}
                     </Link>
                   </li>
                   <li className="mb-2">
-                    <Link className="text-emerald-500 dark:text-emerald-400" href="/music/guitar/triads">
+                    <Link className="cv-link" href="/music/guitar/triads">
                       {lang === EN ? 'Triads (guitar)' : 'Triadi (chitarra)'}
                     </Link>
                   </li>
                   <li>
-                    <Link className="text-emerald-500 dark:text-emerald-400" href="/music/guitar/seventh-chords">
+                    <Link className="cv-link" href="/music/guitar/seventh-chords">
                       {lang === EN ? '7th chords (guitar)' : 'Accordi di 7a (chitarra)'}
                     </Link>
                   </li>

@@ -20,17 +20,24 @@ export default function NotesPermutation() {
         <>
           <div
             id="scale"
-            className="flex flex-col sm:flex-row min-h-screen items-center place-content-evenly select-none"
+            className="flex flex-col sm:flex-row min-h-screen items-center place-content-evenly select-none px-4 text-slate-100"
             onClick={() => {
               if (!init) setInit(true)
               setNotes(shuffle(currentNotes))
             }}
           >
             {!init ? (
-              <div className="text-3xl md:text-5xl lg:text-6xl">Click here</div>
+              <div className="rounded-2xl border border-slate-700/80 bg-slate-900 px-8 py-6 text-3xl md:text-5xl lg:text-6xl shadow-xl shadow-black/20">
+                Click here
+              </div>
             ) : (
               currentNotes.map((note, idx) => (
-                <div key={note} className="text-3xl md:text-5xl lg:text-6xl">
+                <div
+                  key={note}
+                  className={`rounded-2xl border border-slate-700/80 bg-slate-900 px-8 py-6 text-3xl md:text-5xl lg:text-6xl shadow-xl shadow-black/20 ${
+                    idx < currentNotes.length - 1 ? 'mb-4 sm:mb-0' : ''
+                  }`}
+                >
                   {note}
                 </div>
               ))
