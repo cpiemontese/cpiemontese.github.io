@@ -1,14 +1,13 @@
 import { useEffect, useMemo, useRef, useState } from 'react'
 import { YIN } from 'pitchfinder'
-import Layout, { EN } from '../../components/layout'
-import { TrainerPromptCard, TrainerStatusPill } from '../../components/trainer-ui'
-import { getRandomNote, NOTE_TO_PITCH_CLASS, NOTES } from '../../lib/utils'
+import Layout, { EN } from './layout'
+import { TrainerPromptCard, TrainerStatusPill } from './trainer-ui'
+import { getRandomNote, NOTE_TO_PITCH_CLASS, NOTES } from '../lib/utils'
 
-const MODE_1 = 'mode-1'
-const MODE_2 = 'mode-2'
-const MODE_3 = 'mode-3'
-const ROOT_RANDOM = 'root-random'
-const ROOT_FIXED = 'root-fixed'
+const ANCHOR_FIXED = 'anchor-fixed'
+const ANCHOR_DYNAMIC = 'anchor-dynamic'
+const DIRECTION_FORWARD = 'direction-forward'
+const DIRECTION_BACKWARD = 'direction-backward'
 
 const TOLERANCE_CENTS = 70
 const MATCH_FRAMES_REQUIRED = 2
@@ -17,7 +16,13 @@ const MIN_FREQUENCY_HZ = 60
 const MAX_FREQUENCY_HZ = 1400
 const MIN_RMS = 0.0003
 const TRAINER_INTERVALS = ['1', '2b', '2', '3b', '3', '4', '5b', '5', '6b', '6', '7b', '7']
-const PITCH_CLASS_LABELS = ['C', 'C#', 'D', 'Eb', 'E', 'F', 'F#', 'G', 'Ab', 'A', 'Bb', 'B']
+const INTERVAL_DISPLAY_ALIASES = {
+  2: ['2', '9'],
+  4: ['4', '11'],
+  6: ['6', '13'],
+}
+const PITCH_CLASS_LABELS_SHARP = ['C', 'C#', 'D', 'D#', 'E', 'F', 'F#', 'G', 'G#', 'A', 'A#', 'B']
+const PITCH_CLASS_LABELS_FLAT = ['C', 'Db', 'D', 'Eb', 'E', 'F', 'Gb', 'G', 'Ab', 'A', 'Bb', 'B']
 const INTERVAL_TO_SEMITONES = {
   '1': 0,
   '2b': 1,
@@ -105,20 +110,42 @@ function normalizeBuffer(floatBuffer) {
   return normalized
 }
 
-function getModeLabel(lang, mode) {
-  if (mode === MODE_1) {
-    return lang === EN ? 'Random notes' : 'Note casuali'
+function getExerciseLabel(lang, noteOnly, anchorType, isChained, direction) {
+  if (noteOnly) {
+    return lang === EN ? 'Note recognition' : 'Riconoscimento note'
   }
 
-  if (mode === MODE_2) {
-    return lang === EN ? 'Rooted intervals' : 'Intervalli da root'
-  }
+  const anchorLabel =
+    anchorType === ANCHOR_FIXED
+      ? lang === EN
+        ? 'Fixed note'
+        : 'Nota fissa'
+      : lang === EN
+      ? 'Dynamic note'
+      : 'Nota dinamica'
+  const chainedLabel =
+    anchorType === ANCHOR_FIXED
+      ? null
+      : isChained
+      ? lang === EN
+        ? 'Chained'
+        : 'Chained'
+      : lang === EN
+      ? 'Not chained'
+      : 'Non chained'
+  const directionLabel =
+    direction === DIRECTION_FORWARD ? (lang === EN ? 'Forward' : 'Forward') : lang === EN ? 'Backward' : 'Backward'
 
-  return lang === EN ? 'Chained intervals' : 'Intervalli concatenati'
+  return [anchorLabel, chainedLabel, directionLabel].filter(Boolean).join(' • ')
 }
 
-function getPitchClassLabel(pitchClass) {
-  return PITCH_CLASS_LABELS[((pitchClass % 12) + 12) % 12]
+function getPitchClassLabel(pitchClass, preferSharp = false) {
+  const labels = preferSharp ? PITCH_CLASS_LABELS_SHARP : PITCH_CLASS_LABELS_FLAT
+  return labels[((pitchClass % 12) + 12) % 12]
+}
+
+function shouldPreferSharps(noteLabel) {
+  return typeof noteLabel === 'string' && noteLabel.includes('#')
 }
 
 function getIntervalSemitones(intervalLabel) {
@@ -126,10 +153,19 @@ function getIntervalSemitones(intervalLabel) {
 }
 
 function getTrainerInterval(previousInterval = null) {
-  const options = TRAINER_INTERVALS.filter((interval) => interval !== previousInterval)
+  const previousSemitones = previousInterval != null ? getIntervalSemitones(previousInterval) : null
+  const options = TRAINER_INTERVALS.filter((interval) => getIntervalSemitones(interval) !== previousSemitones)
   const pickFrom = options.length > 0 ? options : TRAINER_INTERVALS
   const idx = Math.floor(Math.random() * pickFrom.length)
-  return pickFrom[idx]
+  const baseInterval = pickFrom[idx]
+  const aliases = INTERVAL_DISPLAY_ALIASES[baseInterval]
+
+  if (!aliases) {
+    return baseInterval
+  }
+
+  const aliasIndex = Math.floor(Math.random() * aliases.length)
+  return aliases[aliasIndex]
 }
 
 function getSelectableButtonClass(isSelected) {
@@ -144,20 +180,29 @@ function getSelectableButtonClass(isSelected) {
 const ACTION_BUTTON_CLASS =
   'px-5 py-2 rounded-full transition-colors bg-gray-200 text-gray-800 hover:bg-emerald-600 hover:text-white dark:bg-gray-700 dark:text-gray-100 dark:hover:bg-emerald-600'
 
-const DEBUG_BUTTON_BASE_CLASS =
+const TOGGLE_BUTTON_BASE_CLASS =
   'mt-3 px-4 py-2 rounded-full text-xs transition-colors bg-gray-200 text-gray-700 hover:bg-gray-300 dark:bg-gray-700 dark:text-gray-200 dark:hover:bg-gray-600'
 
-function getDebugButtonClass(isEnabled) {
+function getToggleButtonClass(isEnabled) {
   if (isEnabled) {
     return 'mt-3 px-4 py-2 rounded-full text-xs transition-colors bg-emerald-600 text-white dark:bg-emerald-600 dark:text-white'
   }
-  return DEBUG_BUTTON_BASE_CLASS
+  return TOGGLE_BUTTON_BASE_CLASS
 }
 
-export default function MicIntervalTrainerPage() {
-  const [mode, setMode] = useState(MODE_1)
+function renderIntervalLabel(interval) {
+  if (interval === '11' || interval === '13') {
+    return <span className="tracking-[-0.05em]">{interval}</span>
+  }
+
+  return interval
+}
+
+export function IntervalTrainerPage({ noteOnly = false, forceMic = false, defaultMicEnabled = true }) {
+  const [anchorType, setAnchorType] = useState(ANCHOR_DYNAMIC)
+  const [isChained, setIsChained] = useState(false)
+  const [direction, setDirection] = useState(DIRECTION_FORWARD)
   const [minutes, setMinutes] = useState(2)
-  const [rootMode, setRootMode] = useState(ROOT_RANDOM)
   const [fixedRoot, setFixedRoot] = useState('C')
   const [targetNote, setTargetNote] = useState(null)
   const [activeRoot, setActiveRoot] = useState(null)
@@ -172,6 +217,7 @@ export default function MicIntervalTrainerPage() {
   const [centsToTarget, setCentsToTarget] = useState(null)
   const [inputLevel, setInputLevel] = useState(0)
   const [isDebugEnabled, setIsDebugEnabled] = useState(false)
+  const [isMicEnabled, setIsMicEnabled] = useState(forceMic ? true : defaultMicEnabled)
 
   const detectorsRef = useRef([])
   const audioContextRef = useRef(null)
@@ -186,6 +232,7 @@ export default function MicIntervalTrainerPage() {
   const targetNoteRef = useRef(null)
   const activeRootRef = useRef(null)
   const activeIntervalRef = useRef(null)
+  const timerIntervalRef = useRef(null)
 
   const [sessionElapsedMs, setSessionElapsedMs] = useState(null)
 
@@ -203,23 +250,18 @@ export default function MicIntervalTrainerPage() {
     activeIntervalRef.current = activeInterval
   }, [activeInterval])
 
-  const buildMode2Prompt = (previousRoot = null, previousInterval = null) => {
-    // Mode 2 asks direct interval construction from the displayed root.
-    const root = rootMode === ROOT_FIXED ? fixedRoot : getRandomNote(previousRoot)
+  const buildIntervalPrompt = (previousRoot = null, previousInterval = null, previousTarget = null) => {
+    const useFixedAnchor = anchorType === ANCHOR_FIXED
+    const canChain = !useFixedAnchor && isChained
+    const root = useFixedAnchor ? fixedRoot : canChain && previousTarget ? previousTarget : getRandomNote(previousRoot)
     const interval = getTrainerInterval(previousInterval)
     const rootPitchClass = NOTE_TO_PITCH_CLASS[root]
-    const targetPitchClass = (rootPitchClass + getIntervalSemitones(interval)) % 12
-    const target = getPitchClassLabel(targetPitchClass)
+    const semitones = getIntervalSemitones(interval)
+    const preferSharp = shouldPreferSharps(root)
+    const targetPitchClass =
+      direction === DIRECTION_FORWARD ? (rootPitchClass + semitones) % 12 : (rootPitchClass - semitones + 12) % 12
+    const target = getPitchClassLabel(targetPitchClass, preferSharp)
     return { root, interval, target }
-  }
-
-  const buildChainedPrompt = (note, previousInterval = null) => {
-    // Mode 3 asks reverse reasoning: "displayed note is the X of which note?"
-    const interval = getTrainerInterval(previousInterval)
-    const notePitchClass = NOTE_TO_PITCH_CLASS[note]
-    const targetPitchClass = (notePitchClass - getIntervalSemitones(interval) + 12) % 12
-    const target = getPitchClassLabel(targetPitchClass)
-    return { root: note, interval, target }
   }
 
   const detectFrequency = (floatBuffer) => {
@@ -257,13 +299,22 @@ export default function MicIntervalTrainerPage() {
     analyserRef.current = null
   }
 
+  const cleanupTimer = () => {
+    if (timerIntervalRef.current) {
+      clearInterval(timerIntervalRef.current)
+      timerIntervalRef.current = null
+    }
+  }
+
   useEffect(() => {
     return () => {
+      cleanupTimer()
       cleanupAudio()
     }
   }, [])
 
   const endSession = () => {
+    cleanupTimer()
     if (sessionStartedAtRef.current) {
       setSessionElapsedMs(Math.max(0, performance.now() - sessionStartedAtRef.current))
     }
@@ -272,18 +323,47 @@ export default function MicIntervalTrainerPage() {
     cleanupAudio()
   }
 
+  const startTimer = () => {
+    cleanupTimer()
+    timerIntervalRef.current = setInterval(() => {
+      const endAt = sessionEndAtRef.current
+      if (!endAt) return
+
+      const newRemaining = Math.max(0, endAt - performance.now())
+      setRemainingMs(newRemaining)
+
+      if (newRemaining <= 0) {
+        endSession()
+      }
+    }, 100)
+  }
+
+  const advancePrompt = (now = performance.now()) => {
+    setCorrectAnswers((prev) => prev + 1)
+
+    if (noteOnly) {
+      const nextTarget = getRandomNote(targetNoteRef.current)
+      targetNoteRef.current = nextTarget
+      setTargetNote(nextTarget)
+      setActiveRoot(null)
+      setActiveInterval(null)
+    } else {
+      const nextPrompt = buildIntervalPrompt(activeRootRef.current, activeIntervalRef.current, targetNoteRef.current)
+      targetNoteRef.current = nextPrompt.target
+      setTargetNote(nextPrompt.target)
+      setActiveRoot(nextPrompt.root)
+      setActiveInterval(nextPrompt.interval)
+    }
+
+    matchedFramesRef.current = 0
+    lastAdvanceAtRef.current = now
+  }
+
   const runDetectionLoop = () => {
     const analyser = analyserRef.current
-    if (!analyser || !sessionEndAtRef.current) return
+    if (!analyser || !sessionEndAtRef.current || !isMicEnabled) return
 
     const now = performance.now()
-    const newRemaining = Math.max(0, sessionEndAtRef.current - now)
-    setRemainingMs(newRemaining)
-
-    if (newRemaining <= 0) {
-      endSession()
-      return
-    }
 
     const floatBuffer = new Float32Array(analyser.fftSize)
     analyser.getFloatTimeDomainData(floatBuffer)
@@ -334,31 +414,7 @@ export default function MicIntervalTrainerPage() {
       const isOutOfCooldown = now - lastAdvanceAtRef.current >= ADVANCE_COOLDOWN_MS
 
       if (hasHold && isOutOfCooldown) {
-        setCorrectAnswers((prev) => prev + 1)
-
-        if (mode === MODE_2) {
-          const nextPrompt = buildMode2Prompt(activeRootRef.current, activeIntervalRef.current)
-          targetNoteRef.current = nextPrompt.target
-          setTargetNote(nextPrompt.target)
-          setActiveRoot(nextPrompt.root)
-          setActiveInterval(nextPrompt.interval)
-        } else if (mode === MODE_3) {
-          const chainedRoot = targetNoteRef.current
-          const nextPrompt = buildChainedPrompt(chainedRoot, activeIntervalRef.current)
-          targetNoteRef.current = nextPrompt.target
-          setTargetNote(nextPrompt.target)
-          setActiveRoot(nextPrompt.root)
-          setActiveInterval(nextPrompt.interval)
-        } else {
-          const nextTarget = getRandomNote(targetNoteRef.current)
-          targetNoteRef.current = nextTarget
-          setTargetNote(nextTarget)
-          setActiveRoot(null)
-          setActiveInterval(null)
-        }
-
-        matchedFramesRef.current = 0
-        lastAdvanceAtRef.current = now
+        advancePrompt(now)
       }
     } else {
       matchedFramesRef.current = 0
@@ -372,25 +428,18 @@ export default function MicIntervalTrainerPage() {
     setIsShowingRecap(false)
     setCorrectAnswers(0)
 
-    if (mode === MODE_2) {
-      const firstPrompt = buildMode2Prompt(activeRootRef.current, activeIntervalRef.current)
-      targetNoteRef.current = firstPrompt.target
-      setTargetNote(firstPrompt.target)
-      setActiveRoot(firstPrompt.root)
-      setActiveInterval(firstPrompt.interval)
-    } else if (mode === MODE_3) {
-      const firstRoot = getRandomNote(activeRootRef.current)
-      const firstPrompt = buildChainedPrompt(firstRoot, activeIntervalRef.current)
-      targetNoteRef.current = firstPrompt.target
-      setTargetNote(firstPrompt.target)
-      setActiveRoot(firstPrompt.root)
-      setActiveInterval(firstPrompt.interval)
-    } else {
+    if (noteOnly) {
       const firstTarget = getRandomNote(targetNoteRef.current)
       targetNoteRef.current = firstTarget
       setTargetNote(firstTarget)
       setActiveRoot(null)
       setActiveInterval(null)
+    } else {
+      const firstPrompt = buildIntervalPrompt(activeRootRef.current, activeIntervalRef.current, targetNoteRef.current)
+      targetNoteRef.current = firstPrompt.target
+      setTargetNote(firstPrompt.target)
+      setActiveRoot(firstPrompt.root)
+      setActiveInterval(firstPrompt.interval)
     }
 
     setDetectedFrequency(null)
@@ -399,6 +448,18 @@ export default function MicIntervalTrainerPage() {
     setInputLevel(0)
     matchedFramesRef.current = 0
     lastAdvanceAtRef.current = 0
+    setRemainingMs(sessionDurationMs)
+    setSessionElapsedMs(null)
+
+    sessionStartedAtRef.current = performance.now()
+    sessionEndAtRef.current = performance.now() + sessionDurationMs
+    setIsRunning(true)
+    startTimer()
+
+    if (!isMicEnabled) {
+      cleanupAudio()
+      return
+    }
 
     try {
       // Open mic stream and start a lightweight RAF loop for real-time checks.
@@ -418,21 +479,29 @@ export default function MicIntervalTrainerPage() {
       sourceRef.current = source
       analyserRef.current = analyser
 
-      setRemainingMs(sessionDurationMs)
-      setIsRunning(true)
-      sessionStartedAtRef.current = performance.now()
-      setSessionElapsedMs(null)
-      sessionEndAtRef.current = performance.now() + sessionDurationMs
       runDetectionLoop()
     } catch (error) {
+      cleanupTimer()
       cleanupAudio()
       setIsRunning(false)
+      sessionStartedAtRef.current = null
+      sessionEndAtRef.current = null
       setErrorMessage('mic-unavailable')
     }
   }
 
   const stopSession = () => {
     endSession()
+  }
+
+  const manualAdvance = () => {
+    if (!isRunning) return
+
+    const now = performance.now()
+    const isOutOfCooldown = now - lastAdvanceAtRef.current >= ADVANCE_COOLDOWN_MS
+    if (!isOutOfCooldown) return
+
+    advancePrompt(now)
   }
 
   const formatRemaining = (value) => {
@@ -454,79 +523,111 @@ export default function MicIntervalTrainerPage() {
 
   const notesPerSecond =
     sessionElapsedMs && sessionElapsedMs > 0 ? (correctAnswers / (sessionElapsedMs / 1000)).toFixed(2) : '0.00'
+  const debugPreferSharp = shouldPreferSharps(activeRoot || targetNote)
+
+  const handleMainAreaClick = (event) => {
+    if (!isRunning) return
+    if (event.target.closest('[data-control="true"]')) return
+    manualAdvance()
+  }
 
   return (
     <Layout>
       {({ lang }) => (
-        <div className="flex min-h-screen">
+        <div className="flex min-h-screen" onClick={handleMainAreaClick}>
           <div className="flex-1 flex flex-col items-center justify-center p-6 text-center">
-            <h1 className="text-xl md:text-2xl mb-6">{lang === EN ? 'Interval trainer' : 'Interval trainer'}</h1>
+            <h1 className="text-xl md:text-2xl mb-6">{noteOnly ? 'Note trainer' : 'Interval trainer'}</h1>
 
             <div className="w-full max-w-xl mb-4 flex justify-center px-1">
               <TrainerStatusPill>
                 <div className="text-sm md:text-base text-gray-500">
-                  {isRunning
-                    ? `${getModeLabel(lang, mode)} • ${minutes}m`
+                  {isShowingRecap
+                    ? lang === EN
+                      ? 'Session completed'
+                      : 'Sessione completata'
+                    : isRunning
+                    ? `${getExerciseLabel(lang, noteOnly, anchorType, isChained, direction)} • ${minutes}m`
                     : lang === EN
-                    ? 'Set mode and duration, then start'
-                    : 'Imposta modalità e durata, poi avvia'}
+                    ? noteOnly
+                      ? 'Set duration, then start'
+                      : 'Set exercise and duration, then start'
+                    : noteOnly
+                    ? 'Imposta la durata, poi avvia'
+                    : 'Imposta esercizio e durata, poi avvia'}
                 </div>
               </TrainerStatusPill>
             </div>
 
             {!isRunning && !isShowingRecap && (
               <div className="w-full max-w-xl mb-6 p-2">
-                <p className="mb-2 text-sm text-gray-500">{lang === EN ? 'Mode' : 'Modalita'}</p>
-                <div className="flex flex-wrap justify-center gap-2 mb-4">
-                  <button
-                    className={getSelectableButtonClass(mode === MODE_1)}
-                    onClick={() => setMode(MODE_1)}
-                    disabled={isRunning}
-                  >
-                    {lang === EN ? 'Random notes' : 'Note casuali'}
-                  </button>
-                  <button className={getSelectableButtonClass(mode === MODE_2)} onClick={() => setMode(MODE_2)}>
-                    {lang === EN ? 'Rooted intervals' : 'Intervalli da root'}
-                  </button>
-                  <button className={getSelectableButtonClass(mode === MODE_3)} onClick={() => setMode(MODE_3)}>
-                    {lang === EN ? 'Chained intervals' : 'Intervalli concatenati'}
-                  </button>
-                </div>
-
-                {mode === MODE_2 && (
-                  <div className="mb-4">
-                    <p className="mb-2 text-sm text-gray-500">{lang === EN ? 'Root behavior' : 'Comportamento root'}</p>
-                    <div className="flex flex-wrap justify-center gap-2 mb-3">
+                {!noteOnly && (
+                  <>
+                    <p className="mb-2 text-sm text-gray-500">{lang === EN ? 'Anchor type' : 'Tipo di riferimento'}</p>
+                    <div className="flex flex-wrap justify-center gap-2 mb-4">
                       <button
-                        className={getSelectableButtonClass(rootMode === ROOT_RANDOM)}
-                        onClick={() => setRootMode(ROOT_RANDOM)}
+                        className={getSelectableButtonClass(anchorType === ANCHOR_FIXED)}
+                        onClick={() => setAnchorType(ANCHOR_FIXED)}
+                        disabled={isRunning}
                       >
-                        {lang === EN ? 'Random root' : 'Root casuale'}
+                        {lang === EN ? 'Fixed' : 'Fisso'}
                       </button>
                       <button
-                        className={getSelectableButtonClass(rootMode === ROOT_FIXED)}
-                        onClick={() => setRootMode(ROOT_FIXED)}
+                        className={getSelectableButtonClass(anchorType === ANCHOR_DYNAMIC)}
+                        onClick={() => setAnchorType(ANCHOR_DYNAMIC)}
                       >
-                        {lang === EN ? 'Fixed root' : 'Root fissa'}
+                        {lang === EN ? 'Dynamic' : 'Dinamico'}
                       </button>
                     </div>
 
-                    {rootMode === ROOT_FIXED && (
-                      <div className="flex justify-center">
-                        <select
-                          className="px-3 py-2 rounded-full text-sm bg-gray-200 text-gray-700 dark:bg-gray-700 dark:text-gray-200"
-                          value={fixedRoot}
-                          onChange={(event) => setFixedRoot(event.target.value)}
-                        >
-                          {NOTES.map((note) => (
-                            <option key={note} value={note}>
-                              {note}
-                            </option>
-                          ))}
-                        </select>
+                    {anchorType === ANCHOR_DYNAMIC && (
+                      <>
+                        <p className="mb-2 text-sm text-gray-500">{lang === EN ? 'Chained' : 'Concatenato'}</p>
+                        <div className="flex flex-wrap justify-center gap-2 mb-4">
+                          <button className={getSelectableButtonClass(!isChained)} onClick={() => setIsChained(false)}>
+                            No
+                          </button>
+                          <button className={getSelectableButtonClass(isChained)} onClick={() => setIsChained(true)}>
+                            {lang === EN ? 'Yes' : 'Si'}
+                          </button>
+                        </div>
+                      </>
+                    )}
+
+                    {!noteOnly && anchorType === ANCHOR_FIXED && (
+                      <div className="mb-4">
+                        <p className="mb-2 text-sm text-gray-500">{lang === EN ? 'Fixed note' : 'Nota fissa'}</p>
+                        <div className="flex justify-center">
+                          <select
+                            className="px-3 py-2 rounded-full text-sm bg-gray-200 text-gray-700 dark:bg-gray-700 dark:text-gray-200"
+                            value={fixedRoot}
+                            onChange={(event) => setFixedRoot(event.target.value)}
+                          >
+                            {NOTES.map((note) => (
+                              <option key={note} value={note}>
+                                {note}
+                              </option>
+                            ))}
+                          </select>
+                        </div>
                       </div>
                     )}
-                  </div>
+
+                    <p className="mb-2 text-sm text-gray-500">{lang === EN ? 'Direction' : 'Direzione'}</p>
+                    <div className="flex flex-wrap justify-center gap-2 mb-4">
+                      <button
+                        className={getSelectableButtonClass(direction === DIRECTION_FORWARD)}
+                        onClick={() => setDirection(DIRECTION_FORWARD)}
+                      >
+                        {lang === EN ? 'Forward' : 'Progressiva'}
+                      </button>
+                      <button
+                        className={getSelectableButtonClass(direction === DIRECTION_BACKWARD)}
+                        onClick={() => setDirection(DIRECTION_BACKWARD)}
+                      >
+                        {lang === EN ? 'Backward' : 'Regressiva'}
+                      </button>
+                    </div>
+                  </>
                 )}
 
                 <p className="mb-2 text-sm text-gray-500">{lang === EN ? 'Duration' : 'Durata'}</p>
@@ -543,31 +644,49 @@ export default function MicIntervalTrainerPage() {
                   ))}
                 </div>
 
-                <p className="mt-4 text-xs text-gray-500">
-                  {lang === EN
-                    ? 'Microphone access is required to run this trainer.'
-                    : 'Per usare questo trainer e necessario consentire l accesso al microfono.'}
-                </p>
+                {forceMic ? (
+                  <p className="mt-4 text-xs text-gray-500">
+                    {lang === EN
+                      ? 'Microphone access is required for this trainer.'
+                      : "Per usare questo trainer è necessario consentire l'accesso al microfono."}
+                  </p>
+                ) : (
+                  <p className="mt-4 text-xs text-gray-500">
+                    {lang === EN
+                      ? 'Microphone is optional. You can train mentally and advance by tapping anywhere.'
+                      : 'Il microfono è opzionale. Puoi allenarti mentalmente e avanzare toccando ovunque.'}
+                  </p>
+                )}
               </div>
             )}
 
             {!isRunning && !isShowingRecap && (
               <>
-                <button className={ACTION_BUTTON_CLASS} onClick={startSession}>
+                <button className={ACTION_BUTTON_CLASS} onClick={startSession} data-control="true">
                   {lang === EN ? 'Start' : 'Avvia'}
                 </button>
-                <button
-                  className={getDebugButtonClass(isDebugEnabled)}
-                  onClick={() => setIsDebugEnabled((prev) => !prev)}
-                >
-                  {isDebugEnabled ? 'Debug: on' : 'Debug: off'}
-                </button>
+                <div className="flex items-center justify-center gap-2" data-control="true">
+                  {!forceMic && (
+                    <button
+                      className={getToggleButtonClass(isMicEnabled)}
+                      onClick={() => setIsMicEnabled((prev) => !prev)}
+                    >
+                      {isMicEnabled ? (lang === EN ? 'Mic: on' : 'Mic: on') : lang === EN ? 'Mic: off' : 'Mic: off'}
+                    </button>
+                  )}
+                  <button
+                    className={getToggleButtonClass(isDebugEnabled)}
+                    onClick={() => setIsDebugEnabled((prev) => !prev)}
+                  >
+                    {isDebugEnabled ? 'Debug: on' : 'Debug: off'}
+                  </button>
+                </div>
               </>
             )}
 
             {isRunning && (
               <>
-                {mode === MODE_1 ? (
+                {noteOnly ? (
                   <TrainerPromptCard>
                     <p className="text-3xl md:text-5xl font-mono font-semibold leading-tight text-emerald-700 dark:text-emerald-300">
                       {targetNote || '-'}
@@ -577,13 +696,25 @@ export default function MicIntervalTrainerPage() {
                   <>
                     <TrainerPromptCard>
                       <p className="text-3xl md:text-5xl font-mono font-semibold leading-tight text-emerald-700 dark:text-emerald-300">
-                        {mode === MODE_2
-                          ? lang === EN
-                            ? `${activeInterval || '-'} of ${activeRoot || '-'}`
-                            : `${activeInterval || '-'} di ${activeRoot || '-'}`
-                          : lang === EN
-                          ? `${activeRoot || '-'} is ${activeInterval || '-'} of?`
-                          : `${activeRoot || '-'} è ${activeInterval || '-'} di?`}
+                        {direction === DIRECTION_FORWARD ? (
+                          lang === EN ? (
+                            <>
+                              {renderIntervalLabel(activeInterval || '-')} of {activeRoot || '-'}
+                            </>
+                          ) : (
+                            <>
+                              {renderIntervalLabel(activeInterval || '-')} di {activeRoot || '-'}
+                            </>
+                          )
+                        ) : lang === EN ? (
+                          <>
+                            {activeRoot || '-'} is {renderIntervalLabel(activeInterval || '-')} of?
+                          </>
+                        ) : (
+                          <>
+                            {activeRoot || '-'} è {renderIntervalLabel(activeInterval || '-')} di?
+                          </>
+                        )}
                       </p>
                     </TrainerPromptCard>
                   </>
@@ -594,22 +725,25 @@ export default function MicIntervalTrainerPage() {
                 <p className="text-lg mb-6">
                   {lang === EN ? 'Completed' : 'Completati'}: {correctAnswers}
                 </p>
+                <p className="text-xs mb-3 text-gray-500">
+                  {lang === EN
+                    ? isMicEnabled
+                      ? 'Play/sing the target or tap/click anywhere to continue.'
+                      : 'Mic is off: tap/click anywhere to continue.'
+                    : isMicEnabled
+                    ? 'Suona/canta la nota target o tocca/clicca ovunque per continuare.'
+                    : 'Mic off: tocca/clicca ovunque per continuare.'}
+                </p>
                 {isDebugEnabled && (
                   <p className="text-xs mb-6 text-gray-500 font-mono bg-gray-100 dark:bg-gray-800 rounded-full px-4 py-2">
                     Hz {detectedFrequency ? detectedFrequency.toFixed(1) : '-'} | In {inputLevel.toFixed(4)} | Note{' '}
-                    {detectedPitchClass != null ? PITCH_CLASS_LABELS[detectedPitchClass] : '-'} | Ct{' '}
+                    {detectedPitchClass != null ? getPitchClassLabel(detectedPitchClass, debugPreferSharp) : '-'} | Ct{' '}
                     {centsToTarget != null && Number.isFinite(centsToTarget) ? centsToTarget.toFixed(1) : '-'} | F{' '}
                     {matchedFramesRef.current}/{MATCH_FRAMES_REQUIRED}
                   </p>
                 )}
-                <button className={ACTION_BUTTON_CLASS} onClick={stopSession}>
+                <button className={ACTION_BUTTON_CLASS} onClick={stopSession} data-control="true">
                   {lang === EN ? 'Stop' : 'Ferma'}
-                </button>
-                <button
-                  className={getDebugButtonClass(isDebugEnabled)}
-                  onClick={() => setIsDebugEnabled((prev) => !prev)}
-                >
-                  {isDebugEnabled ? 'Debug: on' : 'Debug: off'}
                 </button>
               </>
             )}
@@ -651,11 +785,12 @@ export default function MicIntervalTrainerPage() {
             {errorMessage === 'mic-unavailable' && (
               <p className="mt-6 text-red-400 max-w-xl">
                 {lang === EN
-                  ? 'Microphone unavailable. Use the manual interval trainer instead.'
-                  : 'Microfono non disponibile. Usa invece il trainer manuale.'}{' '}
-                <a className="text-emerald-500 dark:text-emerald-400" href="/music/manual-interval-trainer">
-                  /music/manual-interval-trainer
-                </a>
+                  ? forceMic
+                    ? 'Microphone unavailable. This trainer requires microphone access.'
+                    : 'Microphone unavailable. Turn mic off and continue by tapping anywhere.'
+                  : forceMic
+                  ? 'Microfono non disponibile. Questo trainer richiede il microfono.'
+                  : 'Microfono non disponibile. Disattiva il mic e continua toccando ovunque.'}
               </p>
             )}
           </div>
