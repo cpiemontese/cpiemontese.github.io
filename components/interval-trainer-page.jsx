@@ -256,6 +256,11 @@ export function IntervalTrainerPage({ noteOnly = false, forceMic = false, defaul
     const root = useFixedAnchor ? fixedRoot : canChain && previousTarget ? previousTarget : getRandomNote(previousRoot)
     const interval = getTrainerInterval(previousInterval)
     const rootPitchClass = NOTE_TO_PITCH_CLASS[root]
+
+    if (rootPitchClass == null) {
+      return { root, interval, target: getRandomNote() }
+    }
+
     const semitones = getIntervalSemitones(interval)
     const preferSharp = shouldPreferSharps(root)
     const targetPitchClass =
@@ -401,6 +406,13 @@ export function IntervalTrainerPage({ noteOnly = false, forceMic = false, defaul
     }
 
     const targetPitchClass = NOTE_TO_PITCH_CLASS[targetNoteRef.current]
+    if (targetPitchClass == null) {
+      setDetectedPitchClass(pitchInfo.pitchClass)
+      setCentsToTarget(null)
+      matchedFramesRef.current = 0
+      rafRef.current = requestAnimationFrame(runDetectionLoop)
+      return
+    }
     const centsOffTarget = getCentsOffTarget(pitchInfo.midiFloat, targetPitchClass)
     setDetectedPitchClass(pitchInfo.pitchClass)
     setCentsToTarget(centsOffTarget)
