@@ -13,9 +13,17 @@ updates:
     versioning-strategy: 'increase-if-necessary'
 
     groups:
+      non-major-all:
+        patterns:
+          - '*'
+        update-types:
+          - 'minor'
+          - 'patch'
+
       next-major:
         patterns:
           - 'next'
+          - 'eslint-config-next'
         update-types:
           - 'major'
 
@@ -23,43 +31,62 @@ updates:
         patterns:
           - 'react'
           - 'react-dom'
+          - '@types/react'
         update-types:
           - 'major'
 
-      next-minor-patch:
+      tailwind-major:
         patterns:
+          - 'tailwindcss'
+          - 'autoprefixer'
+          - 'postcss*'
+        update-types:
+          - 'major'
+
+      typescript-major:
+        patterns:
+          - 'typescript'
+          - '@types/node'
+        update-types:
+          - 'major'
+
+      eslint-major:
+        patterns:
+          - 'eslint'
+        update-types:
+          - 'major'
+
+      prettier-major:
+        patterns:
+          - 'prettier'
+        update-types:
+          - 'major'
+
+      ui-libs-major:
+        patterns:
+          - 'react-icons'
+        update-types:
+          - 'major'
+
+      other-majors:
+        patterns:
+          - '*'
+        exclude-patterns:
           - 'next'
           - 'eslint-config-next'
-        update-types:
-          - 'minor'
-          - 'patch'
-
-      react-minor-patch:
-        patterns:
           - 'react'
           - 'react-dom'
           - '@types/react'
-        update-types:
-          - 'minor'
-          - 'patch'
-
-      ui-libs:
-        patterns:
-          - 'react-icons'
-
-      css-tooling:
-        patterns:
-          - 'autoprefixer'
           - 'tailwindcss'
+          - 'autoprefixer'
           - 'postcss*'
-
-      formatting:
-        patterns:
-          - 'prettier'
-
-      node:
-        patterns:
+          - 'typescript'
           - '@types/node'
+          - 'eslint'
+          - 'prettier'
+          - 'react-icons'
+        update-types:
+          - 'major'
 
     labels:
       - 'dependencies'
