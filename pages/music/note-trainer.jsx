@@ -1,5 +1,5 @@
-import { IntervalTrainerPage } from '../../components/interval-trainer-page'
+import { NoteTrainerPage } from '../../components/note-trainer-page'
 
-export default function NoteTrainerPage() {
-  return <IntervalTrainerPage noteOnly forceMic defaultMicEnabled />
+export default function NoteTrainerRoute() {
+  return <NoteTrainerPage />
 }
