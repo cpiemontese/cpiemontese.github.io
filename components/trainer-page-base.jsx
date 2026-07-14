@@ -1,14 +1,11 @@
 import Layout, { EN } from './layout'
+import { IntervalPreSessionOptions } from './interval-pre-session-options'
+import { IntervalRunningPrompt } from './interval-running-prompt'
 import { MicTuningPanel } from './mic-tuning-panel'
-import { TrainerPromptCard, TrainerStatusPill } from './trainer-ui'
-import { USEFUL_ROOTS } from '../lib/utils'
-import {
-  ANCHOR_DYNAMIC,
-  ANCHOR_FIXED,
-  DIRECTION_BACKWARD,
-  DIRECTION_FORWARD,
-  useTrainerSession,
-} from './use-trainer-session'
+import { NotePreSessionOptions } from './note-pre-session-options'
+import { NoteRunningPrompt } from './note-running-prompt'
+import { TrainerStatusPill } from './trainer-ui'
+import { ANCHOR_FIXED, DIRECTION_FORWARD, useTrainerSession } from './use-trainer-session'
 
 function getExerciseLabel(lang, noteOnly, anchorType, isChained, direction) {
   if (noteOnly) {
@@ -59,14 +56,6 @@ function getToggleButtonClass(isEnabled) {
     return 'mt-3 px-4 py-2 rounded-full text-xs transition-colors bg-emerald-600 text-white dark:bg-emerald-600 dark:text-white'
   }
   return TOGGLE_BUTTON_BASE_CLASS
-}
-
-function renderIntervalLabel(interval) {
-  if (interval === '11' || interval === '13') {
-    return <span className="tracking-[-0.05em]">{interval}</span>
-  }
-
-  return interval
 }
 
 export function IntervalTrainerPage({ noteOnly = false, forceMic = false, defaultMicEnabled = true }) {
@@ -161,74 +150,21 @@ export function IntervalTrainerPage({ noteOnly = false, forceMic = false, defaul
 
             {!isRunning && !isShowingRecap && (
               <div className="w-full max-w-xl mb-6 p-2">
-                {!noteOnly && (
-                  <>
-                    <p className="mb-2 text-sm text-gray-500">{lang === EN ? 'Anchor type' : 'Tipo di riferimento'}</p>
-                    <div className="flex flex-wrap justify-center gap-2 mb-4">
-                      <button
-                        className={getSelectableButtonClass(anchorType === ANCHOR_FIXED)}
-                        onClick={() => setAnchorType(ANCHOR_FIXED)}
-                        disabled={isRunning}
-                      >
-                        {lang === EN ? 'Fixed' : 'Fisso'}
-                      </button>
-                      <button
-                        className={getSelectableButtonClass(anchorType === ANCHOR_DYNAMIC)}
-                        onClick={() => setAnchorType(ANCHOR_DYNAMIC)}
-                      >
-                        {lang === EN ? 'Dynamic' : 'Dinamico'}
-                      </button>
-                    </div>
-
-                    {anchorType === ANCHOR_DYNAMIC && (
-                      <>
-                        <p className="mb-2 text-sm text-gray-500">{lang === EN ? 'Chained' : 'Concatenato'}</p>
-                        <div className="flex flex-wrap justify-center gap-2 mb-4">
-                          <button className={getSelectableButtonClass(!isChained)} onClick={() => setIsChained(false)}>
-                            No
-                          </button>
-                          <button className={getSelectableButtonClass(isChained)} onClick={() => setIsChained(true)}>
-                            {lang === EN ? 'Yes' : 'Si'}
-                          </button>
-                        </div>
-                      </>
-                    )}
-
-                    {!noteOnly && anchorType === ANCHOR_FIXED && (
-                      <div className="mb-4">
-                        <p className="mb-2 text-sm text-gray-500">{lang === EN ? 'Fixed note' : 'Nota fissa'}</p>
-                        <div className="flex justify-center">
-                          <select
-                            className="px-3 py-2 rounded-full text-sm bg-gray-200 text-gray-700 dark:bg-gray-700 dark:text-gray-200"
-                            value={fixedRoot}
-                            onChange={(event) => setFixedRoot(event.target.value)}
-                          >
-                            {USEFUL_ROOTS.map((note) => (
-                              <option key={note} value={note}>
-                                {note}
-                              </option>
-                            ))}
-                          </select>
-                        </div>
-                      </div>
-                    )}
-
-                    <p className="mb-2 text-sm text-gray-500">{lang === EN ? 'Direction' : 'Direzione'}</p>
-                    <div className="flex flex-wrap justify-center gap-2 mb-4">
-                      <button
-                        className={getSelectableButtonClass(direction === DIRECTION_FORWARD)}
-                        onClick={() => setDirection(DIRECTION_FORWARD)}
-                      >
-                        {lang === EN ? 'Forward' : 'Progressiva'}
-                      </button>
-                      <button
-                        className={getSelectableButtonClass(direction === DIRECTION_BACKWARD)}
-                        onClick={() => setDirection(DIRECTION_BACKWARD)}
-                      >
-                        {lang === EN ? 'Backward' : 'Regressiva'}
-                      </button>
-                    </div>
-                  </>
+                {noteOnly ? (
+                  <NotePreSessionOptions />
+                ) : (
+                  <IntervalPreSessionOptions
+                    anchorType={anchorType}
+                    setAnchorType={setAnchorType}
+                    isChained={isChained}
+                    setIsChained={setIsChained}
+                    fixedRoot={fixedRoot}
+                    setFixedRoot={setFixedRoot}
+                    direction={direction}
+                    setDirection={setDirection}
+                    isRunning={isRunning}
+                    lang={lang}
+                  />
                 )}
 
                 <p className="mb-2 text-sm text-gray-500">{lang === EN ? 'Duration' : 'Durata'}</p>
@@ -319,37 +255,14 @@ export function IntervalTrainerPage({ noteOnly = false, forceMic = false, defaul
             {isRunning && (
               <>
                 {noteOnly ? (
-                  <TrainerPromptCard>
-                    <p className="text-3xl md:text-5xl font-mono font-semibold leading-tight text-emerald-700 dark:text-emerald-300">
-                      {targetNote || '-'}
-                    </p>
-                  </TrainerPromptCard>
+                  <NoteRunningPrompt targetNote={targetNote} />
                 ) : (
-                  <>
-                    <TrainerPromptCard>
-                      <p className="text-3xl md:text-5xl font-mono font-semibold leading-tight text-emerald-700 dark:text-emerald-300">
-                        {direction === DIRECTION_FORWARD ? (
-                          lang === EN ? (
-                            <>
-                              {renderIntervalLabel(activeInterval || '-')} of {activeRoot || '-'}
-                            </>
-                          ) : (
-                            <>
-                              {renderIntervalLabel(activeInterval || '-')} di {activeRoot || '-'}
-                            </>
-                          )
-                        ) : lang === EN ? (
-                          <>
-                            {activeRoot || '-'} is {renderIntervalLabel(activeInterval || '-')} of?
-                          </>
-                        ) : (
-                          <>
-                            {activeRoot || '-'} è {renderIntervalLabel(activeInterval || '-')} di?
-                          </>
-                        )}
-                      </p>
-                    </TrainerPromptCard>
-                  </>
+                  <IntervalRunningPrompt
+                    direction={direction}
+                    lang={lang}
+                    activeInterval={activeInterval}
+                    activeRoot={activeRoot}
+                  />
                 )}
                 <p className="text-lg mb-2">
                   {lang === EN ? 'Time left' : 'Tempo rimanente'}: {formatRemaining(remainingMs)}
