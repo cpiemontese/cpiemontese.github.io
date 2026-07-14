@@ -2,7 +2,7 @@ import { useEffect, useMemo, useRef, useState } from 'react'
 import { YIN } from 'pitchfinder'
 import Layout, { EN } from './layout'
 import { TrainerPromptCard, TrainerStatusPill } from './trainer-ui'
-import { getRandomNote, NOTE_TO_PITCH_CLASS, NOTES } from '../lib/utils'
+import { getRandomNote, getRandomUsefulRoot, NOTE_TO_PITCH_CLASS, USEFUL_ROOTS } from '../lib/utils'
 
 const ANCHOR_FIXED = 'anchor-fixed'
 const ANCHOR_DYNAMIC = 'anchor-dynamic'
@@ -253,7 +253,11 @@ export function IntervalTrainerPage({ noteOnly = false, forceMic = false, defaul
   const buildIntervalPrompt = (previousRoot = null, previousInterval = null, previousTarget = null) => {
     const useFixedAnchor = anchorType === ANCHOR_FIXED
     const canChain = !useFixedAnchor && isChained
-    const root = useFixedAnchor ? fixedRoot : canChain && previousTarget ? previousTarget : getRandomNote(previousRoot)
+    const root = useFixedAnchor
+      ? fixedRoot
+      : canChain && previousTarget
+      ? previousTarget
+      : getRandomUsefulRoot(previousRoot)
     const interval = getTrainerInterval(previousInterval)
     const rootPitchClass = NOTE_TO_PITCH_CLASS[root]
 
@@ -614,7 +618,7 @@ export function IntervalTrainerPage({ noteOnly = false, forceMic = false, defaul
                             value={fixedRoot}
                             onChange={(event) => setFixedRoot(event.target.value)}
                           >
-                            {NOTES.map((note) => (
+                            {USEFUL_ROOTS.map((note) => (
                               <option key={note} value={note}>
                                 {note}
                               </option>
