@@ -1,6 +1,7 @@
 import { useEffect, useMemo, useRef, useState } from 'react'
 import { YIN } from 'pitchfinder'
 import Layout, { EN } from './layout'
+import { MicTuningPanel } from './mic-tuning-panel'
 import { TrainerPromptCard, TrainerStatusPill } from './trainer-ui'
 import { getRandomNote, getRandomUsefulRoot, NOTE_TO_PITCH_CLASS, USEFUL_ROOTS } from '../lib/utils'
 
@@ -9,12 +10,21 @@ const ANCHOR_DYNAMIC = 'anchor-dynamic'
 const DIRECTION_FORWARD = 'direction-forward'
 const DIRECTION_BACKWARD = 'direction-backward'
 
-const TOLERANCE_CENTS = 70
-const MATCH_FRAMES_REQUIRED = 2
 const ADVANCE_COOLDOWN_MS = 250
-const MIN_FREQUENCY_HZ = 60
-const MAX_FREQUENCY_HZ = 1400
-const MIN_RMS = 0.0003
+const MIC_SETTINGS_STORAGE_KEY = 'interval-trainer-mic-settings-v1'
+const DEFAULT_MIC_SETTINGS = {
+  minFrequencyHz: 60,
+  maxFrequencyHz: 1400,
+  minRms: 0.0006,
+  toleranceCents: 70,
+  matchFramesRequired: 2,
+  fftSize: 4096,
+  yinThreshold: 0.1,
+  yinProbabilityThreshold: 0.45,
+  echoCancellation: true,
+  noiseSuppression: true,
+  autoGainControl: true,
+}
 const TRAINER_INTERVALS = ['1', '2b', '2', '3b', '3', '4', '5b', '5', '6b', '6', '7b', '7']
 const INTERVAL_DISPLAY_ALIASES = {
   2: ['2', '9'],
@@ -218,6 +228,9 @@ export function IntervalTrainerPage({ noteOnly = false, forceMic = false, defaul
   const [inputLevel, setInputLevel] = useState(0)
   const [isDebugEnabled, setIsDebugEnabled] = useState(false)
   const [isMicEnabled, setIsMicEnabled] = useState(forceMic ? true : defaultMicEnabled)
+  const [micSettings, setMicSettings] = useState(DEFAULT_MIC_SETTINGS)
+  const [isMicTestRunning, setIsMicTestRunning] = useState(false)
+  const [isMicSettingsVisible, setIsMicSettingsVisible] = useState(false)
 
   const detectorsRef = useRef([])
   const audioContextRef = useRef(null)
@@ -227,6 +240,7 @@ export function IntervalTrainerPage({ noteOnly = false, forceMic = false, defaul
   const rafRef = useRef(null)
   const sessionEndAtRef = useRef(null)
   const sessionStartedAtRef = useRef(null)
+  const isMicTestRunningRef = useRef(false)
   const matchedFramesRef = useRef(0)
   const lastAdvanceAtRef = useRef(0)
   const targetNoteRef = useRef(null)
@@ -249,6 +263,33 @@ export function IntervalTrainerPage({ noteOnly = false, forceMic = false, defaul
   useEffect(() => {
     activeIntervalRef.current = activeInterval
   }, [activeInterval])
+
+  useEffect(() => {
+    isMicTestRunningRef.current = isMicTestRunning
+  }, [isMicTestRunning])
+
+  useEffect(() => {
+    if (typeof window === 'undefined') return
+
+    try {
+      const raw = window.localStorage.getItem(MIC_SETTINGS_STORAGE_KEY)
+      if (!raw) return
+
+      const parsed = JSON.parse(raw)
+      setMicSettings((prev) => ({ ...prev, ...parsed }))
+    } catch (_err) {
+      // Ignore invalid saved settings.
+    }
+  }, [])
+
+  useEffect(() => {
+    if (typeof window === 'undefined') return
+    window.localStorage.setItem(MIC_SETTINGS_STORAGE_KEY, JSON.stringify(micSettings))
+  }, [micSettings])
+
+  const updateMicSetting = (key, value) => {
+    setMicSettings((prev) => ({ ...prev, [key]: value }))
+  }
 
   const buildIntervalPrompt = (previousRoot = null, previousInterval = null, previousTarget = null) => {
     const useFixedAnchor = anchorType === ANCHOR_FIXED
@@ -276,7 +317,12 @@ export function IntervalTrainerPage({ noteOnly = false, forceMic = false, defaul
   const detectFrequency = (floatBuffer) => {
     for (const detector of detectorsRef.current) {
       const detected = detector(floatBuffer)
-      if (detected && Number.isFinite(detected) && detected >= MIN_FREQUENCY_HZ && detected <= MAX_FREQUENCY_HZ) {
+      if (
+        detected &&
+        Number.isFinite(detected) &&
+        detected >= micSettings.minFrequencyHz &&
+        detected <= micSettings.maxFrequencyHz
+      ) {
         return detected
       }
     }
@@ -306,6 +352,8 @@ export function IntervalTrainerPage({ noteOnly = false, forceMic = false, defaul
 
     detectorsRef.current = []
     analyserRef.current = null
+    setIsMicTestRunning(false)
+    isMicTestRunningRef.current = false
   }
 
   const cleanupTimer = () => {
@@ -370,7 +418,7 @@ export function IntervalTrainerPage({ noteOnly = false, forceMic = false, defaul
 
   const runDetectionLoop = () => {
     const analyser = analyserRef.current
-    if (!analyser || !sessionEndAtRef.current || !isMicEnabled) return
+    if (!analyser || (!sessionEndAtRef.current && !isMicTestRunningRef.current) || !isMicEnabled) return
 
     const now = performance.now()
 
@@ -380,7 +428,7 @@ export function IntervalTrainerPage({ noteOnly = false, forceMic = false, defaul
     const rms = getRms(floatBuffer)
     setInputLevel(rms)
 
-    if (rms < MIN_RMS) {
+    if (rms < micSettings.minRms) {
       setDetectedFrequency(null)
       setDetectedPitchClass(null)
       setCentsToTarget(null)
@@ -403,7 +451,10 @@ export function IntervalTrainerPage({ noteOnly = false, forceMic = false, defaul
       return
     }
 
+    setDetectedPitchClass(pitchInfo.pitchClass)
+
     if (!targetNoteRef.current) {
+      setCentsToTarget(null)
       matchedFramesRef.current = 0
       rafRef.current = requestAnimationFrame(runDetectionLoop)
       return
@@ -411,22 +462,20 @@ export function IntervalTrainerPage({ noteOnly = false, forceMic = false, defaul
 
     const targetPitchClass = NOTE_TO_PITCH_CLASS[targetNoteRef.current]
     if (targetPitchClass == null) {
-      setDetectedPitchClass(pitchInfo.pitchClass)
       setCentsToTarget(null)
       matchedFramesRef.current = 0
       rafRef.current = requestAnimationFrame(runDetectionLoop)
       return
     }
     const centsOffTarget = getCentsOffTarget(pitchInfo.midiFloat, targetPitchClass)
-    setDetectedPitchClass(pitchInfo.pitchClass)
     setCentsToTarget(centsOffTarget)
 
     // Treat note as correct when detected pitch class is within tolerance.
-    const isInTune = centsOffTarget <= TOLERANCE_CENTS
+    const isInTune = centsOffTarget <= micSettings.toleranceCents
 
     if (isInTune) {
       matchedFramesRef.current += 1
-      const hasHold = matchedFramesRef.current >= MATCH_FRAMES_REQUIRED
+      const hasHold = matchedFramesRef.current >= micSettings.matchFramesRequired
       const isOutOfCooldown = now - lastAdvanceAtRef.current >= ADVANCE_COOLDOWN_MS
 
       if (hasHold && isOutOfCooldown) {
@@ -439,7 +488,79 @@ export function IntervalTrainerPage({ noteOnly = false, forceMic = false, defaul
     rafRef.current = requestAnimationFrame(runDetectionLoop)
   }
 
+  const startAudioCapture = async () => {
+    const stream = await navigator.mediaDevices.getUserMedia({
+      audio: {
+        echoCancellation: micSettings.echoCancellation,
+        noiseSuppression: micSettings.noiseSuppression,
+        autoGainControl: micSettings.autoGainControl,
+      },
+    })
+    const context = new window.AudioContext()
+    await context.resume()
+    const source = context.createMediaStreamSource(stream)
+    const analyser = context.createAnalyser()
+
+    analyser.fftSize = micSettings.fftSize
+    source.connect(analyser)
+
+    detectorsRef.current = [
+      YIN({
+        sampleRate: context.sampleRate,
+        threshold: micSettings.yinThreshold,
+        probabilityThreshold: micSettings.yinProbabilityThreshold,
+      }),
+    ]
+
+    streamRef.current = stream
+    audioContextRef.current = context
+    sourceRef.current = source
+    analyserRef.current = analyser
+  }
+
+  const startMicTest = async () => {
+    if (isRunning) return
+    if (!isMicEnabled) {
+      setErrorMessage('mic-disabled')
+      return
+    }
+
+    setErrorMessage(null)
+    setDetectedFrequency(null)
+    setDetectedPitchClass(null)
+    setCentsToTarget(null)
+    setInputLevel(0)
+    matchedFramesRef.current = 0
+    targetNoteRef.current = null
+
+    cleanupAudio()
+
+    try {
+      await startAudioCapture()
+      setIsMicTestRunning(true)
+      isMicTestRunningRef.current = true
+      runDetectionLoop()
+    } catch (error) {
+      cleanupAudio()
+      setErrorMessage('mic-unavailable')
+    }
+  }
+
+  const stopMicTest = () => {
+    sessionEndAtRef.current = null
+    targetNoteRef.current = null
+    cleanupAudio()
+    setDetectedFrequency(null)
+    setDetectedPitchClass(null)
+    setCentsToTarget(null)
+    setInputLevel(0)
+  }
+
   const startSession = async () => {
+    if (isMicTestRunningRef.current) {
+      stopMicTest()
+    }
+
     setErrorMessage(null)
     setIsShowingRecap(false)
     setCorrectAnswers(0)
@@ -479,21 +600,7 @@ export function IntervalTrainerPage({ noteOnly = false, forceMic = false, defaul
 
     try {
       // Open mic stream and start a lightweight RAF loop for real-time checks.
-      const stream = await navigator.mediaDevices.getUserMedia({ audio: true })
-      const context = new window.AudioContext()
-      await context.resume()
-      const source = context.createMediaStreamSource(stream)
-      const analyser = context.createAnalyser()
-
-      analyser.fftSize = 4096
-      source.connect(analyser)
-
-      detectorsRef.current = [YIN({ sampleRate: context.sampleRate, threshold: 0.1, probabilityThreshold: 0.4 })]
-
-      streamRef.current = stream
-      audioContextRef.current = context
-      sourceRef.current = source
-      analyserRef.current = analyser
+      await startAudioCapture()
 
       runDetectionLoop()
     } catch (error) {
@@ -540,6 +647,7 @@ export function IntervalTrainerPage({ noteOnly = false, forceMic = false, defaul
   const notesPerSecond =
     sessionElapsedMs && sessionElapsedMs > 0 ? (correctAnswers / (sessionElapsedMs / 1000)).toFixed(2) : '0.00'
   const debugPreferSharp = shouldPreferSharps(activeRoot || targetNote)
+  const detectedNoteLabel = detectedPitchClass != null ? getPitchClassLabel(detectedPitchClass, debugPreferSharp) : '-'
 
   const handleMainAreaClick = (event) => {
     if (!isRunning) return
@@ -660,6 +768,23 @@ export function IntervalTrainerPage({ noteOnly = false, forceMic = false, defaul
                   ))}
                 </div>
 
+                {isMicSettingsVisible && (
+                  <MicTuningPanel
+                    lang={lang}
+                    isRunning={isRunning}
+                    micSettings={micSettings}
+                    updateMicSetting={updateMicSetting}
+                    isMicEnabled={isMicEnabled}
+                    isMicTestRunning={isMicTestRunning}
+                    startMicTest={startMicTest}
+                    stopMicTest={stopMicTest}
+                    detectedFrequency={detectedFrequency}
+                    inputLevel={inputLevel}
+                    detectedNoteLabel={detectedNoteLabel}
+                    centsToTarget={centsToTarget}
+                  />
+                )}
+
                 {forceMic ? (
                   <p className="mt-4 text-xs text-gray-500">
                     {lang === EN
@@ -685,11 +810,31 @@ export function IntervalTrainerPage({ noteOnly = false, forceMic = false, defaul
                   {!forceMic && (
                     <button
                       className={getToggleButtonClass(isMicEnabled)}
-                      onClick={() => setIsMicEnabled((prev) => !prev)}
+                      onClick={() => {
+                        const next = !isMicEnabled
+                        setIsMicEnabled(next)
+                        if (!next && isMicTestRunningRef.current) {
+                          stopMicTest()
+                        }
+                        setErrorMessage(null)
+                      }}
                     >
                       {isMicEnabled ? (lang === EN ? 'Mic: on' : 'Mic: on') : lang === EN ? 'Mic: off' : 'Mic: off'}
                     </button>
                   )}
+                  <button
+                    className={getToggleButtonClass(isMicSettingsVisible)}
+                    onClick={() => setIsMicSettingsVisible((prev) => !prev)}
+                    disabled={isRunning}
+                  >
+                    {isMicSettingsVisible
+                      ? lang === EN
+                        ? 'Mic tuning: on'
+                        : 'Taratura mic: on'
+                      : lang === EN
+                      ? 'Mic tuning: off'
+                      : 'Taratura mic: off'}
+                  </button>
                   <button
                     className={getToggleButtonClass(isDebugEnabled)}
                     onClick={() => setIsDebugEnabled((prev) => !prev)}
@@ -755,7 +900,7 @@ export function IntervalTrainerPage({ noteOnly = false, forceMic = false, defaul
                     Hz {detectedFrequency ? detectedFrequency.toFixed(1) : '-'} | In {inputLevel.toFixed(4)} | Note{' '}
                     {detectedPitchClass != null ? getPitchClassLabel(detectedPitchClass, debugPreferSharp) : '-'} | Ct{' '}
                     {centsToTarget != null && Number.isFinite(centsToTarget) ? centsToTarget.toFixed(1) : '-'} | F{' '}
-                    {matchedFramesRef.current}/{MATCH_FRAMES_REQUIRED}
+                    {matchedFramesRef.current}/{micSettings.matchFramesRequired}
                   </p>
                 )}
                 <button className={ACTION_BUTTON_CLASS} onClick={stopSession} data-control="true">
@@ -807,6 +952,14 @@ export function IntervalTrainerPage({ noteOnly = false, forceMic = false, defaul
                   : forceMic
                   ? 'Microfono non disponibile. Questo trainer richiede il microfono.'
                   : 'Microfono non disponibile. Disattiva il mic e continua toccando ovunque.'}
+              </p>
+            )}
+
+            {errorMessage === 'mic-disabled' && (
+              <p className="mt-6 text-amber-500 max-w-xl">
+                {lang === EN
+                  ? 'Enable the mic first to run the microphone test.'
+                  : 'Attiva prima il microfono per eseguire il test microfono.'}
               </p>
             )}
           </div>
