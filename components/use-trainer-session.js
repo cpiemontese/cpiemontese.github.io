@@ -161,7 +161,7 @@ export function useTrainerSession({ noteOnly = false, forceMic = false, defaultM
   const [errorMessage, setErrorMessage] = useState(null)
   const [remainingMs, setRemainingMs] = useState(0)
   const [detectedFrequency, setDetectedFrequency] = useState(null)
-  const [detectedPitchClass, setDetectedPitchClass] = useState(null)
+  const [detectedNoteLabel, setDetectedNoteLabel] = useState('-')
   const [centsToTarget, setCentsToTarget] = useState(null)
   const [inputLevel, setInputLevel] = useState(0)
   const [isDebugEnabled, setIsDebugEnabled] = useState(false)
@@ -189,18 +189,6 @@ export function useTrainerSession({ noteOnly = false, forceMic = false, defaultM
   const [sessionElapsedMs, setSessionElapsedMs] = useState(null)
 
   const sessionDurationMs = useMemo(() => minutes * 60 * 1000, [minutes])
-
-  useEffect(() => {
-    targetNoteRef.current = targetNote
-  }, [targetNote])
-
-  useEffect(() => {
-    activeRootRef.current = activeRoot
-  }, [activeRoot])
-
-  useEffect(() => {
-    activeIntervalRef.current = activeInterval
-  }, [activeInterval])
 
   useEffect(() => {
     isMicTestRunningRef.current = isMicTestRunning
@@ -340,11 +328,15 @@ export function useTrainerSession({ noteOnly = false, forceMic = false, defaultM
       const nextTarget = getRandomNote(targetNoteRef.current)
       targetNoteRef.current = nextTarget
       setTargetNote(nextTarget)
+      activeRootRef.current = null
+      activeIntervalRef.current = null
       setActiveRoot(null)
       setActiveInterval(null)
     } else {
       const nextPrompt = buildIntervalPrompt(activeRootRef.current, activeIntervalRef.current, targetNoteRef.current)
       targetNoteRef.current = nextPrompt.target
+      activeRootRef.current = nextPrompt.root
+      activeIntervalRef.current = nextPrompt.interval
       setTargetNote(nextPrompt.target)
       setActiveRoot(nextPrompt.root)
       setActiveInterval(nextPrompt.interval)
@@ -368,7 +360,7 @@ export function useTrainerSession({ noteOnly = false, forceMic = false, defaultM
 
     if (rms < micSettings.minRms) {
       setDetectedFrequency(null)
-      setDetectedPitchClass(null)
+      setDetectedNoteLabel('-')
       setCentsToTarget(null)
       matchedFramesRef.current = 0
       rafRef.current = requestAnimationFrame(runDetectionLoop)
@@ -381,14 +373,15 @@ export function useTrainerSession({ noteOnly = false, forceMic = false, defaultM
     const pitchInfo = getPitchInfo(frequency)
 
     if (!pitchInfo) {
-      setDetectedPitchClass(null)
+      setDetectedNoteLabel('-')
       setCentsToTarget(null)
       matchedFramesRef.current = 0
       rafRef.current = requestAnimationFrame(runDetectionLoop)
       return
     }
 
-    setDetectedPitchClass(pitchInfo.pitchClass)
+    const preferSharp = shouldPreferSharps(activeRootRef.current || targetNoteRef.current)
+    setDetectedNoteLabel(getPitchClassLabel(pitchInfo.pitchClass, preferSharp))
 
     if (!targetNoteRef.current) {
       setCentsToTarget(null)
@@ -464,7 +457,7 @@ export function useTrainerSession({ noteOnly = false, forceMic = false, defaultM
 
     setErrorMessage(null)
     setDetectedFrequency(null)
-    setDetectedPitchClass(null)
+    setDetectedNoteLabel('-')
     setCentsToTarget(null)
     setInputLevel(0)
     matchedFramesRef.current = 0
@@ -488,7 +481,7 @@ export function useTrainerSession({ noteOnly = false, forceMic = false, defaultM
     targetNoteRef.current = null
     cleanupAudio()
     setDetectedFrequency(null)
-    setDetectedPitchClass(null)
+    setDetectedNoteLabel('-')
     setCentsToTarget(null)
     setInputLevel(0)
   }
@@ -505,19 +498,23 @@ export function useTrainerSession({ noteOnly = false, forceMic = false, defaultM
     if (noteOnly) {
       const firstTarget = getRandomNote(targetNoteRef.current)
       targetNoteRef.current = firstTarget
+      activeRootRef.current = null
+      activeIntervalRef.current = null
       setTargetNote(firstTarget)
       setActiveRoot(null)
       setActiveInterval(null)
     } else {
       const firstPrompt = buildIntervalPrompt(activeRootRef.current, activeIntervalRef.current, targetNoteRef.current)
       targetNoteRef.current = firstPrompt.target
+      activeRootRef.current = firstPrompt.root
+      activeIntervalRef.current = firstPrompt.interval
       setTargetNote(firstPrompt.target)
       setActiveRoot(firstPrompt.root)
       setActiveInterval(firstPrompt.interval)
     }
 
     setDetectedFrequency(null)
-    setDetectedPitchClass(null)
+    setDetectedNoteLabel('-')
     setCentsToTarget(null)
     setInputLevel(0)
     matchedFramesRef.current = 0
@@ -564,8 +561,6 @@ export function useTrainerSession({ noteOnly = false, forceMic = false, defaultM
 
   const notesPerSecond =
     sessionElapsedMs && sessionElapsedMs > 0 ? (correctAnswers / (sessionElapsedMs / 1000)).toFixed(2) : '0.00'
-  const debugPreferSharp = shouldPreferSharps(activeRoot || targetNote)
-  const detectedNoteLabel = detectedPitchClass != null ? getPitchClassLabel(detectedPitchClass, debugPreferSharp) : '-'
 
   const handleMainAreaClick = (event) => {
     if (!isRunning) return
@@ -595,7 +590,6 @@ export function useTrainerSession({ noteOnly = false, forceMic = false, defaultM
     setErrorMessage,
     remainingMs,
     detectedFrequency,
-    detectedPitchClass,
     centsToTarget,
     inputLevel,
     isDebugEnabled,
