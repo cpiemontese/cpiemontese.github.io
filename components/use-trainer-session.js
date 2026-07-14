@@ -8,6 +8,9 @@ export const DIRECTION_FORWARD = 'direction-forward'
 export const DIRECTION_BACKWARD = 'direction-backward'
 
 const ADVANCE_COOLDOWN_MS = 250
+const MODE_IDLE = 'idle'
+const MODE_RUNNING = 'running'
+const MODE_RECAP = 'recap'
 const MIC_SETTINGS_STORAGE_KEY = 'interval-trainer-mic-settings-v1'
 const DEFAULT_MIC_SETTINGS = {
   minFrequencyHz: 60,
@@ -155,8 +158,7 @@ export function useTrainerSession({ noteOnly = false, forceMic = false, defaultM
   const [targetNote, setTargetNote] = useState(null)
   const [activeRoot, setActiveRoot] = useState(null)
   const [activeInterval, setActiveInterval] = useState(null)
-  const [isRunning, setIsRunning] = useState(false)
-  const [isShowingRecap, setIsShowingRecap] = useState(false)
+  const [mode, setMode] = useState(MODE_IDLE)
   const [correctAnswers, setCorrectAnswers] = useState(0)
   const [errorMessage, setErrorMessage] = useState(null)
   const [remainingMs, setRemainingMs] = useState(0)
@@ -187,6 +189,8 @@ export function useTrainerSession({ noteOnly = false, forceMic = false, defaultM
   const timerIntervalRef = useRef(null)
 
   const [sessionElapsedMs, setSessionElapsedMs] = useState(null)
+  const isRunning = mode === MODE_RUNNING
+  const isShowingRecap = mode === MODE_RECAP
 
   const sessionDurationMs = useMemo(() => minutes * 60 * 1000, [minutes])
 
@@ -301,8 +305,7 @@ export function useTrainerSession({ noteOnly = false, forceMic = false, defaultM
     if (sessionStartedAtRef.current) {
       setSessionElapsedMs(Math.max(0, performance.now() - sessionStartedAtRef.current))
     }
-    setIsRunning(false)
-    setIsShowingRecap(true)
+    setMode(MODE_RECAP)
     cleanupAudio()
   }
 
@@ -492,7 +495,7 @@ export function useTrainerSession({ noteOnly = false, forceMic = false, defaultM
     }
 
     setErrorMessage(null)
-    setIsShowingRecap(false)
+    setMode(MODE_IDLE)
     setCorrectAnswers(0)
 
     if (noteOnly) {
@@ -524,7 +527,7 @@ export function useTrainerSession({ noteOnly = false, forceMic = false, defaultM
 
     sessionStartedAtRef.current = performance.now()
     sessionEndAtRef.current = performance.now() + sessionDurationMs
-    setIsRunning(true)
+    setMode(MODE_RUNNING)
     startTimer()
 
     if (!isMicEnabled) {
@@ -538,11 +541,15 @@ export function useTrainerSession({ noteOnly = false, forceMic = false, defaultM
     } catch (error) {
       cleanupTimer()
       cleanupAudio()
-      setIsRunning(false)
+      setMode(MODE_IDLE)
       sessionStartedAtRef.current = null
       sessionEndAtRef.current = null
       setErrorMessage('mic-unavailable')
     }
+  }
+
+  const closeRecap = () => {
+    setMode(MODE_IDLE)
   }
 
   const stopSession = () => {
@@ -582,9 +589,10 @@ export function useTrainerSession({ noteOnly = false, forceMic = false, defaultM
     targetNote,
     activeRoot,
     activeInterval,
+    mode,
     isRunning,
     isShowingRecap,
-    setIsShowingRecap,
+    closeRecap,
     correctAnswers,
     errorMessage,
     setErrorMessage,

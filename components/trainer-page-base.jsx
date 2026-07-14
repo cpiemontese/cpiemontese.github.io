@@ -75,7 +75,7 @@ export function IntervalTrainerPage({ noteOnly = false, forceMic = false, defaul
     activeInterval,
     isRunning,
     isShowingRecap,
-    setIsShowingRecap,
+    closeRecap,
     correctAnswers,
     errorMessage,
     setErrorMessage,
@@ -329,7 +329,7 @@ export function IntervalTrainerPage({ noteOnly = false, forceMic = false, defaul
                   {lang === EN ? 'minutes' : 'minuti'}
                 </p>
 
-                <button className={ACTION_BUTTON_CLASS} onClick={() => setIsShowingRecap(false)}>
+                <button className={ACTION_BUTTON_CLASS} onClick={closeRecap}>
                   {lang === EN ? 'Try again' : 'Riprova'}
                 </button>
               </div>
