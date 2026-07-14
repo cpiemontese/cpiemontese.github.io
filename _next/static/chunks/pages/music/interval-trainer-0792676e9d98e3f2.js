@@ -1,1 +1,0 @@
-(self.webpackChunk_N_E=self.webpackChunk_N_E||[]).push([[935],{1169:(n,_,u)=>{"use strict";u.r(_),u.d(_,{default:()=>s});var e=u(7876),r=u(1326);function s(){return(0,e.jsx)(r.y,{})}},8476:(n,_,u)=>{(window.__NEXT_P=window.__NEXT_P||[]).push(["/music/interval-trainer",function(){return u(1169)}])}},n=>{n.O(0,[812,326,636,593,792],()=>n(n.s=8476)),_N_E=n.O()}]);
