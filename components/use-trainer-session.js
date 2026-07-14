@@ -11,6 +11,10 @@ const ADVANCE_COOLDOWN_MS = 250
 const MODE_IDLE = 'idle'
 const MODE_RUNNING = 'running'
 const MODE_RECAP = 'recap'
+const CALIBRATION_IDLE = 'idle'
+const CALIBRATION_NOISE = 'noise'
+const CALIBRATION_PLAY = 'play'
+const CALIBRATION_DONE = 'done'
 const MIC_SETTINGS_STORAGE_KEY = 'interval-trainer-mic-settings-v1'
 const DEFAULT_MIC_SETTINGS = {
   minFrequencyHz: 60,
@@ -24,6 +28,8 @@ const DEFAULT_MIC_SETTINGS = {
   echoCancellation: true,
   noiseSuppression: true,
   autoGainControl: true,
+  transientGuardEnabled: true,
+  transientGuardMs: 100,
 }
 const TRAINER_INTERVALS = ['1', '2b', '2', '3b', '3', '4', '5b', '5', '6b', '6', '7b', '7']
 const INTERVAL_DISPLAY_ALIASES = {
@@ -149,6 +155,10 @@ function getTrainerInterval(previousInterval = null) {
   return aliases[aliasIndex]
 }
 
+function clamp(value, min, max) {
+  return Math.min(max, Math.max(min, value))
+}
+
 export function useTrainerSession({ noteOnly = false, forceMic = false, defaultMicEnabled = true }) {
   const [anchorType, setAnchorType] = useState(ANCHOR_DYNAMIC)
   const [isChained, setIsChained] = useState(false)
@@ -170,6 +180,10 @@ export function useTrainerSession({ noteOnly = false, forceMic = false, defaultM
   const [micSettings, setMicSettings] = useState(DEFAULT_MIC_SETTINGS)
   const [isMicTestRunning, setIsMicTestRunning] = useState(false)
   const [isMicSettingsVisible, setIsMicSettingsVisible] = useState(false)
+  const [qualityScore, setQualityScore] = useState(0)
+  const [calibrationPhase, setCalibrationPhase] = useState(CALIBRATION_IDLE)
+  const [calibrationSecondsLeft, setCalibrationSecondsLeft] = useState(0)
+  const [calibrationSuggestion, setCalibrationSuggestion] = useState(null)
 
   const detectorsRef = useRef([])
   const audioContextRef = useRef(null)
@@ -185,6 +199,13 @@ export function useTrainerSession({ noteOnly = false, forceMic = false, defaultM
   const targetNoteRef = useRef(null)
   const activePromptRef = useRef({ root: null, interval: null })
   const timerIntervalRef = useRef(null)
+  const signalAboveGateSinceRef = useRef(null)
+  const qualityScoreRef = useRef(0)
+  const previousFrequencyRef = useRef(null)
+  const calibrationPhaseRef = useRef(CALIBRATION_IDLE)
+  const calibrationTimeoutRef = useRef(null)
+  const calibrationIntervalRef = useRef(null)
+  const calibrationStatsRef = useRef(null)
 
   const [sessionElapsedMs, setSessionElapsedMs] = useState(null)
   const activeRoot = activePrompt.root
@@ -197,6 +218,10 @@ export function useTrainerSession({ noteOnly = false, forceMic = false, defaultM
   useEffect(() => {
     isMicTestRunningRef.current = isMicTestRunning
   }, [isMicTestRunning])
+
+  useEffect(() => {
+    calibrationPhaseRef.current = calibrationPhase
+  }, [calibrationPhase])
 
   useEffect(() => {
     if (typeof window === 'undefined') return
@@ -282,8 +307,30 @@ export function useTrainerSession({ noteOnly = false, forceMic = false, defaultM
 
     detectorsRef.current = []
     analyserRef.current = null
+    signalAboveGateSinceRef.current = null
+    previousFrequencyRef.current = null
+    qualityScoreRef.current = 0
+    setQualityScore(0)
     setIsMicTestRunning(false)
     isMicTestRunningRef.current = false
+  }
+
+  const cleanupCalibrationTimers = () => {
+    if (calibrationTimeoutRef.current) {
+      clearTimeout(calibrationTimeoutRef.current)
+      calibrationTimeoutRef.current = null
+    }
+    if (calibrationIntervalRef.current) {
+      clearInterval(calibrationIntervalRef.current)
+      calibrationIntervalRef.current = null
+    }
+  }
+
+  const stopCalibration = () => {
+    cleanupCalibrationTimers()
+    setCalibrationPhase(CALIBRATION_IDLE)
+    setCalibrationSecondsLeft(0)
+    calibrationStatsRef.current = null
   }
 
   const cleanupTimer = () => {
@@ -296,9 +343,100 @@ export function useTrainerSession({ noteOnly = false, forceMic = false, defaultM
   useEffect(() => {
     return () => {
       cleanupTimer()
+      cleanupCalibrationTimers()
       cleanupAudio()
     }
   }, [])
+
+  const startCalibrationPhase = (phase, durationSeconds, onDone) => {
+    cleanupCalibrationTimers()
+    setCalibrationPhase(phase)
+    setCalibrationSecondsLeft(durationSeconds)
+
+    const startedAt = performance.now()
+    calibrationIntervalRef.current = setInterval(() => {
+      const elapsed = (performance.now() - startedAt) / 1000
+      const left = Math.max(0, Math.ceil(durationSeconds - elapsed))
+      setCalibrationSecondsLeft(left)
+    }, 200)
+
+    calibrationTimeoutRef.current = setTimeout(() => {
+      cleanupCalibrationTimers()
+      onDone()
+    }, durationSeconds * 1000)
+  }
+
+  const computeCalibrationSuggestion = () => {
+    const stats = calibrationStatsRef.current
+    if (!stats) return null
+
+    const noiseAvgRms = stats.noiseFrames > 0 ? stats.noiseRmsSum / stats.noiseFrames : 0.0002
+    const playAvgRms = stats.playFrames > 0 ? stats.playRmsSum / stats.playFrames : noiseAvgRms * 4
+    const validRate = stats.playFrames > 0 ? stats.validPitchFrames / stats.playFrames : 0
+    const stability = stats.stabilitySamples > 0 ? stats.stabilitySum / stats.stabilitySamples : 0.5
+
+    const suggestedMinRms = clamp(noiseAvgRms * 2.2, 0.0001, 0.002)
+    const suggestedTolerance = clamp(Math.round(60 + (1 - stability) * 40), 45, 120)
+    const suggestedFrames = stability >= 0.78 ? 2 : stability >= 0.58 ? 3 : 4
+    const suggestedYinProb = clamp(0.38 - (validRate - 0.6) * 0.25, 0.2, 0.55)
+
+    return {
+      minRms: Number(suggestedMinRms.toFixed(4)),
+      toleranceCents: suggestedTolerance,
+      matchFramesRequired: suggestedFrames,
+      yinProbabilityThreshold: Number(suggestedYinProb.toFixed(2)),
+      reference: {
+        noiseAvgRms,
+        playAvgRms,
+        validRate,
+        stability,
+      },
+    }
+  }
+
+  const startCalibration = async () => {
+    if (isRunning) return
+    setCalibrationSuggestion(null)
+
+    calibrationStatsRef.current = {
+      noiseRmsSum: 0,
+      noiseFrames: 0,
+      playRmsSum: 0,
+      playFrames: 0,
+      validPitchFrames: 0,
+      stabilitySum: 0,
+      stabilitySamples: 0,
+      previousPitchMidi: null,
+    }
+
+    if (!isMicTestRunningRef.current) {
+      const started = await startMicTest()
+      if (!started) {
+        stopCalibration()
+        return
+      }
+    }
+
+    startCalibrationPhase(CALIBRATION_NOISE, 8, () => {
+      startCalibrationPhase(CALIBRATION_PLAY, 12, () => {
+        const suggestion = computeCalibrationSuggestion()
+        setCalibrationSuggestion(suggestion)
+        setCalibrationPhase(CALIBRATION_DONE)
+        setCalibrationSecondsLeft(0)
+      })
+    })
+  }
+
+  const applyCalibrationSuggestion = () => {
+    if (!calibrationSuggestion) return
+    setMicSettings((prev) => ({
+      ...prev,
+      minRms: calibrationSuggestion.minRms,
+      toleranceCents: calibrationSuggestion.toleranceCents,
+      matchFramesRequired: calibrationSuggestion.matchFramesRequired,
+      yinProbabilityThreshold: calibrationSuggestion.yinProbabilityThreshold,
+    }))
+  }
 
   const endSession = () => {
     cleanupTimer()
@@ -362,9 +500,18 @@ export function useTrainerSession({ noteOnly = false, forceMic = false, defaultM
     setInputLevel(rms)
 
     if (rms < micSettings.minRms) {
+      signalAboveGateSinceRef.current = null
+    } else if (signalAboveGateSinceRef.current == null) {
+      signalAboveGateSinceRef.current = now
+    }
+
+    if (rms < micSettings.minRms) {
       setDetectedFrequency(null)
       setDetectedNoteLabel('-')
       setCentsToTarget(null)
+      const lowSignalQuality = Math.round(qualityScoreRef.current * 0.92)
+      qualityScoreRef.current = lowSignalQuality
+      setQualityScore(lowSignalQuality)
       matchedFramesRef.current = 0
       rafRef.current = requestAnimationFrame(runDetectionLoop)
       return
@@ -378,6 +525,9 @@ export function useTrainerSession({ noteOnly = false, forceMic = false, defaultM
     if (!pitchInfo) {
       setDetectedNoteLabel('-')
       setCentsToTarget(null)
+      const missingPitchQuality = Math.round(qualityScoreRef.current * 0.95)
+      qualityScoreRef.current = missingPitchQuality
+      setQualityScore(missingPitchQuality)
       matchedFramesRef.current = 0
       rafRef.current = requestAnimationFrame(runDetectionLoop)
       return
@@ -385,6 +535,44 @@ export function useTrainerSession({ noteOnly = false, forceMic = false, defaultM
 
     const preferSharp = shouldPreferSharps(activePromptRef.current.root || targetNoteRef.current)
     setDetectedNoteLabel(getPitchClassLabel(pitchInfo.pitchClass, preferSharp))
+
+    const signalNorm = clamp((rms - micSettings.minRms) / Math.max(micSettings.minRms * 8, 1e-6), 0, 1)
+    let stabilityNorm = 0.6
+    if (previousFrequencyRef.current && previousFrequencyRef.current > 0) {
+      const centsDrift = Math.abs(1200 * Math.log2(pitchInfo.midiFloat ? frequency / previousFrequencyRef.current : 1))
+      stabilityNorm = 1 - clamp(centsDrift / 50, 0, 1)
+    }
+    previousFrequencyRef.current = frequency
+    const qualityRaw = 100 * (0.35 * signalNorm + 0.3 * 1 + 0.35 * stabilityNorm)
+    const nextQuality = Math.round(qualityScoreRef.current * 0.85 + qualityRaw * 0.15)
+    qualityScoreRef.current = nextQuality
+    setQualityScore(nextQuality)
+
+    const calibrationStats = calibrationStatsRef.current
+    if (
+      calibrationStats &&
+      calibrationPhaseRef.current !== CALIBRATION_IDLE &&
+      calibrationPhaseRef.current !== CALIBRATION_DONE
+    ) {
+      if (calibrationPhaseRef.current === CALIBRATION_NOISE) {
+        calibrationStats.noiseRmsSum += rms
+        calibrationStats.noiseFrames += 1
+      }
+
+      if (calibrationPhaseRef.current === CALIBRATION_PLAY) {
+        calibrationStats.playRmsSum += rms
+        calibrationStats.playFrames += 1
+        calibrationStats.validPitchFrames += 1
+
+        if (calibrationStats.previousPitchMidi != null) {
+          const centsStep = Math.abs((pitchInfo.midiFloat - calibrationStats.previousPitchMidi) * 100)
+          const sampleStability = 1 - clamp(centsStep / 60, 0, 1)
+          calibrationStats.stabilitySum += sampleStability
+          calibrationStats.stabilitySamples += 1
+        }
+        calibrationStats.previousPitchMidi = pitchInfo.midiFloat
+      }
+    }
 
     if (!targetNoteRef.current) {
       setCentsToTarget(null)
@@ -405,8 +593,11 @@ export function useTrainerSession({ noteOnly = false, forceMic = false, defaultM
     setCentsToTarget(centsOffTarget)
 
     const isInTune = centsOffTarget <= micSettings.toleranceCents
+    const hasPassedTransientGuard =
+      !micSettings.transientGuardEnabled ||
+      (signalAboveGateSinceRef.current != null && now - signalAboveGateSinceRef.current >= micSettings.transientGuardMs)
 
-    if (isInTune) {
+    if (isInTune && hasPassedTransientGuard) {
       matchedFramesRef.current += 1
       const hasHold = matchedFramesRef.current >= micSettings.matchFramesRequired
       const isOutOfCooldown = now - lastAdvanceAtRef.current >= ADVANCE_COOLDOWN_MS
@@ -455,7 +646,7 @@ export function useTrainerSession({ noteOnly = false, forceMic = false, defaultM
     if (isRunning) return
     if (!isMicEnabled) {
       setErrorMessage('mic-disabled')
-      return
+      return false
     }
 
     setErrorMessage(null)
@@ -473,9 +664,11 @@ export function useTrainerSession({ noteOnly = false, forceMic = false, defaultM
       setIsMicTestRunning(true)
       isMicTestRunningRef.current = true
       runDetectionLoop()
+      return true
     } catch (error) {
       cleanupAudio()
       setErrorMessage('mic-unavailable')
+      return false
     }
   }
 
@@ -483,6 +676,7 @@ export function useTrainerSession({ noteOnly = false, forceMic = false, defaultM
     sessionEndAtRef.current = null
     targetNoteRef.current = null
     cleanupAudio()
+    stopCalibration()
     setDetectedFrequency(null)
     setDetectedNoteLabel('-')
     setCentsToTarget(null)
@@ -568,6 +762,8 @@ export function useTrainerSession({ noteOnly = false, forceMic = false, defaultM
 
   const notesPerSecond =
     sessionElapsedMs && sessionElapsedMs > 0 ? (correctAnswers / (sessionElapsedMs / 1000)).toFixed(2) : '0.00'
+  const notesPerSecondValue = sessionElapsedMs && sessionElapsedMs > 0 ? correctAnswers / (sessionElapsedMs / 1000) : 0
+  const equivalent100NotesSeconds = notesPerSecondValue > 0 ? 100 / notesPerSecondValue : null
 
   const handleMainAreaClick = (event) => {
     if (!isRunning) return
@@ -609,8 +805,16 @@ export function useTrainerSession({ noteOnly = false, forceMic = false, defaultM
     isMicTestRunning,
     isMicSettingsVisible,
     setIsMicSettingsVisible,
+    qualityScore,
+    calibrationPhase,
+    calibrationSecondsLeft,
+    calibrationSuggestion,
+    startCalibration,
+    stopCalibration,
+    applyCalibrationSuggestion,
     sessionElapsedMs,
     notesPerSecond,
+    equivalent100NotesSeconds,
     detectedNoteLabel,
     matchedFramesRef,
     startMicTest,

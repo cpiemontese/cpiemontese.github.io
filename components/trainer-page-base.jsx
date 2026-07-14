@@ -92,8 +92,16 @@ export function IntervalTrainerPage({ noteOnly = false, forceMic = false, defaul
     isMicTestRunning,
     isMicSettingsVisible,
     setIsMicSettingsVisible,
+    qualityScore,
+    calibrationPhase,
+    calibrationSecondsLeft,
+    calibrationSuggestion,
+    startCalibration,
+    stopCalibration,
+    applyCalibrationSuggestion,
     sessionElapsedMs,
     notesPerSecond,
+    equivalent100NotesSeconds,
     detectedNoteLabel,
     matchedFramesRef,
     startMicTest,
@@ -195,6 +203,13 @@ export function IntervalTrainerPage({ noteOnly = false, forceMic = false, defaul
                     inputLevel={inputLevel}
                     detectedNoteLabel={detectedNoteLabel}
                     centsToTarget={centsToTarget}
+                    qualityScore={qualityScore}
+                    calibrationPhase={calibrationPhase}
+                    calibrationSecondsLeft={calibrationSecondsLeft}
+                    calibrationSuggestion={calibrationSuggestion}
+                    startCalibration={startCalibration}
+                    stopCalibration={stopCalibration}
+                    applyCalibrationSuggestion={applyCalibrationSuggestion}
                   />
                 )}
 
@@ -307,7 +322,7 @@ export function IntervalTrainerPage({ noteOnly = false, forceMic = false, defaul
                   {lang === EN ? 'Session recap' : 'Riepilogo sessione'}
                 </h2>
 
-                <div className="grid grid-cols-1 md:grid-cols-3 gap-4 text-sm mb-6">
+                <div className="grid grid-cols-1 md:grid-cols-4 gap-4 text-sm mb-6">
                   <div className="rounded-xl bg-white/80 dark:bg-gray-900/60 p-3">
                     <p className="text-xs text-gray-500 mb-1">
                       {lang === EN ? 'Effective duration' : 'Durata effettiva'}
@@ -321,6 +336,14 @@ export function IntervalTrainerPage({ noteOnly = false, forceMic = false, defaul
                   <div className="rounded-xl bg-white/80 dark:bg-gray-900/60 p-3">
                     <p className="text-xs text-gray-500 mb-1">{lang === EN ? 'Notes per second' : 'Note al secondo'}</p>
                     <p className="text-lg font-semibold">{notesPerSecond}</p>
+                  </div>
+                  <div className="rounded-xl bg-white/80 dark:bg-gray-900/60 p-3">
+                    <p className="text-xs text-gray-500 mb-1">
+                      {lang === EN ? 'Equivalent 100 notes' : 'Equivalente 100 note'}
+                    </p>
+                    <p className="text-lg font-semibold">
+                      {equivalent100NotesSeconds != null ? formatElapsed(equivalent100NotesSeconds * 1000) : '-'}
+                    </p>
                   </div>
                 </div>
 
