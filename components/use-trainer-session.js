@@ -156,8 +156,7 @@ export function useTrainerSession({ noteOnly = false, forceMic = false, defaultM
   const [minutes, setMinutes] = useState(2)
   const [fixedRoot, setFixedRoot] = useState('C')
   const [targetNote, setTargetNote] = useState(null)
-  const [activeRoot, setActiveRoot] = useState(null)
-  const [activeInterval, setActiveInterval] = useState(null)
+  const [activePrompt, setActivePrompt] = useState({ root: null, interval: null })
   const [mode, setMode] = useState(MODE_IDLE)
   const [correctAnswers, setCorrectAnswers] = useState(0)
   const [errorMessage, setErrorMessage] = useState(null)
@@ -184,11 +183,12 @@ export function useTrainerSession({ noteOnly = false, forceMic = false, defaultM
   const matchedFramesRef = useRef(0)
   const lastAdvanceAtRef = useRef(0)
   const targetNoteRef = useRef(null)
-  const activeRootRef = useRef(null)
-  const activeIntervalRef = useRef(null)
+  const activePromptRef = useRef({ root: null, interval: null })
   const timerIntervalRef = useRef(null)
 
   const [sessionElapsedMs, setSessionElapsedMs] = useState(null)
+  const activeRoot = activePrompt.root
+  const activeInterval = activePrompt.interval
   const isRunning = mode === MODE_RUNNING
   const isShowingRecap = mode === MODE_RECAP
 
@@ -331,18 +331,18 @@ export function useTrainerSession({ noteOnly = false, forceMic = false, defaultM
       const nextTarget = getRandomNote(targetNoteRef.current)
       targetNoteRef.current = nextTarget
       setTargetNote(nextTarget)
-      activeRootRef.current = null
-      activeIntervalRef.current = null
-      setActiveRoot(null)
-      setActiveInterval(null)
+      activePromptRef.current = { root: null, interval: null }
+      setActivePrompt({ root: null, interval: null })
     } else {
-      const nextPrompt = buildIntervalPrompt(activeRootRef.current, activeIntervalRef.current, targetNoteRef.current)
+      const nextPrompt = buildIntervalPrompt(
+        activePromptRef.current.root,
+        activePromptRef.current.interval,
+        targetNoteRef.current
+      )
       targetNoteRef.current = nextPrompt.target
-      activeRootRef.current = nextPrompt.root
-      activeIntervalRef.current = nextPrompt.interval
+      activePromptRef.current = { root: nextPrompt.root, interval: nextPrompt.interval }
       setTargetNote(nextPrompt.target)
-      setActiveRoot(nextPrompt.root)
-      setActiveInterval(nextPrompt.interval)
+      setActivePrompt({ root: nextPrompt.root, interval: nextPrompt.interval })
     }
 
     matchedFramesRef.current = 0
@@ -383,7 +383,7 @@ export function useTrainerSession({ noteOnly = false, forceMic = false, defaultM
       return
     }
 
-    const preferSharp = shouldPreferSharps(activeRootRef.current || targetNoteRef.current)
+    const preferSharp = shouldPreferSharps(activePromptRef.current.root || targetNoteRef.current)
     setDetectedNoteLabel(getPitchClassLabel(pitchInfo.pitchClass, preferSharp))
 
     if (!targetNoteRef.current) {
@@ -501,19 +501,19 @@ export function useTrainerSession({ noteOnly = false, forceMic = false, defaultM
     if (noteOnly) {
       const firstTarget = getRandomNote(targetNoteRef.current)
       targetNoteRef.current = firstTarget
-      activeRootRef.current = null
-      activeIntervalRef.current = null
+      activePromptRef.current = { root: null, interval: null }
       setTargetNote(firstTarget)
-      setActiveRoot(null)
-      setActiveInterval(null)
+      setActivePrompt({ root: null, interval: null })
     } else {
-      const firstPrompt = buildIntervalPrompt(activeRootRef.current, activeIntervalRef.current, targetNoteRef.current)
+      const firstPrompt = buildIntervalPrompt(
+        activePromptRef.current.root,
+        activePromptRef.current.interval,
+        targetNoteRef.current
+      )
       targetNoteRef.current = firstPrompt.target
-      activeRootRef.current = firstPrompt.root
-      activeIntervalRef.current = firstPrompt.interval
+      activePromptRef.current = { root: firstPrompt.root, interval: firstPrompt.interval }
       setTargetNote(firstPrompt.target)
-      setActiveRoot(firstPrompt.root)
-      setActiveInterval(firstPrompt.interval)
+      setActivePrompt({ root: firstPrompt.root, interval: firstPrompt.interval })
     }
 
     setDetectedFrequency(null)
