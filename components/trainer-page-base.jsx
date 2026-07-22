@@ -108,6 +108,7 @@ export function IntervalTrainerPage({ noteOnly = false, forceMic = false, defaul
     stopMicTest,
     startSession,
     stopSession,
+    handleMainAreaPointerDown,
     handleMainAreaClick,
     isMicTestRunningRef,
   } = useTrainerSession({ noteOnly, forceMic, defaultMicEnabled })
@@ -132,7 +133,7 @@ export function IntervalTrainerPage({ noteOnly = false, forceMic = false, defaul
   return (
     <Layout>
       {({ lang }) => (
-        <div className="flex min-h-screen" onClick={handleMainAreaClick}>
+        <div className="flex min-h-screen" onPointerDown={handleMainAreaPointerDown} onClick={handleMainAreaClick}>
           <div className="flex-1 flex flex-col items-center justify-center p-6 text-center">
             <h1 className="text-xl md:text-2xl mb-6">{noteOnly ? 'Note trainer' : 'Interval trainer'}</h1>
 

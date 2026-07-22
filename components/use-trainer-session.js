@@ -7,7 +7,11 @@ export const ANCHOR_DYNAMIC = 'anchor-dynamic'
 export const DIRECTION_FORWARD = 'direction-forward'
 export const DIRECTION_BACKWARD = 'direction-backward'
 
-const ADVANCE_COOLDOWN_MS = 250
+const MIC_ADVANCE_COOLDOWN_MS = 250
+const MANUAL_ADVANCE_COOLDOWN_MS = 80
+const POINTER_CLICK_FALLBACK_WINDOW_MS = 350
+const MIC_RELEASE_CENTS_MARGIN = 25
+const MIC_RELEASE_FRAMES_REQUIRED = 2
 const MODE_IDLE = 'idle'
 const MODE_RUNNING = 'running'
 const MODE_RECAP = 'recap'
@@ -206,6 +210,9 @@ export function useTrainerSession({ noteOnly = false, forceMic = false, defaultM
   const calibrationTimeoutRef = useRef(null)
   const calibrationIntervalRef = useRef(null)
   const calibrationStatsRef = useRef(null)
+  const lastPointerAdvanceAtRef = useRef(0)
+  const micAwaitingReleaseRef = useRef(false)
+  const micReleaseFramesRef = useRef(0)
 
   const [sessionElapsedMs, setSessionElapsedMs] = useState(null)
   const activeRoot = activePrompt.root
@@ -485,6 +492,8 @@ export function useTrainerSession({ noteOnly = false, forceMic = false, defaultM
 
     matchedFramesRef.current = 0
     lastAdvanceAtRef.current = now
+    micAwaitingReleaseRef.current = true
+    micReleaseFramesRef.current = 0
   }
 
   const runDetectionLoop = () => {
@@ -513,6 +522,15 @@ export function useTrainerSession({ noteOnly = false, forceMic = false, defaultM
       qualityScoreRef.current = lowSignalQuality
       setQualityScore(lowSignalQuality)
       matchedFramesRef.current = 0
+
+      if (micAwaitingReleaseRef.current) {
+        micReleaseFramesRef.current += 1
+        if (micReleaseFramesRef.current >= MIC_RELEASE_FRAMES_REQUIRED) {
+          micAwaitingReleaseRef.current = false
+          micReleaseFramesRef.current = 0
+        }
+      }
+
       rafRef.current = requestAnimationFrame(runDetectionLoop)
       return
     }
@@ -592,6 +610,24 @@ export function useTrainerSession({ noteOnly = false, forceMic = false, defaultM
     const centsOffTarget = getCentsOffTarget(pitchInfo.midiFloat, targetPitchClass)
     setCentsToTarget(centsOffTarget)
 
+    const isReleasedFromTarget = centsOffTarget > micSettings.toleranceCents + MIC_RELEASE_CENTS_MARGIN
+    if (micAwaitingReleaseRef.current) {
+      if (isReleasedFromTarget) {
+        micReleaseFramesRef.current += 1
+      } else {
+        micReleaseFramesRef.current = 0
+      }
+
+      if (micReleaseFramesRef.current >= MIC_RELEASE_FRAMES_REQUIRED) {
+        micAwaitingReleaseRef.current = false
+        micReleaseFramesRef.current = 0
+      }
+
+      matchedFramesRef.current = 0
+      rafRef.current = requestAnimationFrame(runDetectionLoop)
+      return
+    }
+
     const isInTune = centsOffTarget <= micSettings.toleranceCents
     const hasPassedTransientGuard =
       !micSettings.transientGuardEnabled ||
@@ -600,7 +636,7 @@ export function useTrainerSession({ noteOnly = false, forceMic = false, defaultM
     if (isInTune && hasPassedTransientGuard) {
       matchedFramesRef.current += 1
       const hasHold = matchedFramesRef.current >= micSettings.matchFramesRequired
-      const isOutOfCooldown = now - lastAdvanceAtRef.current >= ADVANCE_COOLDOWN_MS
+      const isOutOfCooldown = now - lastAdvanceAtRef.current >= MIC_ADVANCE_COOLDOWN_MS
 
       if (hasHold && isOutOfCooldown) {
         advancePrompt(now)
@@ -716,6 +752,8 @@ export function useTrainerSession({ noteOnly = false, forceMic = false, defaultM
     setInputLevel(0)
     matchedFramesRef.current = 0
     lastAdvanceAtRef.current = 0
+    micAwaitingReleaseRef.current = false
+    micReleaseFramesRef.current = 0
     setRemainingMs(sessionDurationMs)
     setSessionElapsedMs(null)
 
@@ -750,14 +788,23 @@ export function useTrainerSession({ noteOnly = false, forceMic = false, defaultM
     endSession()
   }
 
-  const manualAdvance = () => {
+  const manualAdvance = (now = performance.now()) => {
     if (!isRunning) return
 
-    const now = performance.now()
-    const isOutOfCooldown = now - lastAdvanceAtRef.current >= ADVANCE_COOLDOWN_MS
+    const isOutOfCooldown = now - lastAdvanceAtRef.current >= MANUAL_ADVANCE_COOLDOWN_MS
     if (!isOutOfCooldown) return
 
     advancePrompt(now)
+  }
+
+  const handleMainAreaPointerDown = (event) => {
+    if (!isRunning) return
+    if (event.target.closest('[data-control="true"]')) return
+    if (event.pointerType === 'mouse' && event.button !== 0) return
+
+    const now = performance.now()
+    lastPointerAdvanceAtRef.current = now
+    manualAdvance(now)
   }
 
   const notesPerSecond =
@@ -768,7 +815,11 @@ export function useTrainerSession({ noteOnly = false, forceMic = false, defaultM
   const handleMainAreaClick = (event) => {
     if (!isRunning) return
     if (event.target.closest('[data-control="true"]')) return
-    manualAdvance()
+
+    // If pointerdown already advanced this interaction, skip click fallback.
+    const now = performance.now()
+    if (now - lastPointerAdvanceAtRef.current <= POINTER_CLICK_FALLBACK_WINDOW_MS) return
+    manualAdvance(now)
   }
 
   return {
@@ -821,6 +872,7 @@ export function useTrainerSession({ noteOnly = false, forceMic = false, defaultM
     stopMicTest,
     startSession,
     stopSession,
+    handleMainAreaPointerDown,
     handleMainAreaClick,
     isMicTestRunningRef,
   }
