@@ -31,7 +31,7 @@ const DEFAULT_MIC_SETTINGS = {
   transientGuardEnabled: true,
   transientGuardMs: 100,
 }
-const TRAINER_INTERVALS = ['1', '2b', '2', '3b', '3', '4', '5b', '5', '6b', '6', '7b', '7']
+const TRAINER_INTERVALS = ['1', '2b', '2', '2#', '3b', '3', '4', '4#', '5b', '5', '5#', '6b', '6', '7b', '7']
 const INTERVAL_DISPLAY_ALIASES = {
   2: ['2', '9'],
   4: ['4', '11'],
