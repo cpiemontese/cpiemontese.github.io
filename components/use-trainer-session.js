@@ -12,6 +12,7 @@ const MANUAL_ADVANCE_COOLDOWN_MS = 80
 const POINTER_CLICK_FALLBACK_WINDOW_MS = 350
 const MIC_RELEASE_CENTS_MARGIN = 25
 const MIC_RELEASE_FRAMES_REQUIRED = 2
+const MIC_MATCH_HOLD_MS = 90
 const MODE_IDLE = 'idle'
 const MODE_RUNNING = 'running'
 const MODE_RECAP = 'recap'
@@ -23,12 +24,12 @@ const MIC_SETTINGS_STORAGE_KEY = 'interval-trainer-mic-settings-v1'
 const DEFAULT_MIC_SETTINGS = {
   minFrequencyHz: 60,
   maxFrequencyHz: 1400,
-  minRms: 0.0006,
+  minRms: 0.0004,
   toleranceCents: 70,
-  matchFramesRequired: 2,
+  matchFramesRequired: 3,
   fftSize: 4096,
   yinThreshold: 0.1,
-  yinProbabilityThreshold: 0.45,
+  yinProbabilityThreshold: 0.38,
   echoCancellation: true,
   noiseSuppression: true,
   autoGainControl: true,
@@ -163,6 +164,23 @@ function clamp(value, min, max) {
   return Math.min(max, Math.max(min, value))
 }
 
+function recoverSubharmonicFrequency(frequency, minFrequencyHz, maxFrequencyHz) {
+  if (!Number.isFinite(frequency) || frequency <= 0) return null
+  if (frequency >= minFrequencyHz && frequency <= maxFrequencyHz) return frequency
+  if (frequency > maxFrequencyHz) return null
+
+  let recovered = frequency
+  for (let i = 0; i < 6 && recovered < minFrequencyHz; i++) {
+    recovered *= 2
+  }
+
+  if (recovered >= minFrequencyHz && recovered <= maxFrequencyHz) {
+    return recovered
+  }
+
+  return null
+}
+
 export function useTrainerSession({ noteOnly = false, forceMic = false, defaultMicEnabled = true }) {
   const [anchorType, setAnchorType] = useState(ANCHOR_DYNAMIC)
   const [isChained, setIsChained] = useState(false)
@@ -213,6 +231,7 @@ export function useTrainerSession({ noteOnly = false, forceMic = false, defaultM
   const lastPointerAdvanceAtRef = useRef(0)
   const micAwaitingReleaseRef = useRef(false)
   const micReleaseFramesRef = useRef(0)
+  const matchedSinceRef = useRef(null)
 
   const [sessionElapsedMs, setSessionElapsedMs] = useState(null)
   const activeRoot = activePrompt.root
@@ -279,13 +298,9 @@ export function useTrainerSession({ noteOnly = false, forceMic = false, defaultM
   const detectFrequency = (floatBuffer) => {
     for (const detector of detectorsRef.current) {
       const detected = detector(floatBuffer)
-      if (
-        detected &&
-        Number.isFinite(detected) &&
-        detected >= micSettings.minFrequencyHz &&
-        detected <= micSettings.maxFrequencyHz
-      ) {
-        return detected
+      const recovered = recoverSubharmonicFrequency(detected, micSettings.minFrequencyHz, micSettings.maxFrequencyHz)
+      if (recovered != null) {
+        return recovered
       }
     }
     return null
@@ -316,6 +331,7 @@ export function useTrainerSession({ noteOnly = false, forceMic = false, defaultM
     analyserRef.current = null
     signalAboveGateSinceRef.current = null
     previousFrequencyRef.current = null
+    matchedSinceRef.current = null
     qualityScoreRef.current = 0
     setQualityScore(0)
     setIsMicTestRunning(false)
@@ -382,7 +398,7 @@ export function useTrainerSession({ noteOnly = false, forceMic = false, defaultM
     const validRate = stats.playFrames > 0 ? stats.validPitchFrames / stats.playFrames : 0
     const stability = stats.stabilitySamples > 0 ? stats.stabilitySum / stats.stabilitySamples : 0.5
 
-    const suggestedMinRms = clamp(noiseAvgRms * 2.2, 0.0001, 0.002)
+    const suggestedMinRms = clamp(Math.min(noiseAvgRms * 1.8, playAvgRms * 0.35), 0.00008, 0.0015)
     const suggestedTolerance = clamp(Math.round(60 + (1 - stability) * 40), 45, 120)
     const suggestedFrames = stability >= 0.78 ? 2 : stability >= 0.58 ? 3 : 4
     const suggestedYinProb = clamp(0.38 - (validRate - 0.6) * 0.25, 0.2, 0.55)
@@ -491,6 +507,7 @@ export function useTrainerSession({ noteOnly = false, forceMic = false, defaultM
     }
 
     matchedFramesRef.current = 0
+    matchedSinceRef.current = null
     lastAdvanceAtRef.current = now
     micAwaitingReleaseRef.current = true
     micReleaseFramesRef.current = 0
@@ -522,6 +539,7 @@ export function useTrainerSession({ noteOnly = false, forceMic = false, defaultM
       qualityScoreRef.current = lowSignalQuality
       setQualityScore(lowSignalQuality)
       matchedFramesRef.current = 0
+      matchedSinceRef.current = null
 
       if (micAwaitingReleaseRef.current) {
         micReleaseFramesRef.current += 1
@@ -547,6 +565,7 @@ export function useTrainerSession({ noteOnly = false, forceMic = false, defaultM
       qualityScoreRef.current = missingPitchQuality
       setQualityScore(missingPitchQuality)
       matchedFramesRef.current = 0
+      matchedSinceRef.current = null
       rafRef.current = requestAnimationFrame(runDetectionLoop)
       return
     }
@@ -595,6 +614,7 @@ export function useTrainerSession({ noteOnly = false, forceMic = false, defaultM
     if (!targetNoteRef.current) {
       setCentsToTarget(null)
       matchedFramesRef.current = 0
+      matchedSinceRef.current = null
       rafRef.current = requestAnimationFrame(runDetectionLoop)
       return
     }
@@ -603,6 +623,7 @@ export function useTrainerSession({ noteOnly = false, forceMic = false, defaultM
     if (targetPitchClass == null) {
       setCentsToTarget(null)
       matchedFramesRef.current = 0
+      matchedSinceRef.current = null
       rafRef.current = requestAnimationFrame(runDetectionLoop)
       return
     }
@@ -624,6 +645,7 @@ export function useTrainerSession({ noteOnly = false, forceMic = false, defaultM
       }
 
       matchedFramesRef.current = 0
+      matchedSinceRef.current = null
       rafRef.current = requestAnimationFrame(runDetectionLoop)
       return
     }
@@ -634,15 +656,20 @@ export function useTrainerSession({ noteOnly = false, forceMic = false, defaultM
       (signalAboveGateSinceRef.current != null && now - signalAboveGateSinceRef.current >= micSettings.transientGuardMs)
 
     if (isInTune && hasPassedTransientGuard) {
+      if (matchedFramesRef.current === 0) {
+        matchedSinceRef.current = now
+      }
       matchedFramesRef.current += 1
       const hasHold = matchedFramesRef.current >= micSettings.matchFramesRequired
+      const hasHeldLongEnough = matchedSinceRef.current != null && now - matchedSinceRef.current >= MIC_MATCH_HOLD_MS
       const isOutOfCooldown = now - lastAdvanceAtRef.current >= MIC_ADVANCE_COOLDOWN_MS
 
-      if (hasHold && isOutOfCooldown) {
+      if (hasHold && hasHeldLongEnough && isOutOfCooldown) {
         advancePrompt(now)
       }
     } else {
       matchedFramesRef.current = 0
+      matchedSinceRef.current = null
     }
 
     rafRef.current = requestAnimationFrame(runDetectionLoop)
@@ -691,6 +718,7 @@ export function useTrainerSession({ noteOnly = false, forceMic = false, defaultM
     setCentsToTarget(null)
     setInputLevel(0)
     matchedFramesRef.current = 0
+    matchedSinceRef.current = null
     targetNoteRef.current = null
 
     cleanupAudio()
@@ -751,6 +779,7 @@ export function useTrainerSession({ noteOnly = false, forceMic = false, defaultM
     setCentsToTarget(null)
     setInputLevel(0)
     matchedFramesRef.current = 0
+    matchedSinceRef.current = null
     lastAdvanceAtRef.current = 0
     micAwaitingReleaseRef.current = false
     micReleaseFramesRef.current = 0
